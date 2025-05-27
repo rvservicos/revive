@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte ao Colaborador - ReVive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-text h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            animation: slideUp 0.5s ease-out 0.1s both;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-tab:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .nav-tab.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-tab-icon {
+            font-size: 1.25rem;
+        }
+        
+        .nav-tab.analise-link {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-tab.analise-link:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            min-height: 600px;
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: tabFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .flow-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .flow-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .flow-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .flow-step {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .flow-step:hover::before {
+            width: 100%;
+        }
+        
+        .flow-step:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0.5rem 0;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        
+        .flow-branch {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .branch-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .branch-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .branch-success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .branch-warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .branch-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-docs {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-docs:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .details-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+        
+        .details-overlay.active {
+            display: flex;
+            animation: overlayFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .details-modal {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .info-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-section h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-section li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .info-section li:last-child {
+            border-bottom: none;
+        }
+        
+        .info-section li::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 0.25rem;
+            flex-shrink: 0;
+        }
+        
+        .alert-box {
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border: 2px solid #6ee7b7;
+            color: #047857;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background: #fee2e2;
+            border: 2px solid #fca5a5;
+            color: #991b1b;
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .doc-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-text {
+            color: #6b7280;
+        }
+        
+        .process-info-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .process-info-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .process-info-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .process-info-content {
+            display: none;
+        }
+        
+        .process-info-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            .header, .nav-container, .content-wrapper {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .search-container {
+                width: 100%;
+                max-width: none;
+            }
+            
+            .nav-tab {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .nav-tab-icon {
+                display: none;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-branch {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .card-actions .btn-info, .card-actions .btn-docs {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .process-info-tabs {
+                flex-direction: column;
+            }
+            .modal-body {
+                padding: 1.5rem;
+            }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">📄</div>
+                    <div class="logo-text">
+                        <h1>Suporte ao Colaborador - ReVive</h1>
+                        <p>Sistema Inteligente de Documentos e Processos</p>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="searchInput" 
+                            placeholder="Pesquisar processos ou documentos..."
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <nav class="nav-container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="processos">
+                    <span class="nav-tab-icon">⚖️</span>
+                    <span>Processos</span>
+                </button>
+                <button class="nav-tab" data-tab="documentos">
+                    <span class="nav-tab-icon">📋</span>
+                    <span>Documentos</span>
+                </button>
+                <button class="nav-tab" data-tab="fluxograma">
+                    <span class="nav-tab-icon">📊</span>
+                    <span>Fluxograma</span>
+                </button>
+                <a href="analise.html" class="nav-tab analise-link">
+                    <span class="nav-tab-icon">🔍</span>
+                    <span>Análise de Direitos</span>
+                </a>
+            </div>
+        </nav>
+        
+        <main class="content-wrapper">
+            <!-- Tab Processos -->
+            <div id="processos" class="tab-content active">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--dark); text-align: center; margin-bottom: 2rem;">
+                    Selecione o Tipo de Processo
+                </h2>
+                <div class="grid-container" id="processGrid">
+                    <!-- Processos serão renderizados aqui via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Tab Documentos -->
+            <div id="documentos" class="tab-content">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--dark); text-align: center; margin-bottom: 2rem;">
+                    Selecione o Tipo de Documento
+                </h2>
+                <div class="grid-container" id="documentGrid">
+                    <!-- Documentos serão renderizados aqui via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Tab Fluxograma -->
+            <div id="fluxograma" class="tab-content">
+                <div class="flow-container">
+                    <div class="flow-card">
+                        <h2 class="flow-title">🎯 Fluxo Principal de Solicitação</h2>
+                        <div class="flow-step"><span>📌 INÍCIO: Identificar processo na planilha</span></div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-step"><span>🔍 Verificar processo no ASTREA</span></div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-branch">
+                            <div class="branch-item branch-success">
+                                <div class="branch-title"><span>✅</span><span>Já Protocolado ADM/Judicial</span></div>
+                                <p>• Retirar pendências (colocar "O")<br>• Mudar etiqueta para "OK" ou "Protocolado"</p>
+                            </div>
+                            <div class="branch-item branch-warning">
+                                <div class="branch-title"><span>⚠️</span><span>Processo Continua Ativo</span></div>
+                                <p>• Voltar para planilha<br>• Começar a identificar pendências</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-card">
+                        <h3 class="flow-title">📞 Processo de Contato com Cliente</h3>
+                        <div class="flow-branch">
+                            <div class="branch-item">
+                                <div class="branch-title"><span>1️⃣</span><span>BotConversa</span></div>
+                                <p>Primeira tentativa de contato<br>Enviar mensagem automatizada</p>
+                            </div>
+                            <div class="branch-item">
+                                <div class="branch-title"><span>2️⃣</span><span>WhatsApp</span></div>
+                                <p>Se não encontrar no BotConversa<br>Atribuir para você e pausar automação</p>
+                            </div>
+                            <div class="branch-item">
+                                <div class="branch-title"><span>3️⃣</span><span>Ligação</span></div>
+                                <p>Ligar pelo menos 2 vezes<br>Se atender, explicar pendências</p>
+                            </div>
+                        </div>
+                        <div class="alert-box alert-warning" style="margin-top: 1.5rem;">
+                            <span class="alert-icon">💡</span>
+                            <span><strong>Script de Ligação:</strong> "Olá, sou [nome], estou resolvendo as pendências do seu processo e gostaria de solicitar alguns documentos. Você teria disponibilidade para enviá-los agora? Vou mandar a lista no WhatsApp."</span>
+                        </div>
+                    </div>
+                    <div class="flow-card">
+                        <h3 class="flow-title">📋 Após Contato com Cliente</h3>
+                        <div class="flow-branch">
+                            <div class="branch-item branch-success">
+                                <div class="branch-title"><span>✅</span><span>Cliente Respondeu</span></div>
+                                <p>• Enviar lista de documentos<br>• Marcar X nos recebidos<br>• Lançar no ASTREA</p>
+                            </div>
+                            <div class="branch-item branch-warning">
+                                <div class="branch-title"><span>⚠️</span><span>Sem Resposta</span></div>
+                                <p>• Colocar pendências no Slack<br>• Notificar consultor<br>• Acompanhar semanalmente</p>
+                            </div>
+                        </div>
+                        <div class="alert-box alert-danger" style="margin-top: 1.5rem;">
+                            <span class="alert-icon">⚠️</span>
+                            <span><strong>Importante:</strong> Sempre lançar no ASTREA as pendências solicitadas, se teve sucesso ou se passou para o consultor!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Detalhes -->
+    <div class="details-overlay" id="detailsOverlay">
+        <div class="details-modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">×</button>
+                <div id="modalHeaderContent">
+                    <!-- Conteúdo do cabeçalho do modal aqui -->
+                </div>
+            </div>
+            <div class="modal-body" id="modalBodyContent">
+                <!-- Conteúdo do corpo do modal aqui -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Estado da aplicação (Global)
+        const AppState = {
+            currentTab: 'processos',
+            searchTerm: '',
+            modalOpen: false,
+            currentProcessInfoTab: 'info'
+        };
+        
+        // ==================================================
+        // DADOS DA APLICAÇÃO (Globais)
+        // ==================================================
+        const processos = {
+            'seguro-vida': {
+                icon: '🛡️',
+                title: 'Seguro de Vida',
+                description: 'Documentos para seguro de vida por acidente',
+                info: {
+                    oQueE: 'O seguro de vida por acidente é uma proteção que oferece indenização em caso de morte ou invalidez permanente causada exclusivamente por acidente. Cobre apenas eventos súbitos, violentos, involuntários e externos que causem lesões físicas.',
+                    quemTemDireito: [
+                        'Segurados que sofreram acidente durante vigência da apólice',
+                        'Beneficiários em caso de morte acidental',
+                        'Pessoas com invalidez permanente total ou parcial por acidente',
+                        'Segurados de apólices individuais, empresariais ou de aplicativos',
+                        'Funcionários com seguro empresarial ativo na data do acidente',
+                        'Motoristas de aplicativo durante atividade ou até 1h após (varia por app)'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'B.O./Relato/CAT', 'Prontuário Médico', 'Raio-X', 'Apólice', 'Dados Bancários', 'RTM', 'Folhas de Pagamento (empresarial)', 'Ficha de Empregado (empresarial)', 'Extrato FGTS (capital global)', 'Prolabore (sócio/dono)', 'Contrato Social (sócio/dono)']
+            },
+            'auxilio-acidente': {
+                icon: '🩹',
+                title: 'Auxílio-Acidente',
+                description: 'Benefício por redução da capacidade de trabalho',
+                info: {
+                    oQueE: 'É uma indenização mensal de 50% do salário-de-benefício que deu origem ao auxílio-doença. Destinado a segurados que ficaram com sequela permanente que reduza sua capacidade laborativa após cessação do benefício por incapacidade temporária.',
+                    quemTemDireito: [
+                        'Segurados empregados urbanos/rurais',
+                        'Empregados domésticos (acidentes após 01/06/2015)',
+                        'Trabalhadores avulsos',
+                        'Segurados especiais (trabalhadores rurais)',
+                        'Ter qualidade de segurado à época do acidente',
+                        'Carência de 12 meses (dispensada para acidentes)',
+                        'Comprovação de sequela permanente por perícia médica',
+                        'Redução comprovada da capacidade de trabalho',
+                        'Pode ser cumulado com aposentadoria'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'CTPS Completa', 'Senha GOV.BR', 'B.O./CAT/Declaração', 'Prontuários', 'Raio-X', 'RTM']
+            },
+            'auxilio-maternidade': {
+                icon: '👶',
+                title: 'Auxílio-Maternidade',
+                description: 'Benefício para mães e pais',
+                info: {
+                    oQueE: 'Benefício pago às seguradas do INSS durante afastamento por motivo de parto, adoção, guarda judicial para fins de adoção, e em casos de aborto não criminoso. Duração de 120 dias, podendo iniciar entre 28 dias antes do parto e a data de nascimento.',
+                    quemTemDireito: [
+                        'Seguradas empregadas (sem carência)',
+                        'Trabalhadoras avulsas (sem carência)',
+                        'Empregadas domésticas (sem carência)',
+                        'Contribuintes individuais (carência 10 meses)',
+                        'Seguradas especiais (10 meses de atividade rural)',
+                        'Facultativas (carência 10 meses)',
+                        'Possível solicitar até criança completar 5 anos',
+                        'Segurada desempregada que mantenha qualidade de segurado',
+                        'Em caso de adoção: idade da criança não importa para a duração'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'CTPS Completa', 'Senha GOV.BR', 'Certidão de Nascimento']
+            },
+            'bpc-loas': {
+                icon: '🤝',
+                title: 'BPC/LOAS',
+                description: 'Benefício de prestação continuada',
+                info: {
+                    oQueE: 'Benefício assistencial que garante um salário mínimo mensal à pessoa com deficiência ou ao idoso com 65 anos ou mais que comprovem não possuir meios de prover a própria manutenção nem de tê-la provida por sua família.',
+                    quemTemDireito: [
+                        'Pessoas com deficiência de natureza física, mental, intelectual ou sensorial',
+                        'Idosos com 65 anos ou mais',
+                        'Renda familiar per capita inferior a 1/4 do salário mínimo',
+                        'Inscrição no CadÚnico atualizada',
+                        'Deficiência deve ser de longo prazo (mínimo 2 anos)',
+                        'Não precisa ter contribuído para o INSS',
+                        'Não é aposentadoria e não dá direito ao 13º salário',
+                        'Revisão médica e social periódica obrigatória'
+                    ]
+                },
+                docs: ['Documento Pessoal (todos da casa)', 'Comprovante de Renda (todos)', 'Comprovante de Residência', 'Senha GOV.BR', 'Laudos Médicos', 'Fotos da Casa', 'Comprovante de Gastos']
+            },
+            'aposentadoria-idade': {
+                icon: '👴',
+                title: 'Aposentadoria por Idade',
+                description: 'Aposentadoria por critério de idade',
+                info: {
+                    oQueE: 'Benefício previdenciário concedido aos trabalhadores que alcançaram a idade mínima exigida e cumpriram o tempo mínimo de contribuição. É a principal forma de aposentadoria após a Reforma da Previdência.',
+                    quemTemDireito: [
+                        'Mulheres: 62 anos + 15 anos de contribuição',
+                        'Homens: 65 anos + 20 anos de contribuição (regra atual)',
+                        'Trabalhadores rurais: 60 anos (homens) e 57 anos (mulheres)',
+                        'Pessoas com deficiência: redução de 5 anos na idade',
+                        'Professores: redução de 5 anos (regras específicas)',
+                        'Valor: 60% da média + 2% por ano acima do mínimo',
+                        'Carência mínima: 180 contribuições (15 anos)',
+                        'Transição gradual das idades até 2031'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'CTPS Completa', 'Notas de Produtor', 'Carnê de Contribuição', 'ITR da Terra', 'Senha GOV.BR']
+            },
+            'aposentadoria-tempo': {
+                icon: '⏰',
+                title: 'Aposentadoria por Tempo',
+                description: 'Aposentadoria por tempo de contribuição',
+                info: {
+                    oQueE: 'Benefício previdenciário extinto pela Reforma da Previdência, mas ainda possível para quem tem direito adquirido ou se enquadra nas regras de transição. Baseava-se exclusivamente no tempo de contribuição.',
+                    quemTemDireito: [
+                        'Direito adquirido: 35 anos (homem) ou 30 anos (mulher) até 13/11/2019',
+                        'Regras de transição: pontos, idade mínima progressiva, pedágios',
+                        'Professores: redução de 5 anos no tempo exigido',
+                        'Regra de pontos: 86 pontos (mulher) e 96 pontos (homem) em 2019',
+                        'Idade mínima progressiva: aumenta 6 meses por ano',
+                        'Pedágio 50%: 50% do tempo que faltava em 13/11/2019',
+                        'Pedágio 100%: 100% do tempo que faltava + idade mínima'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'CTPS Completa', 'Notas de Produtor', 'Carnê de Contribuição', 'ITR da Terra', 'PPP', 'Senha GOV.BR']
+            },
+            'aposentadoria-invalidez': {
+                icon: '♿',
+                title: 'Aposentadoria por Invalidez',
+                description: 'Aposentadoria por incapacidade total permanente',
+                info: {
+                    oQueE: 'Benefício concedido ao segurado permanentemente incapaz de exercer qualquer atividade laborativa e que não pode ser reabilitado em outra profissão. A incapacidade deve ser atestada por perícia médica do INSS.',
+                    quemTemDireito: [
+                        'Segurados com qualidade de segurado no momento da incapacidade',
+                        'Carência de 12 meses (dispensada para acidentes e doenças graves)',
+                        'Incapacidade total e permanente comprovada por perícia',
+                        'Sem possibilidade de reabilitação profissional',
+                        'Doenças graves listadas em lei dispensam carência',
+                        'Benefício pago enquanto persistir a incapacidade',
+                        'Possível acréscimo de 25% se necessitar assistência permanente',
+                        'Revisão médica periódica obrigatória'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'CTPS Completa', 'Notas de Produtor', 'Carnê de Contribuição', 'ITR da Terra', 'PPP', 'Senha GOV.BR', 'Laudos Médicos']
+            },
+            'pensao-morte': {
+                icon: '💔',
+                title: 'Pensão por Morte',
+                description: 'Benefício para dependentes',
+                info: {
+                    oQueE: 'Benefício pago aos dependentes do segurado do INSS que veio a falecer, seja ele aposentado ou não. O falecido deve ter qualidade de segurado na data do óbito.',
+                    quemTemDireito: [
+                        'Classe 1: Cônjuge, companheiro(a), filhos menores de 21 anos ou inválidos',
+                        'Classe 2: Pais (na ausência da classe 1)',
+                        'Classe 3: Irmãos menores de 21 anos ou inválidos (na ausência das anteriores)',
+                        'Não há exigência de carência mínima',
+                        'Cônjuge: duração varia conforme idade e tempo de casamento',
+                        'Filhos: até 21 anos ou enquanto inválidos',
+                        'Companheiro(a): união estável comprovada',
+                        'Cota individual calculada conforme número de dependentes'
+                    ]
+                },
+                docs: ['Documento Pessoal (falecido e requerente)', 'Certidão de Casamento/Nascimento', 'CTPS do Falecido', 'Senha GOV.BR', 'Certidão de Óbito', 'Comprovantes de Convivência']
+            },
+            'auxilio-doenca': {
+                icon: '🏥',
+                title: 'Auxílio-Doença',
+                description: 'Benefício por incapacidade temporária',
+                info: {
+                    oQueE: 'Benefício concedido ao segurado do INSS que, devido a doença ou acidente, fica temporariamente incapaz de exercer suas atividades laborais por mais de 15 dias consecutivos.',
+                    quemTemDireito: [
+                        'Todos os segurados do INSS com qualidade de segurado',
+                        'Carência de 12 contribuições mensais',
+                        'Exceção: acidentes de qualquer natureza (sem carência)',
+                        'Exceção: doenças graves previstas em lei (sem carência)',
+                        'Comprovação por perícia médica do INSS',
+                        'Incapacidade temporária para atividade habitual',
+                        'Não pode ser acumulado com aposentadoria ou salário-maternidade',
+                        'Segurado desempregado que mantenha qualidade de segurado'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Atestados Médicos', 'Senha GOV.BR', 'CTPS Completa', 'CAT (se acidente trabalho)', 'Declaração Último Dia Trabalhado']
+            },
+            'dpvat': {
+                icon: '🚗',
+                title: 'DPVAT',
+                description: 'Seguro obrigatório de veículos (até 14/11/2023)',
+                info: {
+                    oQueE: 'Seguro Obrigatório de Danos Pessoais causados por Veículos Automotores. Destinado a amparar vítimas de acidentes de trânsito, independente de culpa. IMPORTANTE: Válido apenas para acidentes até 14/11/2023.',
+                    quemTemDireito: [
+                        'Qualquer vítima de acidente de trânsito (motoristas, passageiros, pedestres)',
+                        'Beneficiários em caso de morte',
+                        'Independe de culpa ou identificação do veículo',
+                        'Independe se o veículo tem ou não seguro DPVAT em dia',
+                        'Indenizações pagas individualmente por vítima',
+                        'Válido apenas para acidentes até 14/11/2023',
+                        'Valores: R$ 13.500 (morte), até R$ 13.500 (invalidez), R$ 2.700 (despesas médicas)',
+                        'Prazo: até 3 anos após o acidente'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'Boletim de Ocorrência', 'Prontuário Médico', 'Raio-X', 'Certidão de Nascimento (menor)', 'Procuração Caixa', 'Procuração Bancária']
+            },
+            'dpvat-obito': {
+                icon: '💀',
+                title: 'DPVAT Óbito',
+                description: 'DPVAT em caso de morte (até 14/11/2023)',
+                info: {
+                    oQueE: 'Indenização DPVAT em caso de morte da vítima em acidente de trânsito. O valor é pago aos beneficiários legais. IMPORTANTE: Válido apenas para acidentes até 14/11/2023.',
+                    quemTemDireito: [
+                        'Beneficiários legais da vítima fatal',
+                        'Cônjuge não separado judicialmente (50%)',
+                        'Herdeiros conforme ordem de vocação hereditária (50%)',
+                        'Independe de culpa ou identificação do veículo',
+                        'Independe se o veículo tem seguro DPVAT em dia',
+                        'Valor: R$ 13.500,00 total',
+                        'Válido apenas para acidentes até 14/11/2023',
+                        'Divisão automática entre beneficiários legais'
+                    ]
+                },
+                docs: ['Documento Pessoal (beneficiário e falecido)', 'Comprovante de Residência', 'Boletim de Ocorrência', 'Prontuário Médico', 'Certidão de Óbito', 'Certidões de Parentesco', 'Procuração Caixa', 'Procuração Bancária']
+            },
+            'seguro-terceiro': {
+                icon: '🚙',
+                title: 'Seguro Terceiro',
+                description: 'Acionamento de seguro do causador do acidente',
+                info: {
+                    oQueE: 'Acionamento do seguro terceiro do causador do acidente de trânsito. Quando o responsável pelo acidente possui seguro e é possível identificá-lo. Cobertura para danos materiais, corporais e morais.',
+                    quemTemDireito: [
+                        'Vítimas de acidente de trânsito causado por terceiro identificado',
+                        'Terceiro (causador) deve ter seguro de responsabilidade civil',
+                        'Familiares em caso de morte da vítima',
+                        'Comprovação de que o terceiro foi o causador',
+                        'Danos comprovados (materiais, corporais, morais)',
+                        'Terceiro deve ter seguro vigente na data do acidente',
+                        'Processo administrativo direto com a seguradora',
+                        'Mais rápido que ação judicial'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'Boletim de Ocorrência', 'Prontuário Médico', 'Raio-X', 'Dados do Seguro do Terceiro', 'Recibos Danos Materiais', 'Fotos do Acidente']
+            },
+            'acao-acidente-transito': {
+                icon: '⚖️',
+                title: 'Ação Acidente de Trânsito',
+                description: 'Ação judicial por acidente de trânsito',
+                info: {
+                    oQueE: 'Ação judicial contra o responsável por acidente de trânsito quando não há seguro terceiro ou quando se opta pela via judicial. Visa reparação de danos materiais, morais, lucros cessantes e danos estéticos.',
+                    quemTemDireito: [
+                        'Vítimas de acidentes de trânsito causados por terceiros',
+                        'Familiares em caso de morte',
+                        'Quando o causador não tem seguro terceiro',
+                        'Quando se opta por não acionar seguro terceiro',
+                        'Comprovação de culpa do terceiro',
+                        'Danos comprovados (materiais, morais, estéticos)',
+                        'Lucros cessantes para autônomos e empregados',
+                        'Prazo de 3 anos para ajuizar ação',
+                        'Possibilidade de valores maiores que seguro terceiro'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'Boletim de Ocorrência', 'Prontuário Médico', 'Raio-X', 'Recibos Danos Materiais', 'Comprovante de Renda Judicial', 'Extratos Bancários (autônomo)']
+            },
+            'fraude': {
+                icon: '🚨',
+                title: 'Fraude',
+                description: 'Casos de fraude e golpes',
+                info: {
+                    oQueE: 'Ação judicial para recuperar valores perdidos em golpes, fraudes bancárias, estelionato virtual, falsos investimentos e outros crimes contra o patrimônio praticados por meio eletrônico ou presencial.',
+                    quemTemDireito: [
+                        'Vítimas de golpes e fraudes comprovadas',
+                        'Fraudes bancárias (PIX, cartão, conta)',
+                        'Estelionato virtual e por telefone',
+                        'Falsos investimentos e pirâmides financeiras',
+                        'Golpes em redes sociais e aplicativos',
+                        'Compra e venda fraudulenta',
+                        'Clonagem de cartão e dados pessoais',
+                        'Empréstimos fraudulentos em nome da vítima',
+                        'Prazo: até 3 anos após descoberta da fraude'
+                    ]
+                },
+                docs: ['Documento Pessoal', 'Comprovante de Residência', 'Boletim de Ocorrência', 'Prints das Conversas', 'Prints Comprovantes Depósito', 'Extratos Bancários', 'Comprovantes da Fraude']
+            }
+        };
+
+        const documentos = {
+            'documento-pessoal': {
+                icon: '🆔', title: 'Documento Pessoal', description: 'RG, CNH ou RNM com foto',
+                content: {
+                    title: '🆔 Documento Pessoal',
+                    sections: [
+                        { title: '✅ Documentos Aceitos', items: ['RG (Registro Geral): Frente e verso, todas as informações legíveis', 'CNH (Carteira Nacional de Habilitação): Frente e verso', 'RNM: Para estrangeiros residentes (frente e verso)', 'Passaporte: Página com foto e dados pessoais', 'Carteira de Identidade Profissional: Com validade nacional'] },
+                        { title: '📸 Requisitos da Foto', items: ['Ambos os lados do documento visíveis', 'Todas as informações bem legíveis', 'Boa qualidade de imagem (sem reflexos ou borrões)', 'Documento completo na foto', 'Não aceitar fotos cortadas ou parciais'] }
+                    ],
+                    alerts: [{ type: 'success', text: '💡 Dica: Solicitar sempre que verifiquem se todas as informações estão visíveis antes de enviar. Evita retrabalho!' }]
+                }
+            },
+            'comprovante-residencia': {
+                icon: '🏠', title: 'Comprovante de Residência', description: 'Comprovante de endereço atual',
+                content: {
+                    title: '🏠 Comprovante de Residência',
+                    sections: [
+                        { title: '📋 Requisitos Obrigatórios', items: ['Validade: Máximo 2 meses (verificar sempre!)', 'Nome completo e endereço da pessoa', 'Documento bem legível', 'Endereço completo com CEP'] },
+                        { title: '✅ Documentos Aceitos', items: ['Conta de água (Casan)', 'Conta de luz (Celesc)', 'Conta de condomínio', 'Conta de internet ou telefone', 'Extrato bancário', 'Correspondência oficial (INSS, Receita Federal)'] },
+                        { title: '📱 Como Obter via WhatsApp', items: ['Celesc: WhatsApp (48) 98844-0048', 'Casan: WhatsApp disponível no site', 'Necessário: Comprovante antigo no nome do cliente', 'Informar dados para 2ª via'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '💡 Importante: Se já temos comprovante antigo no nome do cliente, podemos baixar 2ª via pelo WhatsApp das concessionárias!' }]
+                }
+            },
+            'comprovante-renda-judicial': {
+                icon: '💰', title: 'Comprovante de Renda Judicial', description: 'Para ação acidente de trânsito',
+                content: {
+                    title: '💰 Comprovante de Renda Judicial',
+                    sections: [
+                        { title: '👔 Para CLT (Empregados)', items: ['3 últimas folhas de pagamento ATUAIS (não do acidente)', 'Comprovam renda atual para cálculo de lucros cessantes', 'Devem ser recentes e legíveis', 'Incluir descriminativo completo dos valores'] },
+                        { title: '🏦 Para quem recebe Benefício', items: ['Extrato de benefício do INSS', 'Comprovante de aposentadoria', 'Extrato do auxílio-doença', 'Outros benefícios governamentais'] },
+                        { title: '💳 Extrato Bancário (Autônomo)', items: ['Últimos 3-6 meses de movimentação', 'De todas as contas que recebe renda', 'Para comprovar média de rendimentos', 'Demonstrar regularidade dos recebimentos'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '⚠️ DIFERENÇA: Este é diferente das folhas de pagamento do seguro empresarial, que são de ANTES do acidente. Aqui são ATUAIS!' }]
+                }
+            },
+            'prolabore': {
+                icon: '💼', title: 'Prolabore', description: 'Para sócios/donos de empresa (apólice empresarial)',
+                content: {
+                    title: '💼 Prolabore (Sócios/Donos)',
+                    sections: [
+                        { title: '📋 O que é', items: ['Remuneração mensal do sócio-administrador', 'Comprova vínculo ativo com a empresa', 'Substitui folha de pagamento para sócios', 'Demonstra que estava exercendo atividade na empresa'] },
+                        { title: '📅 Período Necessário', items: ['3 meses anteriores ao acidente', 'Recibos de prolabore assinados', 'Comprovantes de recolhimento do INSS', 'Demonstrar continuidade dos pagamentos'] },
+                        { title: '📋 Informações Obrigatórias', items: ['Nome completo do sócio', 'Cargo/função na empresa', 'Valor do prolabore', 'Data de pagamento', 'Assinatura do responsável'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '💡 APENAS para sócios/donos: Substitui folha de pagamento, ficha de empregado e GEFIP/FGTS' }]
+                }
+            },
+            'contrato-social': {
+                icon: '📋', title: 'Contrato Social', description: 'Para sócios/donos de empresa (apólice empresarial)',
+                content: {
+                    title: '📋 Contrato Social da Empresa',
+                    sections: [
+                        { title: '📋 O que é', items: ['Documento que formaliza a constituição da empresa', 'Comprova que o cliente é sócio/dono', 'Define participação societária', 'Estabelece funções e responsabilidades'] },
+                        { title: '✅ Versão Necessária', items: ['Contrato social consolidado (mais recente)', 'Ou última alteração contratual', 'Deve estar registrado na Junta Comercial', 'Com todas as assinaturas reconhecidas'] },
+                        { title: '🔍 Informações a Verificar', items: ['Nome do cliente consta como sócio', 'Percentual de participação', 'Função/cargo na sociedade', 'Data de entrada na sociedade', 'Vigência na data do acidente'] }
+                    ],
+                    alerts: [{ type: 'success', text: '📌 Documento fundamental para comprovar que o cliente é sócio/dono e não empregado' }]
+                }
+            },
+            'bo-relato-cat': {
+                icon: '🚨', title: 'B.O./Relato/CAT', description: 'Comprovação do acidente',
+                content: {
+                    title: '🚨 B.O. / Relato / CAT',
+                    sections: [
+                        { title: '🚔 Boletim de Ocorrência (Delegacia)', items: ['APENAS para: Acidente de trânsito com seguro de vida', 'Ação de acidente de trânsito', 'Seguro terceiro', 'DPVAT', 'Deve conter: Placa e Renavam (se motorista)', 'Dados do causador (se terceiro)'] },
+                        { title: '✍️ Relato Manuscrito', items: ['Para: Auxílio-acidente ou acidentes não de trânsito', 'Como ocorreu o acidente', 'Quando ocorreu (data e hora)', 'Onde ocorreu (local)', 'Assinatura do cliente', 'CPF do cliente', 'Data do acidente', 'Data atual', 'SEMPRE enviar modelo para o cliente'] },
+                        { title: '🏭 CAT (Acidente de Trabalho)', items: ['Verificar no MEU INSS se há CAT para download', 'Usar senha GOV.BR do cliente', 'Documento emitido pela empresa', 'Comunicação formal ao INSS'] }
+                    ],
+                    alerts: [
+                        { type: 'danger', text: '⚠️ IMPORTANTE: Auxílio-doença, auxílio-maternidade, aposentadoria e pensão por morte NÃO precisam de registro de ocorrência!' },
+                        { type: 'warning', text: '📤 SEMPRE: Em caso de RELATO ASSINADO, enviar modelo para o cliente não fazer errado. A foto precisa ser bem legível!' }
+                    ]
+                }
+            },
+            'prontuario': {
+                icon: '🏥', title: 'Prontuário Médico', description: 'Documentação médica do atendimento',
+                content: {
+                    title: '🏥 Prontuário Médico',
+                    sections: [
+                        { title: '🔍 Verificações Iniciais', items: ['Se já tem prontuário → verificar se falta raio-X', 'Procurar QR Code no prontuário para baixar raio-X', 'Verificar se raio-X já está anexado', 'Conferir se tem todas as informações necessárias'] },
+                        { title: '📋 Caso tenhamos um prontuário, mas falte outro, verificar se temos as informações abaixo no prontuário presente:', items: ['Entrada por encaminhamento do outro hospital', 'Data e o tipo de acidente detalhado', 'Lesões sofridas especificadas', 'Diagnósticos completos (CID)', 'Tratamentos realizados(cirurgia ou conservador)', 'Se tem tudo → Marcar como "OK", pois não será necessário o outro prontuário'] },
+                        { title: '🔄 Processo de Solicitação', items: ['Consultar planilha de solicitações de prontuário', 'Verificar se já foi solicitado e prazo', 'Se prazo vencido → Notificar responsável', 'Criar tarefa no Slack se necessário'] },
+                        { title: '🏥 Procurações Especiais', items: ['Alguns hospitais não aceitam procuração MABA nº48', 'Verificar lista de instruções de prontuários', 'Se aceita MABA → retirar pendência de procuração interna'] }
+                    ]
+                }
+            },
+            'raio-x': {
+                icon: '🩻', title: 'Raio-X', description: 'Exames de imagem das lesões',
+                content: {
+                    title: '🩻 Raio-X e Exames de Imagem',
+                    sections: [
+                        { title: '📋 Tipos de Exames Aceitos', items: ['Raio-X (radiografia)', 'Tomografia computadorizada', 'Ressonância Magnética', 'Ultrassonografia', 'Outros exames de imagem relevantes'] },
+                        { title: '🔍 Como Obter', items: ['QR Code: Procurar no prontuário médico', 'Hospital/Clínica: Solicitar ao responsável do setor de prontuários', 'Cliente: Perguntar se ele tem em casa ou em PDF', 'Whatsapp: Alguns hospitais têm whatsapp próprio'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '💡 Se falta apenas raio-X e não tem QR Code no prontuário → Criar tarefa no Slack para responsável pelos prontuários solicitar' }]
+                }
+            },
+            'apolice': {
+                icon: '📜', title: 'Apólice/Certificado', description: 'Contrato do seguro de vida',
+                content: {
+                    title: '📜 Apólice/Certificado Seguro de Vida',
+                    sections: [
+                        { title: '🎯 Identificar Tipo de Apólice', items: ['Verificar coluna "tipo de apólice" na planilha', 'Conferir capa de rosto do processo', 'Perguntar ao consultor/cliente se necessário'] },
+                        { title: '📱 Aplicativo (Uber, iFood, 99, outros)', items: ['NÃO precisa apólice', 'Valor único para todos', 'Informações de valores disponíveis no Google', 'Uber: apenas acidentes durante corrida, e precisa de código SAFE que consegue após cliente informar Uber do acidente ocorrido', '99: apenas acidentes durante corrida, e cliente precisa notificar o aplicativo e tirar prints dessa comunicação para nos mandar', 'Ifood: acidente até uma hora depois da última entrega(ou 2h caso de bicicleta), e desde que ocorra até 30km do local da entrega final', 'Não precisa GFIP/FGTS/Folhas pagamento'] },
+                        { title: '👤 Individual - Como identificar', items: ['Estipulante = costuma ser a própria seguradora/banco do cliente', 'Nome do cliente na apólice', 'Valores geralmente abaixo de R$ 200.000', 'Da ICATU/Viacredi pode baixar no Site meusdocumentos.com.br', 'Outros bancos: App do banco do cliente, pedir para ele tentar baixar', 'Não precisa GFIP/FGTS/Folhas pagamento'] },
+                        { title: '🏢 Empresarial - Como identificar', items: ['Estipulante = geralmente empresa do cliente', 'Valores altos (R$ 500.000 - R$ 1.000.000)', 'Verificar no drive RV se já temos apólice de outro funcionário', 'Consultar planilha de empresas para ver se já temos dados do seguro', 'Caso não esteja na planilha, pesquisar nome da empresa no CNPJ.biz ou CNPJ.info e pegar email e telefone', 'Ligar para eles e pedir para falar com RH → diga ser "assistente jurídica" do advogado que representa o funcionário, que o mesmo sofreu acidente e teve invalidez permanente.', 'Solicitar certificado do seguro de vida vigente na data do acidente'] },
+                        { title: '📊 Como identificar na apólice empresarial se é Capital Global ou Individual', items: ['Global: Valor para todos funcionários', 'Global: Precisa extrato FGTS com relação de funcionários', 'Individual: Vai mencionar nome específico do funcionário ou valor para cargo específico', 'Individual: Valor menor (geralmente abaixo de R$ 100.000)', 'Ambos: Precisam 3 folhas pagamento + ficha empregado, mas APENAS GLOBAL precisa de GEFIP/Extrato do FGTS do mês do acidente'] },
+                        { title: '⚠️ Verificações Importantes', items: ['Vigência: Acidente dentro do período do acidente', 'Coberturas: Fratura/ligamento = invalidez permanente parcial ou apenas invalidez permanente', 'Invalidez total: Apenas paralisia ou perda total', 'Se temos apólice antiga da empresa: Verificar se consta nela o nome da corretora e entre em contato com eles para pedir novo certificado'] }
+                    ]
+                }
+            },
+            'ctps': {
+                icon: '💼', title: 'Carteira de Trabalho', description: 'CTPS física ou digital completa',
+                content: {
+                    title: '💼 Carteira de Trabalho (CTPS)',
+                    sections: [
+                        { title: '💻 Carteira Digital (PREFERENCIAL)', items: ['Requisito: Ter senha GOV.BR do cliente', 'Acessar: Portal Emprega Brasil', 'Baixar DUAS versões: normal + outros vínculos', 'Mais completa e atualizada que a física', 'Aceita em todos os processos'] },
+                        { title: '📱 Carteira Física', items: ['Foto de TODAS as páginas (inclusive em branco)', 'Dados pessoais bem legíveis', 'Todos os contratos de trabalho', 'Anotações gerais', 'Alterações salariais'] },
+                        { title: '🔄 Processo de Obtenção', items: ['1. Verificar se temos senha GOV', '2. Se SIM → Acessar Portal Emprega Brasil', '3. Se NÃO → Solicitar senha ao cliente', '4. Baixar ambas as versões digitais', '5. Salvar na pasta do cliente'] }
+                    ]
+                }
+            },
+            'senha-gov': {
+                icon: '🔐', title: 'Senha GOV.BR', description: 'Acesso ao portal do governo',
+                content: {
+                    title: '🔐 Senha GOV.BR',
+                    sections: [
+                        { title: '📍 Onde Encontrar', items: ['Capa de rosto do processo', 'Histórico de processos previdenciários no ASTREA', 'Salvo na pasta do cliente com número 47', 'Verificar se já foi cadastrada anteriormente'] },
+                        { title: '✅ Verificações Necessárias', items: ['Senha está funcionando corretamente', 'Sem verificação em duas etapas ativada', 'Sem questionário obrigatório no MEU INSS', 'Acesso liberado para consultas', 'Testar antes de usar em processos'] },
+                        { title: '📞 Como Explicar ao Cliente', items: ['Fazer acompanhamento dos processos', 'Anexar documentos necessários', 'Acompanhar perícias médicas', 'Verificar pagamentos', 'Baixar CTPS digital'] }
+                    ],
+                    alerts: [{ type: 'success', text: '🎯 Explicação ao cliente: "Precisamos da senha do GOV para fazer o acompanhamento dos seus processos, anexar documentos e acompanhar as perícias e pagamentos."' }]
+                }
+            },
+            'laudos-medicos': {
+                icon: '🩺', title: 'Laudos Médicos', description: 'Relatórios médicos especializados',
+                content: {
+                    title: '🩺 Laudos Médicos',
+                    sections: [
+                        { title: '📋 Tipos de Laudos', items: ['Laudo de deficiência: Para BPC/LOAS', 'Laudo de incapacidade: Para aposentadoria por invalidez', 'Laudo psiquiátrico: Para doenças mentais', 'Laudo de especialista: Cardiologista, neurologista, etc.', 'Laudo pericial: Do INSS ou particular'] },
+                        { title: '📋 Informações Essenciais', items: ['CID (Código Internacional de Doenças)', 'Descrição detalhada da condição', 'Grau de limitação/incapacidade', 'Prognóstico (temporário ou permanente)', 'Data do exame (máximo 1 ano)', 'Assinatura e CRM do médico'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '💡 Para BPC/LOAS: Laudo deve demonstrar impedimento de longo prazo (mínimo 2 anos)' }]
+                }
+            },
+            'dados-bancarios': {
+                icon: '🏦', title: 'Dados Bancários', description: 'Conta para depósito da indenização',
+                content: {
+                    title: '🏦 Dados Bancários',
+                    sections: [
+                        { title: '📋 Informações Necessárias', items: ['Banco: Nome da instituição', 'Agência: Número da agência', 'Conta: Número da conta corrente ou poupança', 'Tipo: Corrente ou poupança', 'Titular: DEVE ser no nome do cliente'] },
+                        { title: '📱 Como Obter', items: ['Extrato bancário: Contém todas as informações', 'Cartão do banco: Agência e conta', 'App do banco: Dados disponíveis', 'Comprovante de abertura: Documento do banco'] }
+                    ],
+                    alerts: [{ type: 'danger', text: '⚠️ OBRIGATÓRIO: A conta deve estar no próprio nome do cliente beneficiário!' }]
+                }
+            },
+            'rtm': {
+                icon: '📊', title: 'RTM', description: 'Relatório de Tratamento Médico',
+                content: {
+                    title: '📊 RTM - Relatório de Tratamento Médico',
+                    sections: [
+                        { title: '📋 O que é', items: ['Laudo feito com perito parceiro', 'Detalha tipo de acidente', 'Especifica as fraturas', 'Calcula porcentagem de sequelas', 'Documento técnico especializado'] },
+                        { title: '🎯 Importância', items: ['Seguro de vida: OBRIGATÓRIO', 'Auxílio-acidente: Aumenta chance em 80%', 'Comprova sequelas permanentes', 'Determina grau de incapacidade', 'Fundamental para indenizações'] },
+                        { title: '🔄 Processo', items: ['Setor de perícias da Revive entra em contato e cobra R$300,00', 'Setor envia para médico parceiro os documentos que atestam lesões do cliente', 'Perito avalia sequelas por vídeo-chamada', 'Emite relatório de tratamento médico e manda o laudo por email para nós'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '💰 Investimento fundamental para maximizar valor das indenizações' }]
+                }
+            },
+            'ppp': {
+                icon: '🏭', title: 'PPP', description: 'Perfil Profissiográfico Previdenciário',
+                content: {
+                    title: '🏭 PPP - Perfil Profissiográfico Previdenciário',
+                    sections: [
+                        { title: '📋 O que é', items: ['Documento que detalha atividades laborais', 'Exposição a agentes nocivos', 'Condições do ambiente de trabalho', 'Obrigatório para aposentadoria especial', 'Histórico ocupacional completo'] },
+                        { title: '📍 Onde Obter', items: ['Empregador: Solicitar ao RH/DP da empresa', 'MEU INSS: Verificar se disponível para download', 'eSocial: Algumas empresas enviam automaticamente', 'Ex-empregadores: Têm obrigação de fornecer'] },
+                        { title: '🎯 Quando Solicitar', items: ['TODOS os trabalhos anteriores do cliente', 'Especialmente com: Ruído excessivo', 'Produtos químicos', 'Calor/frio excessivo', 'Agentes biológicos', 'Radiações'] }
+                    ],
+                    alerts: [{ type: 'danger', text: '⚠️ Empresa tem obrigação legal de fornecer o PPP, mesmo após demissão!' }]
+                }
+            },
+            'notas-produtor': {
+                icon: '🌾', title: 'Notas de Produtor', description: 'Comprovação trabalho rural',
+                content: {
+                    title: '🌾 Notas de Produtor Rural',
+                    sections: [
+                        { title: '📋 O que são', items: ['Notas fiscais de venda de produtos agrícolas', 'Comprovam trabalho na atividade rural', 'Servem como tempo de contribuição', 'Essenciais para aposentadoria rural'] },
+                        { title: '📋 Requisitos', items: ['Período: Mínimo 15 anos de atividade rural', 'Regularidade: Notas ao longo dos anos', 'Valor: Compatível com subsistência familiar', 'Continuidade: Sem grandes intervalos', 'Deve acompanhar ITR da terra'] },
+                        { title: '📍 Onde Obter', items: ['Secretaria da Fazenda: Cópias das notas emitidas', 'Sindicatos Rurais: Podem ter registros', 'Cooperativas: Se vendeu para cooperativa', 'Compradores: Empresas que compraram os produtos'] }
+                    ]
+                }
+            },
+            'fotos-casa': {
+                icon: '📸', title: 'Fotos da Casa', description: 'Para avaliação socioeconômica (BPC/LOAS)',
+                content: {
+                    title: '📸 Fotos da Casa (BPC/LOAS)',
+                    sections: [
+                        { title: '📋 O que Fotografar', items: ['Todos os cômodos: Sala, quartos, cozinha, banheiro', 'Área externa: Frente da casa, quintal, varanda', 'Estado da casa: Condições gerais, reformas', 'Móveis e eletrodomésticos: O que tem disponível', 'Condições reais de moradia'] },
+                        { title: '📱 Como Orientar o Cliente', items: ['Tirar fotos de todos os cômodos', 'Mostrar o estado real da casa', 'Não "arrumar demais" para a foto', 'Incluir área externa se relevante', 'Fotos bem iluminadas e nítidas'] }
+                    ],
+                    alerts: [
+                        { type: 'danger', text: '⚠️ ESTRATÉGIA: Retirar móveis e objetos que possam passar impressão de serem caros. Focar nas condições mais simples da residência!' },
+                        { type: 'warning', text: '🎯 Finalidade: Demonstrar a condição socioeconômica da família para justificar a necessidade do benefício' }
+                    ]
+                }
+            },
+            'procuracoes': {
+                icon: '📋', title: 'Procurações', description: 'Procurações específicas por tipo',
+                content: {
+                    title: '📋 Procurações',
+                    sections: [
+                        { title: '🏥 Procuração Interna', items: ['Uso: Prontuário médico de hospitais específicos', 'Quando: Hospital não aceita Procuração MABA nº48', 'Verificar: Lista de instruções de prontuários', 'Se aceita MABA nº48 → RETIRAR PENDÊNCIA'] },
+                        { title: '🏦 Procuração Caixa', items: ['Uso exclusivo: DPVAT de acidentes ANTES de 15/11/2023', 'Local: Drive RV → "03 documentos" → "Procuração caixa preenchível"', 'Se acidente APÓS 15/11/2023 → RETIRAR PENDÊNCIA', 'Reconhecer em cartório'] },
+                        { title: '💰 Procuração Bancária', items: ['Uso: Retirada de honorários (apenas DPVAT)', 'Acompanha: Procuração Caixa', 'AMBAS precisam ser reconhecidas juntas!', 'Consultor busca com cliente'] }
+                    ],
+                    alerts: [{ type: 'warning', text: '📝 IMPORTANTE: Preencher procuração → Enviar para cliente reconhecer em cartório → Consultor buscar' }]
+                }
+            },
+            'carne-contribuicao': {
+                icon: '📗', title: 'Carnê de Contribuição', description: 'MEI ou contribuinte individual',
+                content: {
+                    title: '📗 Carnê de Contribuição',
+                    sections: [
+                        { title: '📋 Para quem', items: ['MEI (Microempreendedor Individual)', 'Contribuinte individual', 'Autônomos', 'Profissionais liberais'] },
+                        { title: '✅ Documentos', items: ['Carnês de pagamento ao INSS', 'Comprovantes de DAS (MEI)', 'GPS quitadas', 'Extrato de contribuições'] }
+                    ]
+                }
+            },
+            'itr-terra': {
+                icon: '🏞️', title: 'ITR da Terra', description: 'Imposto Territorial Rural',
+                content: {
+                    title: '🏞️ ITR - Imposto Territorial Rural',
+                    sections: [{ title: '📋 O que é', items: ['Imposto sobre propriedade rural', 'Comprova posse/propriedade da terra', 'Acompanha notas de produtor', 'Necessário para aposentadoria rural'] }]
+                }
+            },
+            'certidoes': {
+                icon: '📃', title: 'Certidões', description: 'Documentos de registro civil',
+                content: {
+                    title: '📃 Certidões',
+                    sections: [{ title: '📋 Tipos', items: ['Certidão de Nascimento', 'Certidão de Casamento', 'Certidão de Óbito', 'Certidão de União Estável'] }]
+                }
+            },
+            'comprovante-gastos': {
+                icon: '💸', title: 'Comprovante de Gastos', description: 'Para BPC/LOAS',
+                content: {
+                    title: '💸 Comprovante de Gastos',
+                    sections: [{ title: '📋 Documentos Aceitos', items: ['Contas de água e luz', 'Aluguel ou financiamento', 'Tratamentos médicos', 'Medicamentos contínuos', 'Alimentação especial', 'Transporte para tratamento'] }]
+                }
+            },
+            'atestados-medicos': {
+                icon: '🩺', title: 'Atestados Médicos', description: 'Para auxílio-doença (diferente de Laudos)',
+                content: {
+                    title: '🩺 Atestados Médicos (Auxílio-Doença)',
+                    sections: [{ title: '📋 Requisitos', items: ['Diagnóstico (CID)', 'Período de afastamento RECOMENDADO pelo médico', 'Data do atestado (recente)', 'Assinatura e CRM do médico', 'Carimbo do médico/clínica'] }]
+                }
+            },
+            'declaracao-trabalho': {
+                icon: '📝', title: 'Declaração Último Dia', description: 'Último dia trabalhado',
+                content: {
+                    title: '📝 Declaração Último Dia Trabalhado',
+                    sections: [{ title: '📋 Informações', items: ['Data do último dia efetivamente trabalhado antes do afastamento', 'Motivo do afastamento (se aplicável)', 'Assinatura do empregador/representante da empresa', 'Carimbo da empresa (CNPJ)', 'Papel timbrado da empresa (preferencial)'] }]
+                }
+            },
+            'recibos-danos': {
+                icon: '🧾', title: 'Recibos Danos Materiais', description: 'Para seguro terceiro',
+                content: {
+                    title: '🧾 Recibos Danos Materiais',
+                    sections: [{ title: '📋 Documentos', items: ['Orçamentos de reparo do veículo/bem danificado (mínimo 2-3)', 'Notas fiscais de peças e serviços já realizados', 'Fotos detalhadas dos danos', 'Laudo de vistoria da seguradora (se houver)', 'Comprovantes de outros gastos decorrentes do dano (guincho, etc.)'] }]
+                }
+            },
+            'extratos-bancarios': {
+                icon: '🏦', title: 'Extratos Bancários', description: 'Comprovação de renda autônomo',
+                content: {
+                    title: '🏦 Extratos Bancários (Autônomo)',
+                    sections: [{ title: '📋 Para Autônomos (Lucros Cessantes)', items: ['Últimos 3-6 meses ANTES do acidente/evento', 'De todas as contas bancárias que movimentam a renda', 'Demonstrar a média de renda mensal', 'Para cálculo de lucros cessantes em ações de indenização (ex: seguro terceiro)'] }]
+                }
+            },
+            'prints-conversas': {
+                icon: '💬', title: 'Prints das Conversas', description: 'Para casos de fraude',
+                content: {
+                    title: '💬 Prints das Conversas (Fraude)',
+                    sections: [{ title: '📋 Como Capturar', items: ['Aplicativos: WhatsApp, Messenger, Telegram, SMS, E-mails', 'Data e hora das mensagens devem estar visíveis', 'Número de telefone/contato/perfil do golpista visível', 'Capturar a conversa completa, desde o início', 'Prints sequenciais e legíveis, sem cortes', 'Registrar também comprovantes de pagamento/transferência vinculados à conversa'] }]
+                }
+            },
+            'folhas-pagamento': {
+                icon: '💰', title: 'Folhas de Pagamento', description: 'Para apólice empresarial',
+                content: {
+                    title: '💰 Folhas de Pagamento (Apólice Empresarial)',
+                    sections: [{ title: '📋 Requisitos', items: ['3 meses anteriores ao acidente/evento', 'Apenas para seguro de vida apólice empresarial (não individual ou app)', 'Solicitar ao RH da empresa do segurado', 'Demonstrar vínculo empregatício ativo e salário na época'] }]
+                }
+            },
+            'ficha-empregado': {
+                icon: '👤', title: 'Ficha de Empregado', description: 'Registro empresarial',
+                content: {
+                    title: '👤 Ficha de Empregado/Registro',
+                    sections: [{ title: '📋 Informações', items: ['Dados pessoais completos do empregado', 'Data de admissão', 'Cargo/função exercida', 'Histórico salarial e de promoções', 'Solicitar ao RH da empresa'] }]
+                }
+            },
+            'extrato-fgts': {
+                icon: '🏢', title: 'Extrato FGTS', description: 'Para capital global (Seguro Empresarial)',
+                content: {
+                    title: '🏢 Extrato Analítico FGTS ou Relação de Empregados (Capital Global)',
+                    sections: [{ title: '📋 Capital Global (Seguro Empresarial)', items: ['Relação de todos os funcionários da empresa no mês do acidente/evento', 'OU Extrato analítico do FGTS da empresa referente ao mês do acidente (GFIP/SEFIP)', 'Necessário para calcular a cota individual do seguro quando a apólice é de capital global', 'Dados podem ser solicitados à empresa, que pode censurar nomes de outros funcionários, mantendo a quantidade total visível'] }]
+                }
+            }
+        };
+
+        const documentMapping = {
+            'Documento Pessoal': 'documento-pessoal',
+            'Comprovante de Residência': 'comprovante-residencia',
+            'B.O./Relato/CAT': 'bo-relato-cat',
+            'Prontuário Médico': 'prontuario',
+            'Prontuários': 'prontuario',
+            'Raio-X': 'raio-x',
+            'Apólice': 'apolice',
+            'Dados Bancários': 'dados-bancarios',
+            'RTM': 'rtm',
+            'CTPS Completa': 'ctps',
+            'Senha GOV.BR': 'senha-gov',
+            'Laudos Médicos': 'laudos-medicos',
+            'PPP': 'ppp',
+            'Notas de Produtor': 'notas-produtor',
+            'Fotos da Casa': 'fotos-casa',
+            'Procurações': 'procuracoes',
+            'Procuração Caixa': 'procuracoes',
+            'Procuração Bancária': 'procuracoes',
+            'Folhas de Pagamento (empresarial)': 'folhas-pagamento',
+            'Ficha de Empregado (empresarial)': 'ficha-empregado',
+            'Extrato FGTS (capital global)': 'extrato-fgts',
+            'Prolabore (sócio/dono)': 'prolabore',
+            'Contrato Social (sócio/dono)': 'contrato-social',
+            'B.O./CAT/Declaração': 'bo-relato-cat',
+            'Certidão de Nascimento': 'certidoes',
+            'Comprovante de Renda (todos)': 'comprovante-residencia',
+            'Comprovante de Gastos': 'comprovante-gastos',
+            'Carnê de Contribuição': 'carne-contribuicao',
+            'ITR da Terra': 'itr-terra',
+            'Certidão de Casamento/Nascimento': 'certidoes',
+            'CTPS do Falecido': 'ctps',
+            'Certidão de Óbito': 'certidoes',
+            'Comprovantes de Convivência': 'documento-pessoal',
+            'Atestados Médicos': 'atestados-medicos',
+            'CAT (se acidente trabalho)': 'bo-relato-cat',
+            'Declaração Último Dia Trabalhado': 'declaracao-trabalho',
+            'Boletim de Ocorrência': 'bo-relato-cat',
+            'Certidão de Nascimento (menor)': 'certidoes',
+            'Documento Pessoal (beneficiário e falecido)': 'documento-pessoal',
+            'Certidões de Parentesco': 'certidoes',
+            'Recibos Danos Materiais': 'recibos-danos',
+            'Extratos Bancários (autônomo)': 'extratos-bancarios',
+            'Prints das Conversas': 'prints-conversas',
+            'Prints Comprovantes Depósito': 'prints-conversas',
+            'Documento Pessoal (todos da casa)': 'documento-pessoal',
+            'Documento Pessoal (falecido e requerente)': 'documento-pessoal',
+            'Comprovante de Renda Judicial': 'comprovante-renda-judicial',
+            'Dados do Seguro do Terceiro': 'documento-pessoal',
+            'Fotos do Acidente': 'raio-x',
+            'Comprovantes da Fraude': 'prints-conversas'
+        };
+        
+        // ==================================================
+        // FUNÇÕES GLOBAIS DE UTILIDADE E MODAL (chamadas por onclick no HTML)
+        // ==================================================
+        function getDocumentKey(docName) {
+            return documentMapping[docName] || 'documento-pessoal';
+        }
+
+        function openModal() {
+            const overlay = document.getElementById('detailsOverlay');
+            if (overlay) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                AppState.modalOpen = true;
+            } else {
+                console.error("Elemento 'detailsOverlay' não encontrado para abrir modal.");
+            }
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('detailsOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                AppState.modalOpen = false;
+            }
+        }
+
+        function showProcessInfo(processKey) {
+            const processo = processos[processKey];
+            if (!processo || !processo.info) {
+                console.error("Processo ou informações do processo não encontrados para a chave:", processKey);
+                return;
+            }
+            
+            const modalHeaderEl = document.getElementById('modalHeaderContent');
+            const modalBodyEl = document.getElementById('modalBodyContent');
+            if (!modalHeaderEl || !modalBodyEl) {
+                console.error("Elementos do modal não encontrados (modalHeaderContent ou modalBodyContent).");
+                return;
+            }
+
+            modalHeaderEl.innerHTML = `
+                <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">
+                    ${processo.icon || 'ℹ️'} ${processo.title}
+                </h2>
+                <p style="opacity: 0.9;">Informações Detalhadas</p>
+            `;
+            
+            modalBodyEl.innerHTML = `
+                <div class="process-info-tabs">
+                    <button class="process-info-tab active" data-info-tab="info">O que é?</button>
+                    <button class="process-info-tab" data-info-tab="direito">Quem tem direito?</button>
+                </div>
+                <div class="process-info-content active" id="processTabInfoContent">
+                    <div class="info-section">
+                        <h4>📋 O que é esse processo?</h4>
+                        <p style="line-height: 1.6; color: #374151;">${processo.info.oQueE || 'Informação não disponível.'}</p>
+                    </div>
+                </div>
+                <div class="process-info-content" id="processTabDireitoContent">
+                    <div class="info-section">
+                        <h4>✅ Quem tem direito?</h4>
+                        <ul>
+                            ${processo.info.quemTemDireito && processo.info.quemTemDireito.length > 0 
+                                ? processo.info.quemTemDireito.map(item => `<li>${item}</li>`).join('')
+                                : '<li>Informação não disponível.</li>'}
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert-box alert-success">
+                    <span class="alert-icon">💡</span>
+                    <span>Para ver os documentos necessários, clique no botão "Ver Documentos" no card do processo.</span>
+                </div>
+            `;
+            
+            modalBodyEl.querySelectorAll('.process-info-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetTabKey = e.target.dataset.infoTab;
+                    modalBodyEl.querySelectorAll('.process-info-tab').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    modalBodyEl.querySelectorAll('.process-info-content').forEach(c => c.classList.remove('active'));
+                    const contentEl = document.getElementById('processTab' + targetTabKey.charAt(0).toUpperCase() + targetTabKey.slice(1) + 'Content');
+                    if (contentEl) contentEl.classList.add('active');
+                });
+            });
+            openModal();
+        }
+
+        function showProcessDetails(processKey) {
+            const processo = processos[processKey];
+            if (!processo) {
+                 console.error("Processo não encontrado para a chave:", processKey);
+                return;
+            }
+            
+            const modalHeaderEl = document.getElementById('modalHeaderContent');
+            const modalBodyEl = document.getElementById('modalBodyContent');
+            if (!modalHeaderEl || !modalBodyEl) {
+                 console.error("Elementos do modal não encontrados (modalHeaderContent ou modalBodyContent).");
+                return;
+            }
+
+            modalHeaderEl.innerHTML = `
+                <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">
+                    ${processo.icon || '📄'} ${processo.title}
+                </h2>
+                <p style="opacity: 0.9;">${processo.description}</p>
+            `;
+            
+            modalBodyEl.innerHTML = `
+                <div class="info-section">
+                    <h4>📋 Documentos Necessários</h4>
+                    <div class="doc-grid">
+                        ${processo.docs && processo.docs.length > 0
+                            ? processo.docs.map(doc => {
+                                const docKey = getDocumentKey(doc);
+                                return `<div class="doc-item" onclick="navigateToDocument('${docKey}')">${doc}</div>`;
+                            }).join('')
+                            : '<p>Nenhum documento listado para este processo.</p>'}
+                    </div>
+                </div>
+                <div class="alert-box alert-success">
+                    <span class="alert-icon">💡</span>
+                    <span>Clique em qualquer documento para ver instruções detalhadas.</span>
+                </div>
+            `;
+            openModal();
+        }
+
+        function showDocumentDetails(docKey) {
+            const documento = documentos[docKey];
+            if (!documento || !documento.content) {
+                console.error("Detalhes do documento não encontrados para a chave:", docKey);
+                return;
+            }
+            
+            const modalHeaderEl = document.getElementById('modalHeaderContent');
+            const modalBodyEl = document.getElementById('modalBodyContent');
+            if (!modalHeaderEl || !modalBodyEl) {
+                 console.error("Elementos do modal não encontrados (modalHeaderContent ou modalBodyContent).");
+                return;
+            }
+
+            modalHeaderEl.innerHTML = `
+                <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">
+                    ${documento.icon || '📄'} ${documento.content.title || documento.title}
+                </h2>
+                <p style="opacity: 0.9;">${documento.description}</p>
+            `;
+            
+            let contentHTML = '';
+            if (documento.content.sections && documento.content.sections.length > 0) {
+                documento.content.sections.forEach(section => {
+                    contentHTML += `
+                        <div class="info-section">
+                            <h4>${section.title}</h4>
+                            <ul>${section.items.map(item => `<li>${item}</li>`).join('')}</ul>
+                        </div>
+                    `;
+                });
+            } else {
+                 contentHTML += '<p>Informações detalhadas não disponíveis para este documento.</p>';
+            }
+
+            if (documento.content.alerts && documento.content.alerts.length > 0) {
+                documento.content.alerts.forEach(alert => {
+                    contentHTML += `<div class="alert-box alert-${alert.type || 'info'}"><span class="alert-icon">${alert.icon || '💡'}</span><span>${alert.text}</span></div>`;
+                });
+            }
+            modalBodyEl.innerHTML = contentHTML;
+            openModal();
+        }
+        
+        window.navigateToDocument = (docKey) => { console.warn("navigateToDocument chamada antes da inicialização completa do DOM."); };
+
+        // ==================================================
+        // LÓGICA PRINCIPAL DA APLICAÇÃO (DOMContentLoaded)
+        // ==================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const processGrid = document.getElementById('processGrid');
+            const documentGrid = document.getElementById('documentGrid');
+            const searchInput = document.getElementById('searchInput');
+            const overlay = document.getElementById('detailsOverlay');
+
+            function clearAllGrids() {
+                if (processGrid) processGrid.innerHTML = '';
+                if (documentGrid) documentGrid.innerHTML = '';
+            }
+
+            function renderProcessCards(filter = '') {
+                if (!processGrid) { console.warn("renderProcessCards: processGrid não encontrado."); return; }
+                processGrid.innerHTML = '';
+                const processosKeys = Object.keys(processos);
+                
+                const filtered = processosKeys.filter(key => {
+                    const processo = processos[key];
+                    if (!processo) return false;
+                    if (!filter) return true;
+                    const searchLower = filter.toLowerCase();
+                    return (processo.title && processo.title.toLowerCase().includes(searchLower)) ||
+                           (processo.description && processo.description.toLowerCase().includes(searchLower)) ||
+                           (processo.docs && processo.docs.some(doc => doc.toLowerCase().includes(searchLower)));
+                });
+
+                if (filtered.length === 0) {
+                    processGrid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">😥</div><div class="empty-title">Nenhum processo encontrado</div><div class="empty-text">Tente buscar com outros termos ou verifique os filtros.</div></div>`;
+                    return;
+                }
+                filtered.forEach(key => {
+                    const processo = processos[key];
+                    if (!processo) return;
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-icon">${processo.icon || '❓'}</div>
+                        <div class="card-title">${processo.title}</div>
+                        <div class="card-description">${processo.description}</div>
+                        <div class="card-actions">
+                            <button class="btn-info" onclick="showProcessInfo('${key}')">ℹ️ O que é?</button>
+                            <button class="btn-docs" onclick="showProcessDetails('${key}')">📋 Ver Documentos</button>
+                        </div>
+                    `;
+                    processGrid.appendChild(card);
+                });
+            }
+
+            function renderDocumentCards(filter = '') {
+                if (!documentGrid) { console.warn("renderDocumentCards: documentGrid não encontrado."); return; }
+                documentGrid.innerHTML = '';
+                const documentosKeys = Object.keys(documentos);
+
+                 const filtered = documentosKeys.filter(key => {
+                    const documento = documentos[key];
+                    if (!documento) return false;
+                    if (!filter) return true;
+                    const searchLower = filter.toLowerCase();
+                    return (documento.title && documento.title.toLowerCase().includes(searchLower)) ||
+                           (documento.description && documento.description.toLowerCase().includes(searchLower));
+                });
+
+                if (filtered.length === 0) {
+                    documentGrid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">😥</div><div class="empty-title">Nenhum documento encontrado</div><div class="empty-text">Tente buscar com outros termos ou verifique os filtros.</div></div>`;
+                    return;
+                }
+                 filtered.forEach(key => {
+                    const documento = documentos[key];
+                     if (!documento) return;
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.onclick = () => showDocumentDetails(key);
+                    card.innerHTML = `
+                        <div class="card-icon">${documento.icon || '❓'}</div>
+                        <div class="card-title">${documento.title}</div>
+                        <div class="card-description">${documento.description}</div>
+                    `;
+                    documentGrid.appendChild(card);
+                });
+            }
+
+            function switchTabInternal(tabElement) {
+                if (!tabElement || !tabElement.dataset || !tabElement.dataset.tab) {
+                    console.error("switchTabInternal: tabElement inválido ou sem data-tab.");
+                    return;
+                }
+                const tabName = tabElement.dataset.tab;
+                
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                tabElement.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                const currentContent = document.getElementById(tabName);
+                 if (currentContent) {
+                    currentContent.classList.add('active');
+                } else {
+                    console.error(`Conteúdo da aba "${tabName}" (ID: #${tabName}) não encontrado no DOM!`);
+                    return; 
+                }
+
+                AppState.currentTab = tabName;
+                if (searchInput) {
+                    searchInput.value = '';
+                    AppState.searchTerm = '';
+                }
+                clearAllGrids();
+
+                setTimeout(() => {
+                    if (tabName === 'processos') {
+                        renderProcessCards();
+                    } else if (tabName === 'documentos') {
+                        renderDocumentCards();
+                    }
+                }, 50);
+            }
+
+             window.navigateToDocument = function(docKey) {
+                closeModal();
+                setTimeout(() => {
+                    const docTabElement = document.querySelector('.nav-tab[data-tab="documentos"]');
+                    if (docTabElement) {
+                        switchTabInternal(docTabElement);
+                        setTimeout(() => {
+                            showDocumentDetails(docKey);
+                        }, 100);
+                    } else {
+                        console.error("navigateToDocument: Aba de Documentos não encontrada.");
+                    }
+                }, 300);
+            };
+
+            function performSearchInternal(term) {
+                AppState.searchTerm = term;
+                if (AppState.currentTab === 'processos') {
+                    renderProcessCards(term);
+                } else if (AppState.currentTab === 'documentos') {
+                    renderDocumentCards(term);
+                }
+            }
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (!tab.href) {
+                    tab.addEventListener('click', () => switchTabInternal(tab));
+                }
+            });
+
+            let searchTimeout;
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        performSearchInternal(e.target.value);
+                    }, 300);
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeModal(); 
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && AppState.modalOpen) {
+                    closeModal(); 
+                }
+                if (e.key === '/' && !AppState.modalOpen && searchInput && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            const initialActiveTab = document.querySelector('.nav-tab.active');
+            if (initialActiveTab && !initialActiveTab.href) {
+                 switchTabInternal(initialActiveTab); 
+            } else {
+                const firstTab = document.querySelector('.nav-tab:not([href])');
+                if (firstTab) {
+                    console.warn("Nenhuma aba ativa inicialmente. Ativando a primeira.");
+                    switchTabInternal(firstTab);
+                } else {
+                    console.error("Nenhuma aba encontrada para inicialização.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+            
