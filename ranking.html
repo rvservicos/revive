@@ -70,15 +70,16 @@
             opacity: 0.8;
         }
 
-        .connection-status {
-            margin: 15px 0;
+        .connection-status { /* Mantido para feedback ao usuário */
+            margin: 15px auto; /* Centralizado */
             padding: 10px 15px;
             border-radius: 10px;
             font-size: 0.9rem;
             font-weight: 500;
-            display: flex;
+            display: inline-flex; /* Para centralizar melhor com auto margin */
             align-items: center;
             gap: 10px;
+            max-width: 300px; /* Limita largura */
         }
 
         .status-connected {
@@ -97,101 +98,6 @@
             background: #fef3c7;
             color: #92400e;
             border: 1px solid #f59e0b;
-        }
-
-        .config-panel {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 15px 0;
-            border: 1px solid rgba(147, 51, 234, 0.1);
-        }
-
-        .config-panel h3 {
-            color: #6b46c1;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .config-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .config-item label {
-            color: #6b46c1;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .config-item input, .config-item select {
-            padding: 10px 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background: white;
-        }
-
-        .config-item input:focus, .config-item select:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #7c3aed;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .btn-secondary:hover {
-            background: #d1d5db;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(156, 163, 175, 0.25);
         }
 
         .stats-grid {
@@ -475,108 +381,7 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-
-        .logs {
-            background: #1f2937;
-            color: #f9fafb;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #374151;
-        }
-
-        .log-entry {
-            margin-bottom: 5px;
-            padding: 2px 0;
-            line-height: 1.4;
-        }
-
-        .log-success { color: #10b981; }
-        .log-error { color: #ef4444; }
-        .log-warning { color: #f59e0b; }
-        .log-info { color: #3b82f6; }
-
-        .instructions-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            margin: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
-        .modal-header {
-            color: #6b46c1;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-modal {
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.3s ease;
-        }
-
-        .close-modal:hover {
-            color: #ef4444;
-        }
-
-        .modal-content h4 {
-            color: #6b46c1;
-            margin: 20px 0 10px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-content ol, .modal-content ul {
-            padding-left: 20px;
-            margin-bottom: 20px;
-        }
-
-        .modal-content li {
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .modal-content strong {
-            color: #6b46c1;
-        }
-
-        .last-update {
-            text-align: right;
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 15px;
-        }
-
+      
         .footer {
             text-align: center;
             color: #6b7280;
@@ -623,19 +428,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .config-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
             .update-indicator {
                 top: 10px;
                 right: 10px;
@@ -665,39 +457,7 @@
                 <i class="fas fa-sync fa-spin"></i>
                 <span id="statusText">Verificando conexão...</span>
             </div>
-
-            <div class="config-panel">
-                <h3><i class="fas fa-cog"></i> Configuração da Planilha</h3>
-                <div class="config-grid">
-                    <div class="config-item">
-                        <label for="sheetId"><i class="fas fa-key"></i> ID da Planilha:</label>
-                        <input type="text" id="sheetId" value="1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms" placeholder="ID da sua planilha do Google Sheets">
-                    </div>
-                    <div class="config-item">
-                        <label for="sheetGid"><i class="fas fa-table"></i> GID da Aba (opcional):</label>
-                        <input type="text" id="sheetGid" value="1536647709" placeholder="ID numérico da aba">
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="testConnection()">
-                        <i class="fas fa-link"></i> Testar Conexão
-                    </button>
-                    <button class="btn btn-primary" onclick="manualUpdate()">
-                        <i class="fas fa-sync"></i> Atualizar Dados
-                    </button>
-                    <button class="btn btn-secondary" onclick="toggleAutoUpdate()">
-                        <i class="fas fa-pause"></i> <span id="autoUpdateText">Pausar Auto-Update</span>
-                    </button>
-                    <button class="btn btn-secondary" onclick="showInstructions()">
-                        <i class="fas fa-info-circle"></i> Instruções
-                    </button>
-                </div>
-
-                <div class="logs" id="logContainer">
-                    <div class="log-entry log-info">Sistema iniciado - Aguardando primeira conexão...</div>
-                </div>
-            </div>
+            <!-- PAINEL DE CONFIGURAÇÃO REMOVIDO -->
         </div>
 
         <!-- Seletor de mês -->
@@ -789,56 +549,21 @@
         </div>
     </div>
 
-    <!-- Modal de Instruções -->
-    <div class="instructions-modal" id="instructionsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>📋 Instruções de Uso</span>
-                <span class="close-modal" onclick="hideInstructions()">×</span>
-            </div>
-            <div>
-                <h4><i class="fas fa-table"></i> Como configurar sua planilha do Google Sheets:</h4>
-                <ol>
-                    <li><strong>Torne a planilha pública:</strong> Vá em "Compartilhar" > "Alterar para qualquer pessoa com o link"</li>
-                    <li><strong>Obtenha o ID da planilha:</strong> Copie da URL entre "/d/" e "/edit" (ex: 1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms)</li>
-                    <li><strong>GID da aba (opcional):</strong> Para abas específicas, use o número após "gid=" na URL</li>
-                </ol>
-                
-                <h4><i class="fas fa-columns"></i> Estrutura esperada da planilha:</h4>
-                <ul>
-                    <li><strong>Coluna A:</strong> Tipo de Processo</li>
-                    <li><strong>Coluna B:</strong> Nome do Cliente</li>
-                    <li><strong>Coluna C:</strong> Link (opcional)</li>
-                    <li><strong>Coluna D:</strong> Data (formato: DD/MM/AAAA)</li>
-                    <li><strong>Coluna E:</strong> Nome do Consultor</li>
-                </ul>
-                
-                <h4><i class="fas fa-star"></i> Recursos do Dashboard:</h4>
-                <ul>
-                    <li><strong>Filtro por mês:</strong> Selecione o mês para visualizar as vendas</li>
-                    <li><strong>Auto-update:</strong> Atualiza automaticamente a cada 30 segundos</li>
-                    <li><strong>Múltiplos métodos:</strong> Tenta diferentes formas de acessar os dados</li>
-                    <li><strong>Relatórios por mês:</strong> Todas as estatísticas são baseadas no mês selecionado</li>
-                    <li><strong>Dados de exemplo:</strong> Caso não consiga conectar, mostra dados demonstrativos</li>
-                    <li><strong>Logs detalhados:</strong> Registra todas as operações realizadas</li>
-                </ul>
-                
-                <div class="last-update">
-                    <i class="fas fa-info-circle"></i> Última atualização: <span id="modalLastUpdate">-</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- MODAL DE INSTRUÇÕES REMOVIDO PARA SIMPLICIDADE, PODE SER REINSERIDO SE NECESSÁRIO -->
 
     <script>
         // Variáveis globais
         let salesData = []; 
         let lastUpdate = null;
         let autoUpdateInterval = null;
-        let isAutoUpdateActive = true;
+        const isAutoUpdateActive = true; // Auto-update sempre ativo, sem botão para pausar
         let connectionAttempts = 0;
         const maxRetries = 3;
         
+        // Valores fixos da planilha
+        const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
+        const FIXED_SHEET_GID = "1536647709"; // Deixe "" se não houver GID específico
+
         let currentMonthCounts = {
             previdenciarios: 0,
             seguroTerceiro: 0,
@@ -858,22 +583,16 @@
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO']
             .map(type => type.toUpperCase().trim());
 
-
+        // Função para adicionar logs (mantida para debugging, pode ser removida em produção final)
         function addLog(message, type = 'info') {
-            const logContainer = document.getElementById('logContainer');
-            const timestamp = new Date().toLocaleTimeString('pt-BR');
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${type}`;
-            logEntry.textContent = `[${timestamp}] ${message}`;
-            logContainer.insertBefore(logEntry, logContainer.firstChild);
-            const logs = logContainer.querySelectorAll('.log-entry');
-            if (logs.length > 10) {
-                logContainer.removeChild(logs[logs.length - 1]);
-            }
+            // const logContainer = document.getElementById('logContainer'); // Removido pois o elemento não existe mais
+            // if (logContainer) { ... } // Adicionar verificação se for manter
+            console[type === 'error' ? 'error' : 'log'](`[${new Date().toLocaleTimeString('pt-BR')}] ${message}`);
         }
 
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
+            if (!statusElement) return; // Proteção se o elemento for removido
             statusElement.className = 'connection-status'; 
             statusElement.classList.add(`status-${status}`);
             const icons = {
@@ -885,20 +604,16 @@
         }
         
         async function fetchViaCsvDirect() {
-            const sheetId = document.getElementById('sheetId').value;
-            const gid = document.getElementById('sheetGid').value;
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            addLog('Tentando método 1: CSV direto...', 'info');
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv${FIXED_SHEET_GID ? `&gid=${FIXED_SHEET_GID}` : ''}`;
+            // addLog('Tentando método 1: CSV direto...', 'info'); // Removido para interface mais limpa
             const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
             if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             return await response.text();
         }
 
         async function fetchViaProxy() {
-            const sheetId = document.getElementById('sheetId').value;
-            const gid = document.getElementById('sheetGid').value;
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            addLog('Tentando método 2: CORS Proxy (allorigins.win)...', 'info');
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv${FIXED_SHEET_GID ? `&gid=${FIXED_SHEET_GID}` : ''}`;
+            // addLog('Tentando método 2: CORS Proxy (allorigins.win)...', 'info'); // Removido
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(csvUrl)}`;
             const response = await fetch(proxyUrl);
             const data = await response.json();
@@ -907,7 +622,7 @@
         }
 
         async function fetchSheetData() {
-            updateConnectionStatus('loading', 'Conectando com Google Sheets...');
+            updateConnectionStatus('loading', 'Conectando...');
             const methods = [
                 { name: 'CSV Direto', func: fetchViaCsvDirect },
                 { name: 'CORS Proxy (allorigins.win)', func: fetchViaProxy },
@@ -915,31 +630,31 @@
 
             for (let method of methods) {
                 try {
-                    addLog(`Tentando ${method.name}...`, 'info');
+                    // addLog(`Tentando ${method.name}...`, 'info'); // Removido
                     const csvData = await method.func();
                     if (csvData && csvData.trim()) {
                         await processCsvData(csvData); 
                         populateMonthFilter(salesData); 
                         updateDashboard(); 
                         updateConnectionStatus('connected', `Conectado via ${method.name}`);
-                        addLog(`✅ Sucesso com ${method.name} - ${salesData.length} registros carregados`, 'success');
+                        // addLog(`✅ Sucesso com ${method.name} - ${salesData.length} registros carregados`, 'success'); // Removido
                         connectionAttempts = 0;
                         return true;
                     }
                 } catch (error) {
-                    addLog(`❌ Falha em ${method.name}: ${error.message}`, 'error');
+                    // addLog(`❌ Falha em ${method.name}: ${error.message}`, 'error'); // Removido
                     console.error(`Erro no método ${method.name}:`, error);
                 }
             }
 
             connectionAttempts++;
             if (connectionAttempts >= maxRetries) {
-                addLog('❌ Todos os métodos falharam. Usando dados de exemplo.', 'error');
-                updateConnectionStatus('error', 'Falha na conexão - Usando dados de exemplo');
+                // addLog('❌ Todos os métodos falharam. Usando dados de exemplo.', 'error'); // Removido
+                updateConnectionStatus('error', 'Falha - Usando dados de exemplo');
                 loadSampleData(); 
             } else {
                 updateConnectionStatus('error', `Tentativa ${connectionAttempts}/${maxRetries} falhou`);
-                addLog(`Tentando novamente em 10 segundos... (${connectionAttempts}/${maxRetries})`, 'warning');
+                // addLog(`Tentando novamente em 10 segundos... (${connectionAttempts}/${maxRetries})`, 'warning'); // Removido
                 setTimeout(fetchSheetData, 10000);
             }
             return false;
@@ -948,13 +663,13 @@
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             if (lines.length <= 1) {
-                addLog('Planilha vazia ou sem cabeçalhos.', 'warning');
+                // addLog('Planilha vazia ou sem cabeçalhos.', 'warning'); // Removido
                 salesData = [];
                 return; 
             }
 
-            const headers = parseCSVLine(lines[0]);
-            addLog(`Cabeçalhos encontrados: ${headers.join(', ')}`, 'info');
+            // const headers = parseCSVLine(lines[0]); // Não precisamos mais dos headers para o log
+            // addLog(`Cabeçalhos encontrados: ${headers.join(', ')}`, 'info'); // Removido
             const tempData = [];
             
             for (let i = 1; i < lines.length; i++) {
@@ -975,7 +690,7 @@
             salesData = tempData; 
 
             if (salesData.length === 0) {
-                 addLog('Nenhum registro válido encontrado após processar CSV.', 'warning');
+                 // addLog('Nenhum registro válido encontrado após processar CSV.', 'warning'); // Removido
             }
             lastUpdate = new Date(); 
             updateLastUpdateTime();
@@ -1033,7 +748,7 @@
             monthSelect.innerHTML = '';
 
             if (allAvailableMonths.length === 0) {
-                 addLog('Nenhum mês válido encontrado para popular o filtro.', 'warning');
+                 // addLog('Nenhum mês válido encontrado para popular o filtro.', 'warning'); // Removido
             }
 
             allAvailableMonths.forEach(month => {
@@ -1116,7 +831,7 @@
             updateDashboard(); 
             lastUpdate = new Date();
             updateLastUpdateTime();
-            addLog('✅ Dados de EXEMPLO (para teste) carregados.', 'success');
+            // addLog('✅ Dados de EXEMPLO (para teste) carregados.', 'success'); // Removido
         }
 
         function getMonthSales() {
@@ -1138,7 +853,7 @@
                     populateMonthFilter(salesData); 
                 }
                 if (monthSelect.options.length === 0) {
-                    addLog('Nenhum mês disponível. Painéis não serão atualizados.', 'warning');
+                    // addLog('Nenhum mês disponível. Painéis não serão atualizados.', 'warning'); // Removido
                     document.getElementById('totalMonth').textContent = '-';
                     document.getElementById('monthLabel').textContent = 'Nenhum dado';
                     document.getElementById('topConsultant').textContent = '-';
@@ -1158,22 +873,23 @@
             const monthSales = getMonthSales(); 
             
             updateProcessStats(monthSales); 
-            updateMainStats(); 
+            updateMainStats(monthSales); // Passando monthSales para uso na média diária
             updateConsultantRanking(monthSales); 
             updateMonthSales(monthSales); 
             
-            document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`;
-            setTimeout(() => {
-                document.getElementById('updateIndicator').style.opacity = '0';
+            const updateIndicator = document.getElementById('updateIndicator');
+            if(updateIndicator) {
+                updateIndicator.innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`;
                 setTimeout(() => {
-                    document.getElementById('updateIndicator').style.display = 'none';
-                }, 500);
-            }, 2000);
+                    updateIndicator.style.opacity = '0';
+                    setTimeout(() => {
+                        updateIndicator.style.display = 'none';
+                    }, 500);
+                }, 2000);
+            }
         }
 
-        // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
-        // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
-        function updateMainStats() {
+        function updateMainStats(monthSalesData) { 
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) {
                 document.getElementById('totalMonth').textContent = '-';
@@ -1182,8 +898,8 @@
                 return;
             }
             const [monthStr, yearStr] = selectedMonthYear.split('/');
-            const month = parseInt(monthStr);
-            const year = parseInt(yearStr);
+            const selectedMonth = parseInt(monthStr);
+            const selectedYear = parseInt(yearStr);
 
             const totalProcessosNoMes = currentMonthCounts.previdenciarios +
                                        currentMonthCounts.seguroTerceiro +
@@ -1192,20 +908,18 @@
             document.getElementById('totalMonth').textContent = totalProcessosNoMes;
 
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            document.getElementById('monthLabel').textContent = `${monthNames[month - 1]} ${year}`;
+            document.getElementById('monthLabel').textContent = `${monthNames[selectedMonth - 1]} ${selectedYear}`;
 
-            // Encontrar o maior dia com entrada de dados no mês selecionado
-            const monthSales = getMonthSales(); // Pega as vendas do mês selecionado
             let maxDayInMonthWithData = 0;
-            if (monthSales.length > 0) {
-                monthSales.forEach(sale => {
+            if (monthSalesData.length > 0) { // Usa monthSalesData que foi passado
+                monthSalesData.forEach(sale => {
                     if (sale.data) {
                         const parts = sale.data.split('/');
                         if (parts.length === 3) {
                             const saleDay = parseInt(parts[0], 10);
-                            const saleMonth = parseInt(parts[1], 10);
-                            const saleYear = parseInt(parts[2], 10);
-                            if (saleMonth === month && saleYear === year) {
+                            const saleMonth = parseInt(parts[1], 10); // Para checagem, embora monthSalesData já deva estar filtrado
+                            const saleYear = parseInt(parts[2], 10);  // Para checagem
+                            if (saleMonth === selectedMonth && saleYear === selectedYear) { // Confirma que é do mês/ano certo
                                 if (saleDay > maxDayInMonthWithData) {
                                     maxDayInMonthWithData = saleDay;
                                 }
@@ -1215,24 +929,16 @@
                 });
             }
             
-            // Se não houver dados para o mês, ou maxDayInMonthWithData for 0, a média é 0 ou indefinida.
-            // Usamos maxDayInMonthWithData como o divisor. Se for 0, a média será 0 (ou NaN, tratado abaixo).
-            const daysToConsider = maxDayInMonthWithData > 0 ? maxDayInMonthWithData : 1; // Evita divisão por zero se não houver dados
+            const daysToConsider = maxDayInMonthWithData > 0 ? maxDayInMonthWithData : 1; 
 
             let averageProcessos = 0;
-            if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) {
-                 averageProcessos = totalProcessosNoMes / maxDayInMonthWithData;
-            } else if (totalProcessosNoMes > 0 && maxDayInMonthWithData === 0) {
-                // Se há processos mas nenhum dia de dado (improvável com a lógica atual), 
-                // a média fica indefinida ou baseada em 1 dia.
-                // Poderia também ser o dia atual se for o mês corrente.
-                // Para simplificar: se não há maxDay, e há processos, média é totalProcessos/1
-                 averageProcessos = totalProcessosNoMes; 
+            if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) { // Garante que há dados para dividir
+                 averageProcessos = totalProcessosNoMes / daysToConsider;
             }
-            // Se totalProcessosNoMes for 0, averageProcessos permanece 0.
-
+            
             document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
         }
+
 
         function updateConsultantRanking(monthSales) {
             const consultantProcessCounts = {};
@@ -1249,7 +955,9 @@
                                           .filter(p => p);
                 
                 listaProcessos.forEach(proc => {
-                    consultantProcessCounts[consultant]++;
+                    if (proc) { 
+                         consultantProcessCounts[consultant]++;
+                    }
                 });
             });
             
@@ -1395,64 +1103,31 @@
             if (lastUpdate) {
                 const timeString = lastUpdate.toLocaleTimeString('pt-BR');
                 document.getElementById('lastUpdateTime').textContent = timeString;
-                document.getElementById('modalLastUpdate').textContent = timeString;
+                // document.getElementById('modalLastUpdate').textContent = timeString; // Modal removido
             }
         }
 
-        function manualUpdate() {
-            document.getElementById('updateIndicator').style.display = 'flex';
-            document.getElementById('updateIndicator').style.opacity = '1';
-            document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando manualmente...`;
-            fetchSheetData();
-        }
-
-        function testConnection() {
-            updateConnectionStatus('loading', 'Testando conexão...');
-            fetchSheetData();
-        }
-
-        function toggleAutoUpdate() {
-            isAutoUpdateActive = !isAutoUpdateActive;
-            const buttonText = document.getElementById('autoUpdateText');
-            const icon = buttonText.previousElementSibling;
-            if (isAutoUpdateActive) {
-                buttonText.textContent = 'Pausar Auto-Update';
-                icon.className = 'fas fa-pause';
-                addLog('Auto-update retomado', 'success');
-            } else {
-                buttonText.textContent = 'Retomar Auto-Update';
-                icon.className = 'fas fa-play';
-                addLog('Auto-update pausado', 'warning');
-            }
-        }
-
-        function showInstructions() {
-            document.getElementById('instructionsModal').style.display = 'flex';
-            updateLastUpdateTime();
-        }
-
-        function hideInstructions() {
-            document.getElementById('instructionsModal').style.display = 'none';
-        }
+        // Funções de controle como manualUpdate, testConnection, toggleAutoUpdate, show/hideInstructions removidas
+        // pois os botões foram removidos.
 
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('updateIndicator').style.display = 'flex';
+            const updateIndicator = document.getElementById('updateIndicator');
+            if (updateIndicator) updateIndicator.style.display = 'flex';
             
             fetchSheetData(); 
-            // loadSampleData(); 
+            // loadSampleData(); // Descomente para usar dados de exemplo para teste rápido
             
             autoUpdateInterval = setInterval(() => {
-                if (isAutoUpdateActive) {
-                    document.getElementById('updateIndicator').style.display = 'flex';
-                    document.getElementById('updateIndicator').style.opacity = '1';
-                    document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
+                if (isAutoUpdateActive) { // isAutoUpdateActive é sempre true agora
+                    if (updateIndicator) {
+                        updateIndicator.style.display = 'flex';
+                        updateIndicator.style.opacity = '1';
+                        updateIndicator.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
+                    }
                     fetchSheetData();
                 }
             }, 30000); 
             
-            document.getElementById('instructionsModal').addEventListener('click', function(e) {
-                if (e.target === this) hideInstructions();
-            });
         });
     </script>
 </body>
