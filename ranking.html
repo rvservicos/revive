@@ -1172,6 +1172,7 @@
         }
 
         // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
+        // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
         function updateMainStats() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) {
@@ -1213,7 +1214,25 @@
                     }
                 });
             }
+            
+            // Se não houver dados para o mês, ou maxDayInMonthWithData for 0, a média é 0 ou indefinida.
+            // Usamos maxDayInMonthWithData como o divisor. Se for 0, a média será 0 (ou NaN, tratado abaixo).
+            const daysToConsider = maxDayInMonthWithData > 0 ? maxDayInMonthWithData : 1; // Evita divisão por zero se não houver dados
 
+            let averageProcessos = 0;
+            if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) {
+                 averageProcessos = totalProcessosNoMes / maxDayInMonthWithData;
+            } else if (totalProcessosNoMes > 0 && maxDayInMonthWithData === 0) {
+                // Se há processos mas nenhum dia de dado (improvável com a lógica atual), 
+                // a média fica indefinida ou baseada em 1 dia.
+                // Poderia também ser o dia atual se for o mês corrente.
+                // Para simplificar: se não há maxDay, e há processos, média é totalProcessos/1
+                 averageProcessos = totalProcessosNoMes; 
+            }
+            // Se totalProcessosNoMes for 0, averageProcessos permanece 0.
+
+            document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
+        }
 
         function updateConsultantRanking(monthSales) {
             const consultantProcessCounts = {};
