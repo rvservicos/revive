@@ -382,6 +382,12 @@
             color: #8b5cf6;
         }
 
+        .process-meta {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
         .recent-sales {
             grid-column: 1 / -1;
         }
@@ -643,19 +649,6 @@
                 align-items: flex-start;
             }
         }
-        
-        /* Novo estilo para badge de múltiplos processos */
-        .multi-badge {
-            background: #f3e8ff;
-            border: 1px dashed #8b5cf6;
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin: 2px;
-        }
     </style>
 </head>
 <body>
@@ -717,7 +710,7 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <h3><i class="fas fa-sun"></i> Clientes do Mês</h3>
+                <h3><i class="fas fa-sun"></i> Total do Mês</h3>
                 <div class="stat-value" id="totalMonth">-</div>
                 <div class="stat-label" id="monthLabel">-</div>
             </div>
@@ -729,7 +722,7 @@
             <div class="stat-card">
                 <h3><i class="fas fa-chart-bar"></i> Média Diária</h3>
                 <div class="stat-value" id="dailyAverage">-</div>
-                <div class="stat-label">processos/dia</div>
+                <div class="stat-label">vendas/dia</div>
             </div>
         </div>
 
@@ -750,14 +743,17 @@
                     <div class="process-card">
                         <h4>Previdenciários</h4>
                         <div class="process-number" id="previdenciariosCount">-</div>
+                        <div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div>
                     </div>
                     <div class="process-card">
                         <h4>Seguro Terceiro</h4>
                         <div class="process-number" id="seguroTerceiroCount">-</div>
+                        <div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div>
                     </div>
                     <div class="process-card">
                         <h4>Seguro de Vida</h4>
                         <div class="process-number" id="seguroVidaCount">-</div>
+                        <div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div>
                     </div>
                     <div class="process-card">
                         <h4>Outros</h4>
@@ -803,33 +799,32 @@
             <div>
                 <h4><i class="fas fa-table"></i> Como configurar sua planilha do Google Sheets:</h4>
                 <ol>
-                    <li><strong>Torne a planilha pública:</strong> Vá em "Arquivo" > "Compartilhar" > "Publicar na Web". Certifique-se de que está publicada. Depois, em "Compartilhar" (botão verde/azul), mude a opção "Restrito" para "Qualquer pessoa com o link" e defina o papel como "Leitor". Isso é crucial para a API de visualização funcionar.</li>
-                    <li><strong>Obtenha o ID da planilha:</strong> Copie da URL. Se a URL for `https://docs.google.com/spreadsheets/d/1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms/edit#gid=1536647709`, o ID é `1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms`.</li>
-                    <li><strong>GID da aba (opcional, mas recomendado):</strong> Para abas específicas, use o número após `gid=` na URL. No exemplo acima, o GID é `1536647709`. Se não for fornecido, tentará carregar a primeira aba visível.</li>
+                    <li><strong>Torne a planilha pública:</strong> Vá em "Compartilhar" > "Alterar para qualquer pessoa com o link"</li>
+                    <li><strong>Obtenha o ID da planilha:</strong> Copie da URL entre "/d/" e "/edit" (ex: 1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms)</li>
+                    <li><strong>GID da aba (opcional):</strong> Para abas específicas, use o número após "gid=" na URL</li>
                 </ol>
                 
-                <h4><i class="fas fa-columns"></i> Estrutura esperada da planilha (primeira linha é cabeçalho, ignorado):</h4>
+                <h4><i class="fas fa-columns"></i> Estrutura esperada da planilha:</h4>
                 <ul>
-                    <li><strong>Coluna A:</strong> Tipo de Processo (pode conter múltiplos separados por vírgula, ex: "VIDA, AUXILIO-ACIDENTE")</li>
+                    <li><strong>Coluna A:</strong> Tipo de Processo</li>
                     <li><strong>Coluna B:</strong> Nome do Cliente</li>
-                    <li><strong>Coluna C:</strong> Link (opcional, não utilizado pelo dashboard)</li>
+                    <li><strong>Coluna C:</strong> Link (opcional)</li>
                     <li><strong>Coluna D:</strong> Data (formato: DD/MM/AAAA)</li>
                     <li><strong>Coluna E:</strong> Nome do Consultor</li>
                 </ul>
-                <p><em>Importante:</em> A primeira linha da sua aba deve ser o cabeçalho (ex: TIPO, CLIENTE, LINK, DATA, CONSULTOR). Os dados reais devem começar da segunda linha.</p>
                 
                 <h4><i class="fas fa-star"></i> Recursos do Dashboard:</h4>
                 <ul>
-                    <li><strong>Conexão Real:</strong> Busca dados diretamente da sua Google Sheet.</li>
-                    <li><strong>Contagem múltipla:</strong> Cada processo na mesma linha é contabilizado individualmente.</li>
-                    <li><strong>Filtro por mês:</strong> Selecione o mês para visualizar as vendas.</li>
-                    <li><strong>Auto-update:</strong> Atualiza automaticamente a cada 30 segundos (pode ser pausado).</li>
-                    <li><strong>Fallback:</strong> Caso não consiga conectar após várias tentativas, mostra dados demonstrativos.</li>
-                    <li><strong>Logs detalhados:</strong> Registra as operações de conexão e processamento.</li>
+                    <li><strong>Filtro por mês:</strong> Selecione o mês para visualizar as vendas</li>
+                    <li><strong>Auto-update:</strong> Atualiza automaticamente a cada 30 segundos</li>
+                    <li><strong>Múltiplos métodos:</strong> Tenta diferentes formas de acessar os dados</li>
+                    <li><strong>Relatórios por mês:</strong> Todas as estatísticas são baseadas no mês selecionado</li>
+                    <li><strong>Dados de exemplo:</strong> Caso não consiga conectar, mostra dados demonstrativos</li>
+                    <li><strong>Logs detalhados:</strong> Registra todas as operações realizadas</li>
                 </ul>
                 
                 <div class="last-update">
-                    <i class="fas fa-info-circle"></i> Última atualização do dashboard: <span id="modalLastUpdate">-</span>
+                    <i class="fas fa-info-circle"></i> Última atualização: <span id="modalLastUpdate">-</span>
                 </div>
             </div>
         </div>
@@ -842,9 +837,9 @@
         let autoUpdateInterval = null;
         let isAutoUpdateActive = true;
         let connectionAttempts = 0;
-        const maxRetries = 3; // Máximo de tentativas de conexão antes de usar dados de exemplo
-        let months = []; // Não parece ser usada globalmente, mas mantida por ora.
-        
+        const maxRetries = 3;
+        let months = [];
+
         // Função para adicionar logs
         function addLog(message, type = 'info') {
             const logContainer = document.getElementById('logContainer');
@@ -853,17 +848,11 @@
             logEntry.className = `log-entry log-${type}`;
             logEntry.textContent = `[${timestamp}] ${message}`;
             
-            // Insere no topo
-            if (logContainer.firstChild) {
-                logContainer.insertBefore(logEntry, logContainer.firstChild);
-            } else {
-                logContainer.appendChild(logEntry);
-            }
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
             
-            // Manter apenas os últimos N logs (ex: 20)
-            const maxLogs = 20;
+            // Manter apenas os últimos 10 logs
             const logs = logContainer.querySelectorAll('.log-entry');
-            if (logs.length > maxLogs) {
+            if (logs.length > 10) {
                 logContainer.removeChild(logs[logs.length - 1]);
             }
         }
@@ -871,9 +860,10 @@
         // Função para atualizar status da conexão
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
-            const statusTextElement = document.getElementById('statusText'); // Re-get in case innerHTML changed it
+            const statusText = document.getElementById('statusText');
             
-            statusElement.className = 'connection-status'; // Reset classes
+            // Remover todas as classes de status
+            statusElement.className = 'connection-status';
             statusElement.classList.add(`status-${status}`);
             
             const icons = {
@@ -882,523 +872,570 @@
                 'loading': 'fas fa-sync fa-spin'
             };
             
+            // Atualizar ícone e texto
             statusElement.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
 
-        // Função para testar conexão com a planilha
-        async function testConnection() {
-            updateConnectionStatus('loading', 'Testando conexão...');
-            addLog('Iniciando teste de conexão com a planilha', 'info');
-
-            const sheetId = document.getElementById('sheetId').value.trim();
-            const sheetGid = document.getElementById('sheetGid').value.trim();
-
-            if (!sheetId) {
-                updateConnectionStatus('error', 'ID da Planilha não fornecido para teste.');
-                addLog('Teste de conexão falhou: ID da Planilha não fornecido.', 'error');
-                return;
-            }
-
-            // Fetch a small part of the sheet (e.g., first 2 rows to include header and one data row)
-            let testUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&range=A1:E2`;
-            if (sheetGid) {
-                testUrl += `&gid=${sheetGid}`;
-            }
-            testUrl += `&v=${new Date().getTime()}`; // Cache buster
-
-            try {
-                const response = await fetch(testUrl);
-                if (!response.ok) {
-                    let errorText = `Erro HTTP: ${response.status} ${response.statusText}.`;
-                     // Try to parse Google's specific error message if HTML response
-                    if (response.headers.get("content-type")?.includes("text/html")) {
-                        const htmlError = await response.text();
-                        const match = htmlError.match(/google\.visualization\.Query\.setResponse\s*\(\s*(\{[\s\S]*?\})\s*\)/);
-                        if (match && match[1]) {
-                            try {
-                                const errorObj = JSON.parse(match[1]);
-                                if (errorObj.errors && errorObj.errors.length > 0) {
-                                   errorText += ` Detalhe: ${errorObj.errors[0].detailed_message || errorObj.errors[0].message}`;
-                                }
-                            } catch (e) { /* ignore parsing error */ }
-                        }
-                    }
-                    throw new Error(`${errorText} Verifique se a planilha é pública ("Qualquer pessoa com o link pode ver"), o ID da Planilha e o GID da Aba estão corretos.`);
-                }
-                // const csvSample = await response.text(); // Don't need to parse for test
-                // addLog(`Resposta do teste (amostra): ${csvSample.substring(0, 100)}...`, 'info');
-
-                updateConnectionStatus('connected', 'Conexão estabelecida com sucesso!');
-                addLog('Teste de conexão bem-sucedido!', 'success');
-                manualUpdate(); // Proceed to fetch all data
-            } catch (error) {
-                updateConnectionStatus('error', `Falha na conexão: ${error.message}`);
-                addLog(`Teste de conexão falhou: ${error.message}`, 'error');
-            }
-        }
-
-        // Função para atualização manual
-        function manualUpdate() {
-            updateConnectionStatus('loading', 'Atualizando dados...');
-            addLog('Solicitada atualização manual de dados', 'info');
-            connectionAttempts = 0; // Reset attempts for a manual refresh
-            fetchSalesData();
-        }
-
-        // Função para alternar auto-update
-        function toggleAutoUpdate() {
-            isAutoUpdateActive = !isAutoUpdateActive;
-            const buttonText = document.getElementById('autoUpdateText');
-            const iconElement = buttonText.previousElementSibling; // Get the <i> element
-            
-            if (isAutoUpdateActive) {
-                buttonText.textContent = 'Pausar Auto-Update';
-                iconElement.className = 'fas fa-pause';
-                addLog('Auto-atualização ativada', 'success');
-                if (salesData.length > 0) { // If data already loaded
-                    updateConnectionStatus('connected', 'Auto-atualização ativada.');
-                } else { // If no data yet, it might be in error or loading
-                     updateConnectionStatus('loading', 'Auto-atualização ativada, aguardando dados...');
-                }
-                startAutoUpdate();
-                fetchSalesData(); // Fetch immediately when re-enabled
-            } else {
-                buttonText.textContent = 'Retomar Auto-Update';
-                iconElement.className = 'fas fa-play';
-                addLog('Auto-atualização pausada', 'warning');
-                updateConnectionStatus('connected', 'Auto-atualização pausada.');
-                clearInterval(autoUpdateInterval);
-                autoUpdateInterval = null;
-            }
-        }
-
-        // Função para iniciar auto-update
-        function startAutoUpdate() {
-            if (autoUpdateInterval) {
-                clearInterval(autoUpdateInterval);
-            }
-            if(isAutoUpdateActive) {
-                autoUpdateInterval = setInterval(() => {
-                    addLog('Atualização automática em andamento...', 'info');
-                    fetchSalesData();
-                }, 30000); // Atualiza a cada 30 segundos
-            }
-        }
-
-        // Função para mostrar instruções
-        function showInstructions() {
-            document.getElementById('instructionsModal').style.display = 'flex';
-            document.getElementById('modalLastUpdate').textContent = lastUpdate || 'N/A';
-        }
-
-        // Função para esconder instruções
-        function hideInstructions() {
-            document.getElementById('instructionsModal').style.display = 'none';
-        }
-
-        // Função para parsear CSV
-        function parseCSV(csvText) {
-            const lines = csvText.trim().split(/\r?\n/); // Handle Windows and Unix newlines
-            const data = [];
-
-            if (lines.length < 2) { // Expect at least a header and one data line
-                addLog("CSV não contém dados suficientes (cabeçalho ausente ou sem linhas de dados).", "warning");
-                return [];
-            }
-
-            // Skip header line (lines[0]) by starting loop at i = 1
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                if (!line.trim()) continue; // Skip empty lines
-
-                const rowValues = [];
-                let currentVal = "";
-                let inQuotes = false;
-
-                for (let k = 0; k < line.length; k++) {
-                    let char = line[k];
-                    if (char === '"') {
-                        if (inQuotes && k + 1 < line.length && line[k+1] === '"') { // Escaped double quote ("")
-                            currentVal += '"';
-                            k++; // Skip the second quote of the pair
-                        } else {
-                            inQuotes = !inQuotes; // Toggle quote state
-                        }
-                    } else if (char === ',' && !inQuotes) { // Comma delimiter, only if not inside quotes
-                        rowValues.push(currentVal);
-                        currentVal = "";
-                    } else {
-                        currentVal += char; // Character is part of the current field
-                    }
-                }
-                rowValues.push(currentVal); // Add the last field value
-                data.push(rowValues);
-            }
-            return data;
-        }
+        // Múltiplas abordagens para acessar Google Sheets
         
-        // Função para buscar dados de vendas da planilha
-        async function fetchSalesData() {
-            addLog('Iniciando busca de dados da planilha...', 'info');
-            updateConnectionStatus('loading', 'Buscando dados da planilha...');
-            document.getElementById('updateIndicator').style.display = 'flex';
-            document.getElementById('updateIndicator').innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Carregando dados...';
+        // Abordagem 1: CSV direto (funciona se a planilha for pública)
+        async function fetchViaCsvDirect() {
+            const sheetId = document.getElementById('sheetId').value;
+            const gid = document.getElementById('sheetGid').value;
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
+            
+            addLog('Tentando método 1: CSV direto...', 'info');
+            
+            const response = await fetch(csvUrl, {
+                method: 'GET',
+                mode: 'cors'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return await response.text();
+        }
 
+        // Abordagem 2: Usando CORS Proxy
+        async function fetchViaProxy() {
+            const sheetId = document.getElementById('sheetId').value;
+            const gid = document.getElementById('sheetGid').value;
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
+            
+            addLog('Tentando método 2: CORS Proxy...', 'info');
+            
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(csvUrl)}`;
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            
+            if (!data.contents) {
+                throw new Error('Dados vazios retornados pelo proxy');
+            }
+            
+            return data.contents;
+        }
 
-            const sheetId = document.getElementById('sheetId').value.trim();
-            const sheetGid = document.getElementById('sheetGid').value.trim();
+        // Abordagem 3: Proxy alternativo
+        async function fetchViaAlternativeProxy() {
+            const sheetId = document.getElementById('sheetId').value;
+            const gid = document.getElementById('sheetGid').value;
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
+            
+            addLog('Tentando método 3: Proxy alternativo...', 'info');
+            
+            const proxyUrl = `https://cors-anywhere.herokuapp.com/${csvUrl}`; // Note: cors-anywhere pode ser instável
+            const response = await fetch(proxyUrl);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return await response.text();
+        }
 
-            if (!sheetId) {
-                addLog('ID da Planilha não fornecido. Usando dados de exemplo.', 'warning');
-                updateConnectionStatus('error', 'ID da Planilha não configurado.');
-                generateSampleData(); // Fallback
-                processSalesData();
-                updateDashboardUI();
-                document.getElementById('updateIndicator').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ID não configurado. Usando dados de exemplo.';
-                setTimeout(() => { document.getElementById('updateIndicator').style.display = 'none'; }, 3000);
-                return;
+        // Função principal para buscar dados
+        async function fetchSheetData() {
+            updateConnectionStatus('loading', 'Conectando com Google Sheets...');
+            
+            const methods = [
+                { name: 'CSV Direto', func: fetchViaCsvDirect },
+                { name: 'CORS Proxy', func: fetchViaProxy },
+                { name: 'Proxy Alternativo', func: fetchViaAlternativeProxy }
+            ];
+
+            for (let i = 0; i < methods.length; i++) {
+                try {
+                    addLog(`Tentando ${methods[i].name}...`, 'info');
+                    const csvData = await methods[i].func();
+                    
+                    if (csvData && csvData.trim()) {
+                        await processCsvData(csvData);
+                        updateConnectionStatus('connected', `Conectado via ${methods[i].name}`);
+                        addLog(`✅ Sucesso com ${methods[i].name} - ${salesData.length} registros carregados`, 'success');
+                        connectionAttempts = 0;
+                        return true;
+                    }
+                } catch (error) {
+                    addLog(`❌ Falha em ${methods[i].name}: ${error.message}`, 'error');
+                    console.error(`Erro no método ${methods[i].name}:`, error);
+                }
             }
 
-            let sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
-            if (sheetGid) {
-                sheetUrl += `&gid=${sheetGid}`;
+            // Se todos os métodos falharam
+            connectionAttempts++;
+            if (connectionAttempts >= maxRetries) {
+                addLog('❌ Todos os métodos falharam. Usando dados de exemplo.', 'error');
+                updateConnectionStatus('error', 'Falha na conexão - Usando dados de exemplo');
+                loadSampleData();
+            } else {
+                updateConnectionStatus('error', `Tentativa ${connectionAttempts}/${maxRetries} falhou`);
+                addLog(`Tentando novamente em 10 segundos... (${connectionAttempts}/${maxRetries})`, 'warning');
+                setTimeout(() => fetchSheetData(), 10000);
             }
-            sheetUrl += `&v=${new Date().getTime()}`; // Cache buster
+            
+            return false;
+        }
 
-            try {
-                addLog(`Tentando buscar de: ${sheetId} (GID: ${sheetGid || 'padrão'})`, 'info');
-                const response = await fetch(sheetUrl);
+        // Processar dados CSV
+        async function processCsvData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            
+            if (lines.length <= 1) {
+                throw new Error('Planilha vazia ou sem dados válidos');
+            }
 
-                if (!response.ok) {
-                     let errorText = `Erro HTTP: ${response.status} ${response.statusText}.`;
-                    if (response.headers.get("content-type")?.includes("text/html")) {
-                        const htmlError = await response.text();
-                        const match = htmlError.match(/google\.visualization\.Query\.setResponse\s*\(\s*(\{[\s\S]*?\})\s*\)/);
-                        if (match && match[1]) {
-                            try {
-                                const errorObj = JSON.parse(match[1]);
-                                if (errorObj.errors && errorObj.errors.length > 0) {
-                                   errorText += ` Detalhe: ${errorObj.errors[0].detailed_message || errorObj.errors[0].message}`;
-                                }
-                            } catch (e) { /* ignore parsing error */ }
-                        }
-                    }
-                    throw new Error(`${errorText} Verifique permissões e IDs.`);
-                }
+            // Assumindo que a primeira linha são os cabeçalhos
+            const headers = parseCSVLine(lines[0]);
+            addLog(`Cabeçalhos encontrados: ${headers.join(', ')}`, 'info');
 
-                const csvText = await response.text();
-                if (!csvText || csvText.trim() === "") {
-                    throw new Error("Resposta CSV vazia. Planilha pode estar vazia ou inacessível.");
-                }
-
-                const parsedCsvRows = parseCSV(csvText);
-
-                salesData = parsedCsvRows.map(row => {
-                    // Colunas: A: Tipo, B: Cliente, C: Link (ignorar), D: Data, E: Consultor
-                    if (row.length < 5) { // Expecting at least 5 columns as per structure
-                        addLog(`Linha ignorada por ter ${row.length} colunas (esperado >= 5): ${row.join('|')}`, 'warning');
-                        return null;
-                    }
-                    return {
-                        tipo: row[0] || '',      // Coluna A (Tipo de Processo)
-                        cliente: row[1] || '',   // Coluna B (Nome do Cliente)
-                        // Link (row[2]) é ignorado
-                        data: row[3] || '',      // Coluna D (Data)
-                        consultor: row[4] || ''  // Coluna E (Nome do Consultor)
+            salesData = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                
+                if (columns.length >= 4 && columns.some(col => col.trim())) { // Pelo menos 4 colunas para Data
+                    const record = {
+                        processo: (columns[0] || '').trim(),
+                        cliente: (columns[1] || '').trim(),
+                        link: (columns[2] || '').trim(),
+                        data: (columns[3] || '').trim(),
+                        consultor: (columns[4] || '').trim() // Coluna E para consultor
                     };
-                }).filter(item => {
-                    // Basic validation: ensure essential fields are present
-                    return item !== null && item.data && item.consultor && item.tipo;
-                });
-
-                if (salesData.length === 0 && parsedCsvRows.length > 0) {
-                     addLog('Nenhum dado válido encontrado após parse. Verifique formato das colunas e conteúdo da planilha. Todas as linhas foram filtradas.', 'warning');
-                } else if (salesData.length === 0) {
-                     addLog('Nenhum dado retornado ou planilha vazia (após cabeçalho).', 'warning');
-                }
-
-
-                lastUpdate = new Date().toLocaleString('pt-BR');
-                document.getElementById('lastUpdateTime').textContent = lastUpdate;
-                
-                processSalesData();
-                updateDashboardUI(); // Changed from updateDashboard to avoid confusion
-                
-                updateConnectionStatus('connected', 'Dados atualizados com sucesso da planilha!');
-                addLog(`Dados carregados da planilha: ${salesData.length} registros válidos.`, 'success');
-                document.getElementById('updateIndicator').innerHTML = '<i class="fas fa-check-circle"></i> Dados atualizados!';
-                setTimeout(() => { document.getElementById('updateIndicator').style.display = 'none'; }, 2000);
-                
-                connectionAttempts = 0; // Reset retries on success
-
-                if (isAutoUpdateActive && !autoUpdateInterval) {
-                    startAutoUpdate();
-                }
-
-            } catch (error) {
-                addLog(`Erro ao buscar/processar dados da planilha: ${error.message}`, 'error');
-                connectionAttempts++;
-                
-                if (connectionAttempts >= maxRetries) {
-                    updateConnectionStatus('error', `Falha após ${maxRetries} tentativas. Usando dados de exemplo.`);
-                    addLog(`Máximo de tentativas (${maxRetries}) atingido. Usando dados de exemplo. Verifique console para detalhes.`, 'error');
-                    console.error("Detailed error leading to fallback:", error);
-                    generateSampleData(); // Fallback to sample data
-                    processSalesData();
-                    updateDashboardUI();
-                    document.getElementById('updateIndicator').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Falha. Usando dados de exemplo.';
-                    setTimeout(() => { document.getElementById('updateIndicator').style.display = 'none'; }, 3000);
-                    // connectionAttempts = 0; // Reset for next manual attempt cycle or keep it to prevent immediate retries
-                } else {
-                    updateConnectionStatus('error', `Erro (${connectionAttempts}/${maxRetries}): ${error.message.substring(0,100)}...`);
-                     if (isAutoUpdateActive) {
-                        addLog(`Próxima tentativa automática em 30 segundos.`, 'info');
+                    
+                    // Validar se tem pelo menos cliente e consultor
+                    if (record.cliente && record.consultor) {
+                        salesData.push(record);
                     }
                 }
             }
-        }
 
-
-        // Função para gerar dados de exemplo (FALLBACK)
-        function generateSampleData() {
-            addLog('Gerando dados de exemplo como fallback.', 'warning');
-            const consultants = ['Ana Silva', 'Carlos Oliveira', 'Mariana Costa', 'Pedro Santos', 'Juliana Pereira'];
-            const processTypes = ['VIDA', 'AUXILIO-ACIDENTE', 'PREVIDENCIARIO', 'SEGURO-TERCEIRO', 'OUTROS'];
-            const clients = ['Cliente Exemplo A', 'Cliente Exemplo B', 'Cliente Exemplo C', 'Cliente Exemplo D', 'Cliente Exemplo E'];
-            
-            const tempData = [];
-            const today = new Date();
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
-            
-            for (let i = 0; i < 30; i++) { // Reduced sample size
-                const monthOffset = Math.floor(Math.random() * 3); // Sample for last 3 months
-                const day = Math.floor(Math.random() * 28) + 1;
-                const month = (currentMonth - monthOffset + 12) % 12;
-                const year = month > currentMonth ? currentYear - 1 : currentYear;
-                
-                const processCount = Math.floor(Math.random() * 2) + 1; // 1-2 processes
-                const processes = [];
-                for (let j = 0; j < processCount; j++) {
-                    processes.push(processTypes[Math.floor(Math.random() * processTypes.length)]);
-                }
-                
-                tempData.push({
-                    tipo: processes.join(', '),
-                    cliente: clients[Math.floor(Math.random() * clients.length)],
-                    data: `${day.toString().padStart(2, '0')}/${(month + 1).toString().padStart(2, '0')}/${year}`,
-                    consultor: consultants[Math.floor(Math.random() * consultants.length)]
-                });
+            if (salesData.length === 0) {
+                throw new Error('Nenhum registro válido encontrado na planilha');
             }
-            salesData = tempData; // Assign to global salesData
-            lastUpdate = new Date().toLocaleString('pt-BR') + " (Exemplo)";
-            document.getElementById('lastUpdateTime').textContent = lastUpdate;
+
+            // Gerar lista de meses disponíveis
+            generateMonthOptions();
+            
+            updateDashboard();
+            lastUpdate = new Date();
+            updateLastUpdateTime();
         }
 
-        // Função para processar dados de vendas (com contagem múltipla)
-        function processSalesData() {
-            // This function now primarily prepares data for UI updates.
-            // Actual data filtering for month happens here.
-            // UI elements are updated in updateDashboardUI() based on processed values.
+        // Função para fazer parse de linha CSV
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
             
-            populateMonthSelector(); // Ensure month selector is up-to-date with available data
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
             
-            const selectedMonthFilter = document.getElementById('monthFilter').value;
-            
-            const currentMonthData = selectedMonthFilter === 'all' 
-                ? salesData 
-                : salesData.filter(item => {
-                    if (!item.data || typeof item.data !== 'string' || !item.data.includes('/')) return false;
-                    const parts = item.data.split('/');
-                    if (parts.length < 3) return false;
-                    const [day, month, year] = parts;
-                    return `${month}/${year}` === selectedMonthFilter;
-                });
+            result.push(current);
+            return result.map(item => item.replace(/^"|"$/g, '').trim());
+        }
 
-            // Counts for the *filtered* data
-            const processCounts = { 'PREVIDENCIARIO': 0, 'SEGURO-TERCEIRO': 0, 'VIDA': 0, 'OUTROS': 0 };
-            const consultantSales = {};
+        // Gerar opções de meses disponíveis
+        function generateMonthOptions() {
+            // Coletar meses únicos dos dados
+            const monthSet = new Set();
             
-            currentMonthData.forEach(item => {
-                const tipos = item.tipo.split(',').map(t => t.trim().toUpperCase());
-                tipos.forEach(tipo => {
-                    if (tipo.includes('PREVIDEN')) processCounts['PREVIDENCIARIO']++;
-                    else if (tipo.includes('TERCEIRO') || tipo.includes('TERCEIROS')) processCounts['SEGURO-TERCEIRO']++;
-                    else if (tipo.includes('VIDA')) processCounts['VIDA']++;
-                    else if (tipo) processCounts['OUTROS']++; // Ensure 'tipo' is not empty
-                });
-                if (item.consultor) { // Ensure consultant is not empty
-                   consultantSales[item.consultor] = (consultantSales[item.consultor] || 0) + tipos.filter(t=>t).length; // Count only non-empty tipos
+            salesData.forEach(sale => {
+                if (sale.data) {
+                    const [day, month, year] = sale.data.split('/');
+                    if (day && month && year && !isNaN(parseInt(day)) && !isNaN(parseInt(month)) && !isNaN(parseInt(year))) {
+                        monthSet.add(`${month.padStart(2, '0')}/${year}`);
+                    }
                 }
             });
             
-            // Store processed data for UI update
-            window.dashboardProcessedData = {
-                processCounts,
-                consultantSales,
-                currentMonthData,
-                totalProcesses: Object.values(processCounts).reduce((a, b) => a + b, 0)
-            };
-        }
-
-        // Função para preencher seletor de meses
-        function populateMonthSelector() {
-            const monthSelector = document.getElementById('monthFilter');
-            const currentSelectedValue = monthSelector.value; // Preserve selection if possible
-            monthSelector.innerHTML = ''; // Clear options
-            
-            const monthSet = new Set();
-            salesData.forEach(item => {
-                if (!item.data || typeof item.data !== 'string' || !item.data.includes('/')) return;
-                const parts = item.data.split('/');
-                if (parts.length < 3) return;
-                const [day, month, year] = parts;
-                monthSet.add(`${month}/${year}`);
-            });
-            
-            const sortedMonths = Array.from(monthSet).sort((a, b) => {
+            // Converter para array e ordenar
+            months = Array.from(monthSet).sort((a, b) => {
                 const [aMonth, aYear] = a.split('/');
                 const [bMonth, bYear] = b.split('/');
                 return new Date(bYear, bMonth - 1) - new Date(aYear, aMonth - 1);
             });
             
-            const allOption = document.createElement('option');
-            allOption.value = 'all';
-            allOption.textContent = 'Todos os meses';
-            monthSelector.appendChild(allOption);
+            // Atualizar o seletor de meses
+            const monthSelect = document.getElementById('monthFilter');
+            monthSelect.innerHTML = '';
             
-            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            sortedMonths.forEach(monthYear => {
-                const [month, year] = monthYear.split('/');
+            months.forEach(month => {
                 const option = document.createElement('option');
-                option.value = monthYear;
-                option.textContent = `${monthNames[parseInt(month) - 1]} de ${year}`;
-                monthSelector.appendChild(option);
+                option.value = month;
+                option.textContent = month;
+                monthSelect.appendChild(option);
             });
-
-            if (currentSelectedValue && monthSelector.querySelector(`option[value="${currentSelectedValue}"]`)) {
-                monthSelector.value = currentSelectedValue;
-            } else if (sortedMonths.length > 0) {
-                 // Default to the most recent month if "all" wasn't selected or doesn't exist as a prior selection
-                 if (currentSelectedValue !== 'all') monthSelector.value = sortedMonths[0];
+            
+            // Selecionar o mês mais recente por padrão
+            if (months.length > 0) {
+                monthSelect.value = months[0];
             }
         }
-        
-        // Função para ATUALIZAR A INTERFACE DO DASHBOARD com os dados processados
-        function updateDashboardUI() {
-            const { processCounts, consultantSales, currentMonthData, totalProcesses } = window.dashboardProcessedData || { processCounts:{}, consultantSales:{}, currentMonthData:[], totalProcesses:0};
 
-            document.getElementById('previdenciariosCount').textContent = processCounts['PREVIDENCIARIO'] || 0;
-            document.getElementById('seguroTerceiroCount').textContent = processCounts['SEGURO-TERCEIRO'] || 0;
-            document.getElementById('seguroVidaCount').textContent = processCounts['VIDA'] || 0;
-            document.getElementById('outrosCount').textContent = processCounts['OUTROS'] || 0;
+        // Dados de exemplo
+        function loadSampleData() {
+            salesData = [
+                { processo: 'CONCESSÃO MATERNIDADE', cliente: 'Camila de Freitas Rech Carlini', data: '04/06/2025', consultor: 'Augusto Teply' },
+                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Vitor Muniz dos Santos', data: '04/06/2025', consultor: 'Carlos Antonio Rosa' },
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Vitor Muniz dos Santos', data: '04/06/2025', consultor: 'Carlos Antonio Rosa' }, // Mesmo cliente, processo de terceiro diferente
+                { processo: 'VIDA', cliente: 'Adenilson Robak', data: '03/06/2025', consultor: 'Debora' },
+                { processo: 'VIDA APLICATIVO', cliente: 'Nicolas Sell Guimarães Sampaio', data: '03/06/2025', consultor: 'Gustavo' },
+                { processo: 'APOSENTADORIA POR TEMPO DE SERVIÇO', cliente: 'Rodrigo Felipe Cardoso', data: '03/06/2025', consultor: 'Olska' },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo da Silva', data: '02/06/2025', consultor: 'Maria Fernanda' },
+                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Ana Carolina Mendes', data: '02/06/2025', consultor: 'Carlos Antonio Rosa' },
+                { processo: 'VIDA', cliente: 'Roberto Almeida', data: '01/06/2025', consultor: 'Augusto Teply' },
+                { processo: 'APOSENTADORIA POR IDADE', cliente: 'Fernanda Oliveira', data: '01/06/2025', consultor: 'Gustavo' },
+                { processo: 'AUXILIO-DOENÇA', cliente: 'Marcos Vinicius', data: '31/05/2025', consultor: 'Debora' }, // Mês anterior
+                { processo: 'LOAS', cliente: 'Patricia Souza', data: '30/05/2025', consultor: 'Maria Fernanda' }, // Mês anterior
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Ricardo Pereira', data: '30/05/2025', consultor: 'Olska' }, // Mês anterior
+                { processo: 'VIDA APLICATIVO', cliente: 'Juliana Mendes', data: '28/05/2025', consultor: 'Carlos Antonio Rosa' }, // Mês anterior
+                { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Felipe Costa', data: '27/05/2025', consultor: 'Augusto Teply' }, // Mês anterior
+                { processo: 'OUTRO PROCESSO QUALQUER', cliente: 'Cliente Outro', data: '01/06/2025', consultor: 'Consultor X' }
+            ];
             
-            document.getElementById('totalMonth').textContent = totalProcesses;
+            generateMonthOptions();
             
-            let topConsultantName = '-';
-            let topSalesCount = 0;
-            Object.entries(consultantSales).forEach(([consultant, sales]) => {
-                if (sales > topSalesCount) {
-                    topSalesCount = sales;
-                    topConsultantName = consultant;
+            updateDashboard();
+            lastUpdate = new Date();
+            updateLastUpdateTime();
+            addLog('✅ Dados de exemplo carregados com sucesso', 'success');
+        }
+
+        // Obter vendas do mês selecionado
+        function getMonthSales() {
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) return salesData; // Se nenhum mês selecionado, retorna tudo (ou um array vazio)
+            
+            const [filterMonth, filterYear] = selectedMonthYear.split('/');
+            
+            return salesData.filter(sale => {
+                if (!sale.data) return false;
+                
+                const [saleDay, saleMonth, saleYear] = sale.data.split('/');
+                return saleMonth === filterMonth && saleYear === filterYear;
+            });
+        }
+
+        // Atualizar o dashboard com os dados
+        function updateDashboard() {
+            if (salesData.length === 0 && months.length === 0) { // Se não há dados E não há meses, pode ser estado inicial
+                 addLog('Aguardando dados ou seleção de mês.', 'info');
+                 return;
+            }
+            if (document.getElementById('monthFilter').options.length === 0 && salesData.length > 0) {
+                // Caso onde salesData foi preenchido mas o monthFilter ainda não (acontece em loadSampleData)
+                // generateMonthOptions() deve ser chamado antes de updateDashboard neste caso.
+                // Adicionado um check para robustez
+                generateMonthOptions();
+                if (document.getElementById('monthFilter').options.length === 0) {
+                    addLog('Nenhum mês disponível para filtro, mesmo após tentar gerar opções.', 'warning');
+                    return; // Não pode prosseguir sem meses
+                }
+            }
+            
+            const monthSales = getMonthSales();
+            
+            updateMainStats(monthSales);
+            updateConsultantRanking(monthSales);
+            updateProcessStats(monthSales); // <--- CORREÇÃO APLICADA AQUI
+            updateMonthSales(monthSales);
+            
+            document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`;
+            setTimeout(() => {
+                document.getElementById('updateIndicator').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('updateIndicator').style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+
+        // Atualizar estatísticas principais
+        function updateMainStats(monthSales) {
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) {
+                document.getElementById('totalMonth').textContent = '-';
+                document.getElementById('monthLabel').textContent = 'Nenhum mês selecionado';
+                document.getElementById('topConsultant').textContent = '-';
+                document.getElementById('dailyAverage').textContent = '-';
+                return;
+            }
+            const [month, year] = selectedMonthYear.split('/');
+            
+            document.getElementById('totalMonth').textContent = monthSales.length;
+            
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                              'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const monthName = monthNames[parseInt(month) - 1];
+            document.getElementById('monthLabel').textContent = `${monthName} ${year}`;
+            
+            const consultantSales = {};
+            monthSales.forEach(sale => {
+                if (consultantSales[sale.consultor]) {
+                    consultantSales[sale.consultor]++;
+                } else {
+                    consultantSales[sale.consultor] = 1;
                 }
             });
-            document.getElementById('topConsultant').textContent = topConsultantName || '-';
             
-            if (currentMonthData.length > 0 && totalProcesses > 0) {
-                const uniqueDates = [...new Set(currentMonthData.map(item => item.data))];
-                const dailyAvg = uniqueDates.length > 0 ? (totalProcesses / uniqueDates.length).toFixed(1) : '0.0';
-                document.getElementById('dailyAverage').textContent = dailyAvg;
-            } else {
-                document.getElementById('dailyAverage').textContent = '0.0';
+            let topConsultant = '-';
+            let maxSales = 0;
+            for (const consultant in consultantSales) {
+                if (consultantSales[consultant] > maxSales) {
+                    maxSales = consultantSales[consultant];
+                    topConsultant = consultant;
+                }
             }
             
-            updateConsultantRankingUI(consultantSales);
-            updateRecentSalesTableUI(currentMonthData);
-
-            // Update month label
-            const monthSelector = document.getElementById('monthFilter');
-            const selectedOption = monthSelector.options[monthSelector.selectedIndex];
-            document.getElementById('monthLabel').textContent = selectedOption ? selectedOption.textContent : '-';
+            document.getElementById('topConsultant').textContent = topConsultant;
+            
+            const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+            const average = daysInMonth > 0 ? (monthSales.length / daysInMonth) : 0;
+            document.getElementById('dailyAverage').textContent = average.toFixed(1);
         }
 
-
-        // Função para atualizar ranking de consultores NA UI
-        function updateConsultantRankingUI(consultantSales) {
-            const rankingContainer = document.getElementById('consultantRanking');
-            rankingContainer.innerHTML = ''; // Clear previous
+        // Atualizar ranking de consultores
+        function updateConsultantRanking(monthSales) {
+            const consultantSales = {};
+            monthSales.forEach(sale => {
+                if (consultantSales[sale.consultor]) {
+                    consultantSales[sale.consultor]++;
+                } else {
+                    consultantSales[sale.consultor] = 1;
+                }
+            });
             
-            const sortedConsultants = Object.entries(consultantSales)
-                .sort((a, b) => b[1] - a[1]); // Sort by sales descending
+            const ranking = Object.keys(consultantSales).map(consultant => ({
+                name: consultant,
+                sales: consultantSales[consultant]
+            })).sort((a, b) => b.sales - a.sales);
             
-            if (sortedConsultants.length === 0) {
-                rankingContainer.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px;">Nenhum dado de consultor disponível para este período.</div>';
-                return;
-            }
+            const topRanking = ranking.slice(0, 5);
             
-            sortedConsultants.forEach(([consultant, sales], index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'ranking-item';
-                itemDiv.innerHTML = `
-                    <div class="consultant-info">
-                        <div class="rank-number">${index + 1}</div>
-                        <div class="consultant-name">${consultant}</div>
+            let html = '';
+            if (topRanking.length > 0) {
+                topRanking.forEach((consultant, index) => {
+                    html += `
+                    <div class="ranking-item">
+                        <div class="consultant-info">
+                            <div class="rank-number">${index + 1}</div>
+                            <div class="consultant-name">${consultant.name}</div>
+                        </div>
+                        <div class="sales-count">${consultant.sales}</div>
                     </div>
-                    <div class="sales-count">${sales}</div>
-                `;
-                rankingContainer.appendChild(itemDiv);
-            });
-        }
-
-        // Função para atualizar tabela de vendas recentes NA UI
-        function updateRecentSalesTableUI(data) {
-            const tableBody = document.getElementById('recentSalesTable');
-            tableBody.innerHTML = ''; // Clear previous
-            
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 20px;">Nenhuma venda encontrada para este período.</td></tr>';
-                return;
+                    `;
+                });
+            } else {
+                html = `<div style="text-align: center; color: #6b7280; padding: 20px;">
+                    Nenhuma venda encontrada para o mês selecionado
+                </div>`;
             }
-            
-            // Show most recent first, limit to e.g. 10 or 20.
-            // Assuming data is already somewhat sorted or we sort it by date if necessary.
-            // For now, just take the last N items from the filtered data (which might not be date sorted from GSheet)
-            // To sort by date properly:
-            const sortedData = [...data].sort((a,b) => {
-                const dateA = new Date(a.data.split('/').reverse().join('-'));
-                const dateB = new Date(b.data.split('/').reverse().join('-'));
-                return dateB - dateA; //Descending
-            });
+            document.getElementById('consultantRanking').innerHTML = html;
+        }
 
-            const recentDataToDisplay = sortedData.slice(0, 15); // Show top 15 recent
-            
-            recentDataToDisplay.forEach(item => {
-                const tr = document.createElement('tr');
-                const tipos = item.tipo.split(',').map(t => t.trim()).filter(t => t);
-                const processBadges = tipos.map(tipo => `<span class="multi-badge">${tipo}</span>`).join(' ');
+        // Atualizar estatísticas por tipo de processo -- FUNÇÃO CORRIGIDA --
+        function updateProcessStats(monthSales) {
+            const metas = {
+                'PREVIDENCIÁRIOS': 400,
+                'SEGURO TERCEIRO': 30,
+                'SEGURO DE VIDA': 90 // Meta para Seguro de Vida
+            };
+
+            const processCounts = {
+                'PREVIDENCIÁRIOS': 0,
+                'SEGURO TERCEIRO': 0,
+                'SEGURO DE VIDA': 0,
+                'OUTROS': 0
+            };
+
+            // Tipos de processo como fornecidos (normalizados para maiúsculas para comparação)
+            const previdenciarioTypesExact = [
+                'CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO',
+                'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ'
+            ];
+            const seguroTerceiroTypesExact = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'];
+            const seguroVidaTypesExact = ['VIDA', 'VIDA APLICATIVO'];
+
+            // Para Seguro Terceiro: agrupar por cliente para contar apenas uma vez
+            const clientesComSeguroTerceiro = new Set();
+
+            monthSales.forEach(sale => {
+                const tipoProcessoUpper = (sale.processo || '').toUpperCase().trim();
+                let foiCategorizadoPrincipal = false;
+
+                // 1. Contagem de Previdenciários (por ocorrência, correspondência exata com os tipos listados)
+                if (previdenciarioTypesExact.includes(tipoProcessoUpper)) {
+                    processCounts['PREVIDENCIÁRIOS']++;
+                    foiCategorizadoPrincipal = true;
+                }
+
+                // 2. Contagem de Seguro de Vida (por ocorrência, correspondência exata com os tipos listados)
+                if (seguroVidaTypesExact.includes(tipoProcessoUpper)) {
+                    processCounts['SEGURO DE VIDA']++;
+                    foiCategorizadoPrincipal = true;
+                }
                 
-                tr.innerHTML = `
-                    <td><span class="date-badge">${item.data}</span></td>
-                    <td>${item.cliente}</td>
-                    <td>${processBadges || '-'}</td>
-                    <td>${item.consultor}</td>
-                `;
-                tableBody.appendChild(tr);
+                // 3. Identificar clientes para Seguro Terceiro (correspondência exata com os tipos listados)
+                // A contagem será feita baseada no número de clientes únicos com esses processos.
+                if (seguroTerceiroTypesExact.includes(tipoProcessoUpper)) {
+                    if (sale.cliente) { 
+                       clientesComSeguroTerceiro.add(sale.cliente);
+                    }
+                    foiCategorizadoPrincipal = true; // Marcar como principal para não ir para "Outros"
+                }
+                
+                // 4. Contagem de Outros (por ocorrência)
+                // Se o processo não foi classificado em NENHUMA das categorias principais e não é uma string vazia
+                if (!foiCategorizadoPrincipal && tipoProcessoUpper) {
+                    processCounts['OUTROS']++;
+                }
             });
+
+            // A contagem de Seguro Terceiro é o tamanho do Set de clientes únicos
+            processCounts['SEGURO TERCEIRO'] = clientesComSeguroTerceiro.size;
+
+            // Atualizar os cards com as contagens e metas
+            // Previdenciários
+            const prevCount = processCounts['PREVIDENCIÁRIOS'];
+            const prevMeta = metas['PREVIDENCIÁRIOS'];
+            const prevPercent = prevMeta > 0 ? Math.min(100, Math.round((prevCount / prevMeta) * 100)) : 0;
+            document.getElementById('previdenciariosCount').textContent = prevCount;
+            document.getElementById('previdenciariosGoal').textContent = `${prevCount}/${prevMeta}`;
+            document.getElementById('previdenciariosPercent').textContent = prevPercent;
+            
+            // Seguro Terceiro
+            const terCount = processCounts['SEGURO TERCEIRO'];
+            const terMeta = metas['SEGURO TERCEIRO'];
+            const terPercent = terMeta > 0 ? Math.min(100, Math.round((terCount / terMeta) * 100)) : 0;
+            document.getElementById('seguroTerceiroCount').textContent = terCount;
+            document.getElementById('seguroTerceiroGoal').textContent = `${terCount}/${terMeta}`;
+            document.getElementById('seguroTerceiroPercent').textContent = terPercent;
+            
+            // Seguro de Vida
+            const vidaCount = processCounts['SEGURO DE VIDA'];
+            const vidaMeta = metas['SEGURO DE VIDA']; // Meta de 90
+            const vidaPercent = vidaMeta > 0 ? Math.min(100, Math.round((vidaCount / vidaMeta) * 100)) : 0;
+            document.getElementById('seguroVidaCount').textContent = vidaCount;
+            document.getElementById('seguroVidaGoal').textContent = `${vidaCount}/${vidaMeta}`;
+            document.getElementById('seguroVidaPercent').textContent = vidaPercent;
+            
+            // Outros
+            document.getElementById('outrosCount').textContent = processCounts['OUTROS'];
         }
 
-        // Função chamada na mudança do seletor de mês
-        function updateDashboard() { // Renamed from original updateDashboard to avoid conflict
-            addLog(`Filtro de mês alterado. Re-processando dados.`, 'info');
-            processSalesData(); // Reprocess data based on new month selection
-            updateDashboardUI();   // Update the UI elements
+
+        // Atualizar tabela de vendas do mês
+        function updateMonthSales(monthSales) {
+            const sortedSales = [...monthSales].sort((a, b) => {
+                if (!a.data || !b.data) return 0;
+                
+                const [dayA, monthA, yearA] = a.data.split('/');
+                const [dayB, monthB, yearB] = b.data.split('/');
+                const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+                const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+                return dateB - dateA;
+            });
+            
+            let html = '';
+            if (sortedSales.length > 0) {
+                sortedSales.forEach(sale => {
+                    html += `
+                    <tr>
+                        <td><span class="date-badge">${sale.data || '-'}</span></td>
+                        <td>${sale.cliente || '-'}</td>
+                        <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                        <td>${sale.consultor || '-'}</td>
+                    </tr>
+                    `;
+                });
+            } else {
+                html = `<tr>
+                    <td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">
+                        Nenhuma venda encontrada para o mês selecionado
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('recentSalesTable').innerHTML = html;
         }
 
-        // Inicializar dashboard
+        // Atualizar o tempo da última atualização
+        function updateLastUpdateTime() {
+            if (lastUpdate) {
+                const timeString = lastUpdate.toLocaleTimeString('pt-BR');
+                document.getElementById('lastUpdateTime').textContent = timeString;
+                document.getElementById('modalLastUpdate').textContent = timeString;
+            }
+        }
+
+        // Funções de controle
+        function manualUpdate() {
+            document.getElementById('updateIndicator').style.display = 'flex';
+            document.getElementById('updateIndicator').style.opacity = '1';
+            document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando manualmente...`;
+            fetchSheetData();
+        }
+
+        function testConnection() {
+            updateConnectionStatus('loading', 'Testando conexão...');
+            fetchSheetData();
+        }
+
+        function toggleAutoUpdate() {
+            isAutoUpdateActive = !isAutoUpdateActive;
+            const buttonText = document.getElementById('autoUpdateText');
+            const icon = document.querySelector('#autoUpdateText').previousElementSibling;
+            
+            if (isAutoUpdateActive) {
+                buttonText.textContent = 'Pausar Auto-Update';
+                icon.className = 'fas fa-pause';
+                addLog('Auto-update retomado', 'success');
+            } else {
+                buttonText.textContent = 'Retomar Auto-Update';
+                icon.className = 'fas fa-play';
+                addLog('Auto-update pausado', 'warning');
+            }
+        }
+
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+            updateLastUpdateTime();
+        }
+
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+
+        // Inicialização do dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            addLog('Dashboard inicializado. Tentando conectar...', 'info');
-            testConnection(); // This will attempt connection and then call manualUpdate -> fetchSalesData
-            // Initial auto-update will be started by fetchSalesData if successful and active
+            document.getElementById('updateIndicator').style.display = 'flex';
+            
+            fetchSheetData();
+            
+            autoUpdateInterval = setInterval(() => {
+                if (isAutoUpdateActive) {
+                    document.getElementById('updateIndicator').style.display = 'flex';
+                    document.getElementById('updateIndicator').style.opacity = '1';
+                    document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
+                    fetchSheetData();
+                }
+            }, 30000); // 30 segundos
+            
+            document.getElementById('instructionsModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideInstructions();
+                }
+            });
         });
     </script>
 </body>
