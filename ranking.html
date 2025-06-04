@@ -70,16 +70,16 @@
             opacity: 0.8;
         }
 
-        .connection-status { /* Mantido para feedback ao usuário */
-            margin: 15px auto; /* Centralizado */
+        .connection-status { 
+            margin: 15px auto; 
             padding: 10px 15px;
             border-radius: 10px;
             font-size: 0.9rem;
             font-weight: 500;
-            display: inline-flex; /* Para centralizar melhor com auto margin */
+            display: inline-flex; 
             align-items: center;
             gap: 10px;
-            max-width: 300px; /* Limita largura */
+            max-width: 300px; 
         }
 
         .status-connected {
@@ -457,14 +457,11 @@
                 <i class="fas fa-sync fa-spin"></i>
                 <span id="statusText">Verificando conexão...</span>
             </div>
-            <!-- PAINEL DE CONFIGURAÇÃO REMOVIDO -->
         </div>
 
-        <!-- Seletor de mês -->
         <div class="month-selector">
             <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
             <select id="monthFilter" onchange="updateDashboard()">
-                <!-- Os meses serão preenchidos via JavaScript -->
             </select>
         </div>
 
@@ -549,20 +546,17 @@
         </div>
     </div>
 
-    <!-- MODAL DE INSTRUÇÕES REMOVIDO PARA SIMPLICIDADE, PODE SER REINSERIDO SE NECESSÁRIO -->
-
     <script>
         // Variáveis globais
         let salesData = []; 
         let lastUpdate = null;
         let autoUpdateInterval = null;
-        const isAutoUpdateActive = true; // Auto-update sempre ativo, sem botão para pausar
+        const isAutoUpdateActive = true; 
         let connectionAttempts = 0;
         const maxRetries = 3;
         
-        // Valores fixos da planilha
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
-        const FIXED_SHEET_GID = "1536647709"; // Deixe "" se não houver GID específico
+        const FIXED_SHEET_GID = "1536647709"; 
 
         let currentMonthCounts = {
             previdenciarios: 0,
@@ -583,16 +577,13 @@
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO']
             .map(type => type.toUpperCase().trim());
 
-        // Função para adicionar logs (mantida para debugging, pode ser removida em produção final)
         function addLog(message, type = 'info') {
-            // const logContainer = document.getElementById('logContainer'); // Removido pois o elemento não existe mais
-            // if (logContainer) { ... } // Adicionar verificação se for manter
             console[type === 'error' ? 'error' : 'log'](`[${new Date().toLocaleTimeString('pt-BR')}] ${message}`);
         }
 
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
-            if (!statusElement) return; // Proteção se o elemento for removido
+            if (!statusElement) return; 
             statusElement.className = 'connection-status'; 
             statusElement.classList.add(`status-${status}`);
             const icons = {
@@ -605,7 +596,6 @@
         
         async function fetchViaCsvDirect() {
             const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv${FIXED_SHEET_GID ? `&gid=${FIXED_SHEET_GID}` : ''}`;
-            // addLog('Tentando método 1: CSV direto...', 'info'); // Removido para interface mais limpa
             const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
             if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             return await response.text();
@@ -613,7 +603,6 @@
 
         async function fetchViaProxy() {
             const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv${FIXED_SHEET_GID ? `&gid=${FIXED_SHEET_GID}` : ''}`;
-            // addLog('Tentando método 2: CORS Proxy (allorigins.win)...', 'info'); // Removido
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(csvUrl)}`;
             const response = await fetch(proxyUrl);
             const data = await response.json();
@@ -630,31 +619,26 @@
 
             for (let method of methods) {
                 try {
-                    // addLog(`Tentando ${method.name}...`, 'info'); // Removido
                     const csvData = await method.func();
                     if (csvData && csvData.trim()) {
                         await processCsvData(csvData); 
                         populateMonthFilter(salesData); 
                         updateDashboard(); 
                         updateConnectionStatus('connected', `Conectado via ${method.name}`);
-                        // addLog(`✅ Sucesso com ${method.name} - ${salesData.length} registros carregados`, 'success'); // Removido
                         connectionAttempts = 0;
                         return true;
                     }
                 } catch (error) {
-                    // addLog(`❌ Falha em ${method.name}: ${error.message}`, 'error'); // Removido
                     console.error(`Erro no método ${method.name}:`, error);
                 }
             }
 
             connectionAttempts++;
             if (connectionAttempts >= maxRetries) {
-                // addLog('❌ Todos os métodos falharam. Usando dados de exemplo.', 'error'); // Removido
                 updateConnectionStatus('error', 'Falha - Usando dados de exemplo');
                 loadSampleData(); 
             } else {
                 updateConnectionStatus('error', `Tentativa ${connectionAttempts}/${maxRetries} falhou`);
-                // addLog(`Tentando novamente em 10 segundos... (${connectionAttempts}/${maxRetries})`, 'warning'); // Removido
                 setTimeout(fetchSheetData, 10000);
             }
             return false;
@@ -663,16 +647,11 @@
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             if (lines.length <= 1) {
-                // addLog('Planilha vazia ou sem cabeçalhos.', 'warning'); // Removido
                 salesData = [];
                 return; 
             }
-
-            // const headers = parseCSVLine(lines[0]); // Não precisamos mais dos headers para o log
-            // addLog(`Cabeçalhos encontrados: ${headers.join(', ')}`, 'info'); // Removido
             const tempData = [];
-            
-            for (let i = 1; i < lines.length; i++) {
+            for (let i = 1; i < lines.length; i++) { 
                 const columns = parseCSVLine(lines[i]);
                 if (columns.length >= 5) { 
                     const record = {
@@ -680,7 +659,8 @@
                         cliente: (columns[1] || '').trim(),
                         link: (columns[2] || '').trim(),
                         data: (columns[3] || '').trim(),
-                        consultor: (columns[4] || '').trim()
+                        consultor: (columns[4] || '').trim(),
+                        originalIndex: i 
                     };
                     if (record.processo && record.cliente && record.data && record.consultor) {
                         tempData.push(record);
@@ -688,10 +668,6 @@
                 }
             }
             salesData = tempData; 
-
-            if (salesData.length === 0) {
-                 // addLog('Nenhum registro válido encontrado após processar CSV.', 'warning'); // Removido
-            }
             lastUpdate = new Date(); 
             updateLastUpdateTime();
         }
@@ -700,7 +676,6 @@
             const result = [];
             let current = '';
             let inQuotes = false;
-
             for (let i = 0; i < line.length; i++) {
                 let char = line[i];
                 if (char === '"') {
@@ -747,10 +722,6 @@
             const currentSelectedMonth = monthSelect.value;
             monthSelect.innerHTML = '';
 
-            if (allAvailableMonths.length === 0) {
-                 // addLog('Nenhum mês válido encontrado para popular o filtro.', 'warning'); // Removido
-            }
-
             allAvailableMonths.forEach(month => {
                 const option = document.createElement('option');
                 option.value = month;
@@ -766,54 +737,54 @@
         }
         
         const sampleSalesDataForTesting = [
-            { processo: 'VIDA,  AUXILIO-DOENÇA,  LOAS', cliente: 'Mario kopelkke', data: '02/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego armando mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes' },
-            { processo: 'VIDA,  AÇÃO DE ACIDENTE DE TRÂNSITO', cliente: 'Valber Cardoso dos Santos', data: '02/06/2025', consultor: 'Kristin' }, 
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Abnorlan daglison Costa dias', data: '02/06/2025', consultor: 'Jackeline Lima da Silva' },
-            { processo: 'AUXILIO-DOENÇA', cliente: 'Willian Andrade Silva', data: '02/06/2025', consultor: 'Debora' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Cristiane Waltrick Zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Vinicius zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Marcos da Silva Rios', data: '02/06/2025', consultor: 'Yudi Alan' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Silso baldo', data: '02/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Stanley Hartmann', data: '02/06/2025', consultor: 'Luiz do Seguro' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Matheus Ferreira Silva', data: '02/06/2025', consultor: 'Carlos Antonio Rosa' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Charlonm maurino da rocha', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jose iuris Jesus santos', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sandra Esser', data: '03/06/2025', consultor: 'Flavio Almiron' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Samuel magno do carmo', data: '03/06/2025', consultor: 'Jackeline Lima' },
-            { processo: 'VIDA, TERCEIRO DANO CORPORAL', cliente: 'Ricardo Fischer', data: '03/06/2025', consultor: 'Luiz do Seguro' }, 
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Vanderleia Correa', data: '03/06/2025', consultor: 'Flavio Almiron' },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Renan Maciel de souza', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' }, 
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sidney Ghidolin de Jesus', data: '03/06/2025', consultor: 'Carlos Antonio Rosa' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rosemeri do Amaral Ramos', data: '03/06/2025', consultor: 'Yudi Alan' },
-            { processo: 'VIDA', cliente: 'Carlos Kaique Ezequiel Santos Fonseca', data: '03/06/2025', consultor: 'LUCAS' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'Volnei zepherino', data: '03/06/2025', consultor: 'Flavio Almiron' },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Henri Roepke', data: '03/06/2025', consultor: 'Luiz do Seguro' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Matheus Paim da Costa', data: '03/06/2025', consultor: 'Kristin' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Joao victor zepherino', data: '03/06/2025', consultor: 'Flavio Almiron' },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'André Ricardo rodrigues', data: '03/06/2025', consultor: 'Thiago Pereira gomes' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Bruno João Neto', data: '03/06/2025', consultor: 'Gustavo' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'JONATAN FELIPE PEREIRA DE SOUZA', data: '03/06/2025', consultor: 'CRISTIANO' },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Antonio Dias de Sousa Neto', data: '03/06/2025', consultor: 'Luiz do Seguro' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Renato luiz Filagrana', data: '03/06/2025', consultor: 'Flavio Almiron' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rafael Anacleto', data: '03/06/2025', consultor: 'Edilene' },
-            { processo: 'VIDA', cliente: 'Cristian Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Cristiano Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro' },
-            { processo: 'AUXILIO-ACIDENTE,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Marcelo Francisco', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' }, 
-            { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Vanessa kleien', data: '04/06/2025', consultor: 'Edilene' },
-            { processo: 'PENSÃO POR MORTE', cliente: 'Maria Tereza de Souza', data: '04/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Fábio dos Santos', data: '04/06/2025', consultor: 'Olska' },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Rafael Clóvis pastorello', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' }, 
-            { processo: 'APOSENTADORIA POR INVALIDEZ,  LOAS', cliente: 'Luciano de Jesus Pereira', data: '04/06/2025', consultor: 'Augusto Teply' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jéssica Caroline Torres da silva', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Pereira Farias', data: '04/06/2025', consultor: 'Kristin' },
-            { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST' },
-            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST' }, 
-            { processo: 'TERCEIRO DANO CORPORAL, VIDA', cliente: 'Outro Cliente ST com Vida', data: '01/06/2025', consultor: 'Consultor ST2' },
-            { processo: 'DPVAT', cliente: 'Cliente DPVAT', data: '05/06/2025', consultor: 'Consultor DPVAT' },
-            { processo: 'VIDA', cliente: 'Cliente Maio SV', data: '15/05/2025', consultor: 'Consultor Maio' },
-            { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2' },
-            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Maio ST', data: '12/05/2025', consultor: 'Consultor Maio ST' }
+            { processo: 'VIDA,  AUXILIO-DOENÇA,  LOAS', cliente: 'Mario kopelkke', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 1 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego armando mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 2 },
+            { processo: 'VIDA,  AÇÃO DE ACIDENTE DE TRÂNSITO', cliente: 'Valber Cardoso dos Santos', data: '02/06/2025', consultor: 'Kristin', originalIndex: 3 }, 
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Abnorlan daglison Costa dias', data: '02/06/2025', consultor: 'Jackeline Lima da Silva', originalIndex: 4 },
+            { processo: 'AUXILIO-DOENÇA', cliente: 'Willian Andrade Silva', data: '02/06/2025', consultor: 'Debora', originalIndex: 5 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Cristiane Waltrick Zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 6 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Vinicius zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 7 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Marcos da Silva Rios', data: '02/06/2025', consultor: 'Yudi Alan', originalIndex: 8 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Silso baldo', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 9 },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Stanley Hartmann', data: '02/06/2025', consultor: 'Luiz do Seguro', originalIndex: 10 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Matheus Ferreira Silva', data: '02/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 11 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Charlonm maurino da rocha', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 12 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jose iuris Jesus santos', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 13 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sandra Esser', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 14 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Samuel magno do carmo', data: '03/06/2025', consultor: 'Jackeline Lima', originalIndex: 15 },
+            { processo: 'VIDA, TERCEIRO DANO CORPORAL', cliente: 'Ricardo Fischer', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 16 }, 
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Vanderleia Correa', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 17 },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Renan Maciel de souza', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 18 }, 
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sidney Ghidolin de Jesus', data: '03/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 19 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rosemeri do Amaral Ramos', data: '03/06/2025', consultor: 'Yudi Alan', originalIndex: 20 },
+            { processo: 'VIDA', cliente: 'Carlos Kaique Ezequiel Santos Fonseca', data: '03/06/2025', consultor: 'LUCAS', originalIndex: 21 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'Volnei zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 22 },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Henri Roepke', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 23 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Matheus Paim da Costa', data: '03/06/2025', consultor: 'Kristin', originalIndex: 24 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Joao victor zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 25 },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'André Ricardo rodrigues', data: '03/06/2025', consultor: 'Thiago Pereira gomes', originalIndex: 26 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Bruno João Neto', data: '03/06/2025', consultor: 'Gustavo', originalIndex: 27 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'JONATAN FELIPE PEREIRA DE SOUZA', data: '03/06/2025', consultor: 'CRISTIANO', originalIndex: 28 },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Antonio Dias de Sousa Neto', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 29 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Renato luiz Filagrana', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 30 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rafael Anacleto', data: '03/06/2025', consultor: 'Edilene', originalIndex: 31 },
+            { processo: 'VIDA', cliente: 'Cristian Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 32 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Cristiano Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 33 },
+            { processo: 'AUXILIO-ACIDENTE,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Marcelo Francisco', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 34 }, 
+            { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Vanessa kleien', data: '04/06/2025', consultor: 'Edilene', originalIndex: 35 },
+            { processo: 'PENSÃO POR MORTE', cliente: 'Maria Tereza de Souza', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 36 },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Fábio dos Santos', data: '04/06/2025', consultor: 'Olska', originalIndex: 37 },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Rafael Clóvis pastorello', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 38 }, 
+            { processo: 'APOSENTADORIA POR INVALIDEZ,  LOAS', cliente: 'Luciano de Jesus Pereira', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 39 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jéssica Caroline Torres da silva', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 40 },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Pereira Farias', data: '04/06/2025', consultor: 'Kristin', originalIndex: 41 },
+            { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 42 },
+            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 43 }, 
+            { processo: 'TERCEIRO DANO CORPORAL, VIDA', cliente: 'Outro Cliente ST com Vida', data: '01/06/2025', consultor: 'Consultor ST2', originalIndex: 44 },
+            { processo: 'DPVAT', cliente: 'Cliente DPVAT', data: '05/06/2025', consultor: 'Consultor DPVAT', originalIndex: 45 },
+            { processo: 'VIDA', cliente: 'Cliente Maio SV', data: '15/05/2025', consultor: 'Consultor Maio', originalIndex: 46 },
+            { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2', originalIndex: 47 },
+            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Maio ST', data: '12/05/2025', consultor: 'Consultor Maio ST', originalIndex: 48 }
         ];
 
         function loadSampleData() {
@@ -831,7 +802,6 @@
             updateDashboard(); 
             lastUpdate = new Date();
             updateLastUpdateTime();
-            // addLog('✅ Dados de EXEMPLO (para teste) carregados.', 'success'); // Removido
         }
 
         function getMonthSales() {
@@ -853,7 +823,6 @@
                     populateMonthFilter(salesData); 
                 }
                 if (monthSelect.options.length === 0) {
-                    // addLog('Nenhum mês disponível. Painéis não serão atualizados.', 'warning'); // Removido
                     document.getElementById('totalMonth').textContent = '-';
                     document.getElementById('monthLabel').textContent = 'Nenhum dado';
                     document.getElementById('topConsultant').textContent = '-';
@@ -873,7 +842,7 @@
             const monthSales = getMonthSales(); 
             
             updateProcessStats(monthSales); 
-            updateMainStats(monthSales); // Passando monthSales para uso na média diária
+            updateMainStats(monthSales);  
             updateConsultantRanking(monthSales); 
             updateMonthSales(monthSales); 
             
@@ -911,15 +880,15 @@
             document.getElementById('monthLabel').textContent = `${monthNames[selectedMonth - 1]} ${selectedYear}`;
 
             let maxDayInMonthWithData = 0;
-            if (monthSalesData.length > 0) { // Usa monthSalesData que foi passado
+            if (monthSalesData.length > 0) { 
                 monthSalesData.forEach(sale => {
                     if (sale.data) {
                         const parts = sale.data.split('/');
                         if (parts.length === 3) {
                             const saleDay = parseInt(parts[0], 10);
-                            const saleMonth = parseInt(parts[1], 10); // Para checagem, embora monthSalesData já deva estar filtrado
-                            const saleYear = parseInt(parts[2], 10);  // Para checagem
-                            if (saleMonth === selectedMonth && saleYear === selectedYear) { // Confirma que é do mês/ano certo
+                            const saleMonth = parseInt(parts[1], 10); 
+                            const saleYear = parseInt(parts[2], 10);  
+                            if (saleMonth === selectedMonth && saleYear === selectedYear) { 
                                 if (saleDay > maxDayInMonthWithData) {
                                     maxDayInMonthWithData = saleDay;
                                 }
@@ -932,7 +901,7 @@
             const daysToConsider = maxDayInMonthWithData > 0 ? maxDayInMonthWithData : 1; 
 
             let averageProcessos = 0;
-            if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) { // Garante que há dados para dividir
+            if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) { 
                  averageProcessos = totalProcessosNoMes / daysToConsider;
             }
             
@@ -1070,15 +1039,26 @@
         function updateMonthSales(monthSales) {
             const sortedSales = [...monthSales].sort((a, b) => {
                 if (!a.data || !b.data) return 0;
-                const [dayA, monthA, yearA] = a.data.split('/');
-                const [dayB, monthB, yearB] = b.data.split('/');
-                try {
-                    const dateAVal = new Date(`${yearA}-${monthA}-${dayA}`);
-                    const dateBVal = new Date(`${yearB}-${monthB}-${dayB}`);
-                    if (isNaN(dateAVal.getTime()) || isNaN(dateBVal.getTime())) return 0; 
-                    return dateBVal - dateAVal;
-                } catch (e) {
+                
+                const parseDate = (dateStr) => {
+                    const parts = dateStr.split('/');
+                    if (parts.length === 3) {
+                        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                    }
+                    return null; 
+                };
+
+                const dateAVal = parseDate(a.data);
+                const dateBVal = parseDate(b.data);
+
+                if (!dateAVal || !dateBVal || isNaN(dateAVal.getTime()) || isNaN(dateBVal.getTime())) {
                     return 0; 
+                }
+
+                if (dateBVal.getTime() !== dateAVal.getTime()) {
+                    return dateBVal.getTime() - dateAVal.getTime(); 
+                } else {
+                    return (b.originalIndex || 0) - (a.originalIndex || 0); 
                 }
             });
             
@@ -1103,22 +1083,18 @@
             if (lastUpdate) {
                 const timeString = lastUpdate.toLocaleTimeString('pt-BR');
                 document.getElementById('lastUpdateTime').textContent = timeString;
-                // document.getElementById('modalLastUpdate').textContent = timeString; // Modal removido
             }
         }
-
-        // Funções de controle como manualUpdate, testConnection, toggleAutoUpdate, show/hideInstructions removidas
-        // pois os botões foram removidos.
 
         document.addEventListener('DOMContentLoaded', function() {
             const updateIndicator = document.getElementById('updateIndicator');
             if (updateIndicator) updateIndicator.style.display = 'flex';
             
             fetchSheetData(); 
-            // loadSampleData(); // Descomente para usar dados de exemplo para teste rápido
+            // loadSampleData(); 
             
             autoUpdateInterval = setInterval(() => {
-                if (isAutoUpdateActive) { // isAutoUpdateActive é sempre true agora
+                if (isAutoUpdateActive) { 
                     if (updateIndicator) {
                         updateIndicator.style.display = 'flex';
                         updateIndicator.style.opacity = '1';
