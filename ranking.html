@@ -850,7 +850,6 @@
             
             logContainer.insertBefore(logEntry, logContainer.firstChild);
             
-            // Manter apenas os últimos 10 logs
             const logs = logContainer.querySelectorAll('.log-entry');
             if (logs.length > 10) {
                 logContainer.removeChild(logs[logs.length - 1]);
@@ -860,10 +859,9 @@
         // Função para atualizar status da conexão
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
-            const statusText = document.getElementById('statusText');
+            // const statusText = document.getElementById('statusText'); // Re-obter para evitar issues
             
-            // Remover todas as classes de status
-            statusElement.className = 'connection-status';
+            statusElement.className = 'connection-status'; // Reset classes
             statusElement.classList.add(`status-${status}`);
             
             const icons = {
@@ -872,98 +870,67 @@
                 'loading': 'fas fa-sync fa-spin'
             };
             
-            // Atualizar ícone e texto
             statusElement.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
-
-        // Múltiplas abordagens para acessar Google Sheets
         
-        // Abordagem 1: CSV direto (funciona se a planilha for pública)
         async function fetchViaCsvDirect() {
             const sheetId = document.getElementById('sheetId').value;
             const gid = document.getElementById('sheetGid').value;
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            
             addLog('Tentando método 1: CSV direto...', 'info');
-            
-            const response = await fetch(csvUrl, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
+            const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             return await response.text();
         }
 
-        // Abordagem 2: Usando CORS Proxy
         async function fetchViaProxy() {
             const sheetId = document.getElementById('sheetId').value;
             const gid = document.getElementById('sheetGid').value;
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            
-            addLog('Tentando método 2: CORS Proxy...', 'info');
-            
+            addLog('Tentando método 2: CORS Proxy (allorigins.win)...', 'info');
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(csvUrl)}`;
             const response = await fetch(proxyUrl);
             const data = await response.json();
-            
-            if (!data.contents) {
-                throw new Error('Dados vazios retornados pelo proxy');
-            }
-            
+            if (!data.contents) throw new Error('Dados vazios retornados pelo proxy allorigins.win');
             return data.contents;
         }
 
-        // Abordagem 3: Proxy alternativo
         async function fetchViaAlternativeProxy() {
             const sheetId = document.getElementById('sheetId').value;
             const gid = document.getElementById('sheetGid').value;
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            
-            addLog('Tentando método 3: Proxy alternativo...', 'info');
-            
-            const proxyUrl = `https://cors-anywhere.herokuapp.com/${csvUrl}`; // Note: cors-anywhere pode ser instável
+            addLog('Tentando método 3: Proxy alternativo (cors-anywhere)...', 'info');
+            const proxyUrl = `https://cors-anywhere.herokuapp.com/${csvUrl}`; // Pode ser instável
             const response = await fetch(proxyUrl);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText} (cors-anywhere)`);
             return await response.text();
         }
 
-        // Função principal para buscar dados
         async function fetchSheetData() {
             updateConnectionStatus('loading', 'Conectando com Google Sheets...');
-            
             const methods = [
                 { name: 'CSV Direto', func: fetchViaCsvDirect },
-                { name: 'CORS Proxy', func: fetchViaProxy },
-                { name: 'Proxy Alternativo', func: fetchViaAlternativeProxy }
+                { name: 'CORS Proxy (allorigins.win)', func: fetchViaProxy },
+                // { name: 'Proxy Alternativo (cors-anywhere)', func: fetchViaAlternativeProxy } // Removido por instabilidade, pode ser reativado
             ];
 
-            for (let i = 0; i < methods.length; i++) {
+            for (let method of methods) {
                 try {
-                    addLog(`Tentando ${methods[i].name}...`, 'info');
-                    const csvData = await methods[i].func();
-                    
+                    addLog(`Tentando ${method.name}...`, 'info');
+                    const csvData = await method.func();
                     if (csvData && csvData.trim()) {
                         await processCsvData(csvData);
-                        updateConnectionStatus('connected', `Conectado via ${methods[i].name}`);
-                        addLog(`✅ Sucesso com ${methods[i].name} - ${salesData.length} registros carregados`, 'success');
+                        updateConnectionStatus('connected', `Conectado via ${method.name}`);
+                        addLog(`✅ Sucesso com ${method.name} - ${salesData.length} registros carregados`, 'success');
                         connectionAttempts = 0;
                         return true;
                     }
                 } catch (error) {
-                    addLog(`❌ Falha em ${methods[i].name}: ${error.message}`, 'error');
-                    console.error(`Erro no método ${methods[i].name}:`, error);
+                    addLog(`❌ Falha em ${method.name}: ${error.message}`, 'error');
+                    console.error(`Erro no método ${method.name}:`, error);
                 }
             }
 
-            // Se todos os métodos falharam
             connectionAttempts++;
             if (connectionAttempts >= maxRetries) {
                 addLog('❌ Todos os métodos falharam. Usando dados de exemplo.', 'error');
@@ -972,105 +939,86 @@
             } else {
                 updateConnectionStatus('error', `Tentativa ${connectionAttempts}/${maxRetries} falhou`);
                 addLog(`Tentando novamente em 10 segundos... (${connectionAttempts}/${maxRetries})`, 'warning');
-                setTimeout(() => fetchSheetData(), 10000);
+                setTimeout(fetchSheetData, 10000);
             }
-            
             return false;
         }
 
-        // Processar dados CSV
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
-            
-            if (lines.length <= 1) {
-                throw new Error('Planilha vazia ou sem dados válidos');
-            }
+            if (lines.length <= 1) throw new Error('Planilha vazia ou sem dados válidos');
 
-            // Assumindo que a primeira linha são os cabeçalhos
             const headers = parseCSVLine(lines[0]);
             addLog(`Cabeçalhos encontrados: ${headers.join(', ')}`, 'info');
-
             salesData = [];
             
             for (let i = 1; i < lines.length; i++) {
                 const columns = parseCSVLine(lines[i]);
-                
-                if (columns.length >= 4 && columns.some(col => col.trim())) { // Pelo menos 4 colunas para Data
+                if (columns.length >= 5) { // Coluna A a E
                     const record = {
                         processo: (columns[0] || '').trim(),
                         cliente: (columns[1] || '').trim(),
                         link: (columns[2] || '').trim(),
                         data: (columns[3] || '').trim(),
-                        consultor: (columns[4] || '').trim() // Coluna E para consultor
+                        consultor: (columns[4] || '').trim()
                     };
-                    
-                    // Validar se tem pelo menos cliente e consultor
-                    if (record.cliente && record.consultor) {
+                    if (record.processo && record.cliente && record.data && record.consultor) { // Campos essenciais
                         salesData.push(record);
                     }
                 }
             }
 
-            if (salesData.length === 0) {
-                throw new Error('Nenhum registro válido encontrado na planilha');
-            }
-
-            // Gerar lista de meses disponíveis
+            if (salesData.length === 0) throw new Error('Nenhum registro válido encontrado na planilha');
             generateMonthOptions();
-            
             updateDashboard();
             lastUpdate = new Date();
             updateLastUpdateTime();
         }
 
-        // Função para fazer parse de linha CSV
         function parseCSVLine(line) {
             const result = [];
             let current = '';
             let inQuotes = false;
-            
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                
-                if (char === '"') {
+                if (char === '"' && (i === 0 || line[i-1] !== '"')) { // Trata aspas duplas escapadas ""
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current);
+                    result.push(current.replace(/""/g, '"')); // Substitui aspas duplas escapadas
                     current = '';
                 } else {
                     current += char;
                 }
             }
-            
-            result.push(current);
+            result.push(current.replace(/""/g, '"'));
             return result.map(item => item.replace(/^"|"$/g, '').trim());
         }
 
-        // Gerar opções de meses disponíveis
+
         function generateMonthOptions() {
-            // Coletar meses únicos dos dados
             const monthSet = new Set();
-            
             salesData.forEach(sale => {
                 if (sale.data) {
-                    const [day, month, year] = sale.data.split('/');
-                    if (day && month && year && !isNaN(parseInt(day)) && !isNaN(parseInt(month)) && !isNaN(parseInt(year))) {
-                        monthSet.add(`${month.padStart(2, '0')}/${year}`);
+                    const parts = sale.data.split('/');
+                    if (parts.length === 3) {
+                        const day = parseInt(parts[0]);
+                        const month = parseInt(parts[1]);
+                        const year = parseInt(parts[2]);
+                        if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) {
+                             monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
+                        }
                     }
                 }
             });
             
-            // Converter para array e ordenar
             months = Array.from(monthSet).sort((a, b) => {
                 const [aMonth, aYear] = a.split('/');
                 const [bMonth, bYear] = b.split('/');
                 return new Date(bYear, bMonth - 1) - new Date(aYear, aMonth - 1);
             });
             
-            // Atualizar o seletor de meses
             const monthSelect = document.getElementById('monthFilter');
             monthSelect.innerHTML = '';
-            
             months.forEach(month => {
                 const option = document.createElement('option');
                 option.value = month;
@@ -1078,78 +1026,76 @@
                 monthSelect.appendChild(option);
             });
             
-            // Selecionar o mês mais recente por padrão
             if (months.length > 0) {
                 monthSelect.value = months[0];
             }
         }
 
-        // Dados de exemplo
         function loadSampleData() {
             salesData = [
-                { processo: 'CONCESSÃO MATERNIDADE', cliente: 'Camila de Freitas Rech Carlini', data: '04/06/2025', consultor: 'Augusto Teply' },
-                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Vitor Muniz dos Santos', data: '04/06/2025', consultor: 'Carlos Antonio Rosa' },
-                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Vitor Muniz dos Santos', data: '04/06/2025', consultor: 'Carlos Antonio Rosa' }, // Mesmo cliente, processo de terceiro diferente
-                { processo: 'VIDA', cliente: 'Adenilson Robak', data: '03/06/2025', consultor: 'Debora' },
-                { processo: 'VIDA APLICATIVO', cliente: 'Nicolas Sell Guimarães Sampaio', data: '03/06/2025', consultor: 'Gustavo' },
-                { processo: 'APOSENTADORIA POR TEMPO DE SERVIÇO', cliente: 'Rodrigo Felipe Cardoso', data: '03/06/2025', consultor: 'Olska' },
-                { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo da Silva', data: '02/06/2025', consultor: 'Maria Fernanda' },
-                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Ana Carolina Mendes', data: '02/06/2025', consultor: 'Carlos Antonio Rosa' },
-                { processo: 'VIDA', cliente: 'Roberto Almeida', data: '01/06/2025', consultor: 'Augusto Teply' },
-                { processo: 'APOSENTADORIA POR IDADE', cliente: 'Fernanda Oliveira', data: '01/06/2025', consultor: 'Gustavo' },
-                { processo: 'AUXILIO-DOENÇA', cliente: 'Marcos Vinicius', data: '31/05/2025', consultor: 'Debora' }, // Mês anterior
-                { processo: 'LOAS', cliente: 'Patricia Souza', data: '30/05/2025', consultor: 'Maria Fernanda' }, // Mês anterior
-                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Ricardo Pereira', data: '30/05/2025', consultor: 'Olska' }, // Mês anterior
-                { processo: 'VIDA APLICATIVO', cliente: 'Juliana Mendes', data: '28/05/2025', consultor: 'Carlos Antonio Rosa' }, // Mês anterior
-                { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Felipe Costa', data: '27/05/2025', consultor: 'Augusto Teply' }, // Mês anterior
-                { processo: 'OUTRO PROCESSO QUALQUER', cliente: 'Cliente Outro', data: '01/06/2025', consultor: 'Consultor X' }
+                // Junho 2025
+                { processo: 'CONCESSÃO MATERNIDADE', cliente: 'Camila Silva', data: '04/06/2025', consultor: 'Augusto' }, // Prev
+                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Vitor Santos', data: '04/06/2025', consultor: 'Carlos' }, // ST
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Vitor Santos', data: '04/06/2025', consultor: 'Carlos' }, // ST (mesmo cliente, conta como 1)
+                { processo: 'VIDA', cliente: 'Adenilson Robak', data: '03/06/2025', consultor: 'Debora' }, // SV
+                { processo: 'VIDA APLICATIVO', cliente: 'Nicolas Sampaio', data: '03/06/2025', consultor: 'Gustavo' }, // SV
+                { processo: 'APOSENTADORIA POR TEMPO DE SERVIÇO', cliente: 'Rodrigo Cardoso', data: '03/06/2025', consultor: 'Olska' }, // Prev
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Silva', data: '02/06/2025', consultor: 'Maria' }, // Prev
+                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Ana Mendes', data: '02/06/2025', consultor: 'Carlos' }, // ST (outro cliente)
+                { processo: 'VIDA', cliente: 'Roberto Almeida', data: '01/06/2025', consultor: 'Augusto' }, // SV
+                { processo: 'APOSENTADORIA POR IDADE', cliente: 'Fernanda Oliveira', data: '01/06/2025', consultor: 'Gustavo' }, // Prev
+                { processo: 'PROCESSO X', cliente: 'Cliente X', data: '01/06/2025', consultor: 'Debora' }, // Outro
+                // Maio 2025
+                { processo: 'AUXILIO-DOENÇA', cliente: 'Marcos Vinicius', data: '31/05/2025', consultor: 'Debora' }, // Prev
+                { processo: 'LOAS', cliente: 'Patricia Souza', data: '30/05/2025', consultor: 'Maria' }, // Prev
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Ricardo Pereira', data: '30/05/2025', consultor: 'Olska' }, // ST
+                { processo: 'VIDA APLICATIVO', cliente: 'Juliana Mendes', data: '28/05/2025', consultor: 'Carlos' }, // SV
+                { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Felipe Costa', data: '27/05/2025', consultor: 'Augusto' }, // Prev
+                { processo: 'PROCESSO Y', cliente: 'Cliente Y', data: '27/05/2025', consultor: 'Gustavo' }, // Outro
             ];
-            
+            /*
+            Contagem esperada para Junho/2025 (com os dados de exemplo acima):
+            - Previdenciários: 4 (Camila, Rodrigo, Leonardo, Fernanda)
+            - Seguro Terceiro: 2 (Vitor Santos - conta como 1, Ana Mendes)
+            - Seguro de Vida: 3 (Adenilson, Nicolas, Roberto)
+            - Outros: 1 (Cliente X)
+            */
             generateMonthOptions();
-            
             updateDashboard();
             lastUpdate = new Date();
             updateLastUpdateTime();
             addLog('✅ Dados de exemplo carregados com sucesso', 'success');
         }
 
-        // Obter vendas do mês selecionado
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
-            if (!selectedMonthYear) return salesData; // Se nenhum mês selecionado, retorna tudo (ou um array vazio)
-            
+            if (!selectedMonthYear) return [];
             const [filterMonth, filterYear] = selectedMonthYear.split('/');
-            
             return salesData.filter(sale => {
                 if (!sale.data) return false;
-                
                 const [saleDay, saleMonth, saleYear] = sale.data.split('/');
                 return saleMonth === filterMonth && saleYear === filterYear;
             });
         }
 
-        // Atualizar o dashboard com os dados
         function updateDashboard() {
-            if (salesData.length === 0 && months.length === 0) { // Se não há dados E não há meses, pode ser estado inicial
-                 addLog('Aguardando dados ou seleção de mês.', 'info');
-                 return;
-            }
-            if (document.getElementById('monthFilter').options.length === 0 && salesData.length > 0) {
-                // Caso onde salesData foi preenchido mas o monthFilter ainda não (acontece em loadSampleData)
-                // generateMonthOptions() deve ser chamado antes de updateDashboard neste caso.
-                // Adicionado um check para robustez
-                generateMonthOptions();
+            if (document.getElementById('monthFilter').options.length === 0) {
+                if (salesData.length > 0) generateMonthOptions(); // Tenta gerar se houver dados
+                 // Se ainda não há meses, não prosseguir ou limpar paineis
                 if (document.getElementById('monthFilter').options.length === 0) {
-                    addLog('Nenhum mês disponível para filtro, mesmo após tentar gerar opções.', 'warning');
-                    return; // Não pode prosseguir sem meses
+                    addLog('Nenhum mês disponível para filtro.', 'warning');
+                    // Limpar painéis ou mostrar mensagem
+                    document.getElementById('totalMonth').textContent = '-';
+                    document.getElementById('monthLabel').textContent = 'Nenhum dado';
+                    // ... limpar outros painéis ...
+                    return;
                 }
             }
             
             const monthSales = getMonthSales();
-            
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
-            updateProcessStats(monthSales); // <--- CORREÇÃO APLICADA AQUI
+            updateProcessStats(monthSales);
             updateMonthSales(monthSales);
             
             document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`;
@@ -1158,15 +1104,14 @@
                 setTimeout(() => {
                     document.getElementById('updateIndicator').style.display = 'none';
                 }, 500);
-            }, 3000);
+            }, 2000);
         }
 
-        // Atualizar estatísticas principais
         function updateMainStats(monthSales) {
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) {
                 document.getElementById('totalMonth').textContent = '-';
-                document.getElementById('monthLabel').textContent = 'Nenhum mês selecionado';
+                document.getElementById('monthLabel').textContent = 'Nenhum mês';
                 document.getElementById('topConsultant').textContent = '-';
                 document.getElementById('dailyAverage').textContent = '-';
                 return;
@@ -1174,30 +1119,22 @@
             const [month, year] = selectedMonthYear.split('/');
             
             document.getElementById('totalMonth').textContent = monthSales.length;
-            
-            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
-                              'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            const monthName = monthNames[parseInt(month) - 1];
-            document.getElementById('monthLabel').textContent = `${monthName} ${year}`;
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            document.getElementById('monthLabel').textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
             
             const consultantSales = {};
             monthSales.forEach(sale => {
-                if (consultantSales[sale.consultor]) {
-                    consultantSales[sale.consultor]++;
-                } else {
-                    consultantSales[sale.consultor] = 1;
-                }
+                consultantSales[sale.consultor] = (consultantSales[sale.consultor] || 0) + 1;
             });
             
             let topConsultant = '-';
             let maxSales = 0;
-            for (const consultant in consultantSales) {
-                if (consultantSales[consultant] > maxSales) {
-                    maxSales = consultantSales[consultant];
+            Object.entries(consultantSales).forEach(([consultant, sales]) => {
+                if (sales > maxSales) {
+                    maxSales = sales;
                     topConsultant = consultant;
                 }
-            }
-            
+            });
             document.getElementById('topConsultant').textContent = topConsultant;
             
             const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
@@ -1205,27 +1142,19 @@
             document.getElementById('dailyAverage').textContent = average.toFixed(1);
         }
 
-        // Atualizar ranking de consultores
         function updateConsultantRanking(monthSales) {
             const consultantSales = {};
             monthSales.forEach(sale => {
-                if (consultantSales[sale.consultor]) {
-                    consultantSales[sale.consultor]++;
-                } else {
-                    consultantSales[sale.consultor] = 1;
-                }
+                consultantSales[sale.consultor] = (consultantSales[sale.consultor] || 0) + 1;
             });
-            
-            const ranking = Object.keys(consultantSales).map(consultant => ({
-                name: consultant,
-                sales: consultantSales[consultant]
-            })).sort((a, b) => b.sales - a.sales);
-            
-            const topRanking = ranking.slice(0, 5);
+            const ranking = Object.entries(consultantSales)
+                .map(([name, sales]) => ({ name, sales }))
+                .sort((a, b) => b.sales - a.sales)
+                .slice(0, 5);
             
             let html = '';
-            if (topRanking.length > 0) {
-                topRanking.forEach((consultant, index) => {
+            if (ranking.length > 0) {
+                ranking.forEach((consultant, index) => {
                     html += `
                     <div class="ranking-item">
                         <div class="consultant-info">
@@ -1233,13 +1162,10 @@
                             <div class="consultant-name">${consultant.name}</div>
                         </div>
                         <div class="sales-count">${consultant.sales}</div>
-                    </div>
-                    `;
+                    </div>`;
                 });
             } else {
-                html = `<div style="text-align: center; color: #6b7280; padding: 20px;">
-                    Nenhuma venda encontrada para o mês selecionado
-                </div>`;
+                html = `<div style="text-align: center; color: #6b7280; padding: 20px;">Nenhuma venda para o mês.</div>`;
             }
             document.getElementById('consultantRanking').innerHTML = html;
         }
@@ -1249,102 +1175,85 @@
             const metas = {
                 'PREVIDENCIÁRIOS': 400,
                 'SEGURO TERCEIRO': 30,
-                'SEGURO DE VIDA': 90 // Meta para Seguro de Vida
-            };
-
-            const processCounts = {
-                'PREVIDENCIÁRIOS': 0,
-                'SEGURO TERCEIRO': 0,
-                'SEGURO DE VIDA': 0,
-                'OUTROS': 0
+                'SEGURO DE VIDA': 90
             };
 
             // Tipos de processo como fornecidos (normalizados para maiúsculas para comparação)
-            const previdenciarioTypesExact = [
+            const previdenciarioTypes = [
                 'CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO',
                 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ'
-            ];
-            const seguroTerceiroTypesExact = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'];
-            const seguroVidaTypesExact = ['VIDA', 'VIDA APLICATIVO'];
+            ].map(type => type.toUpperCase());
 
-            // Para Seguro Terceiro: agrupar por cliente para contar apenas uma vez
-            const clientesComSeguroTerceiro = new Set();
+            const seguroTerceiroTypes = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL']
+                .map(type => type.toUpperCase());
+
+            const seguroVidaTypes = ['VIDA', 'VIDA APLICATIVO']
+                .map(type => type.toUpperCase());
+
+            let previdenciariosCount = 0;
+            let seguroVidaCount = 0;
+            let outrosCount = 0;
+            const clientesComSeguroTerceiroEsteMes = new Set();
 
             monthSales.forEach(sale => {
                 const tipoProcessoUpper = (sale.processo || '').toUpperCase().trim();
-                let foiCategorizadoPrincipal = false;
+                const cliente = sale.cliente; // Assume-se que o nome do cliente é a chave para unicidade
+                let classificadoNestaVenda = false;
 
-                // 1. Contagem de Previdenciários (por ocorrência, correspondência exata com os tipos listados)
-                if (previdenciarioTypesExact.includes(tipoProcessoUpper)) {
-                    processCounts['PREVIDENCIÁRIOS']++;
-                    foiCategorizadoPrincipal = true;
-                }
-
-                // 2. Contagem de Seguro de Vida (por ocorrência, correspondência exata com os tipos listados)
-                if (seguroVidaTypesExact.includes(tipoProcessoUpper)) {
-                    processCounts['SEGURO DE VIDA']++;
-                    foiCategorizadoPrincipal = true;
+                if (previdenciarioTypes.includes(tipoProcessoUpper)) {
+                    previdenciariosCount++;
+                    classificadoNestaVenda = true;
                 }
                 
-                // 3. Identificar clientes para Seguro Terceiro (correspondência exata com os tipos listados)
-                // A contagem será feita baseada no número de clientes únicos com esses processos.
-                if (seguroTerceiroTypesExact.includes(tipoProcessoUpper)) {
-                    if (sale.cliente) { 
-                       clientesComSeguroTerceiro.add(sale.cliente);
+                if (seguroVidaTypes.includes(tipoProcessoUpper)) {
+                    seguroVidaCount++;
+                    classificadoNestaVenda = true;
+                }
+                
+                // Para Seguro Terceiro, marcamos o cliente. A contagem final será pelo tamanho do Set.
+                // E também marcamos como classificado para não ir para "Outros".
+                if (seguroTerceiroTypes.includes(tipoProcessoUpper)) {
+                    if (cliente) { // Apenas se houver nome de cliente
+                       clientesComSeguroTerceiroEsteMes.add(cliente);
                     }
-                    foiCategorizadoPrincipal = true; // Marcar como principal para não ir para "Outros"
+                    classificadoNestaVenda = true; 
                 }
                 
-                // 4. Contagem de Outros (por ocorrência)
-                // Se o processo não foi classificado em NENHUMA das categorias principais e não é uma string vazia
-                if (!foiCategorizadoPrincipal && tipoProcessoUpper) {
-                    processCounts['OUTROS']++;
+                if (!classificadoNestaVenda && tipoProcessoUpper) { // Se não foi classificado em nenhuma das anteriores E tem um nome de processo
+                    outrosCount++;
                 }
             });
 
-            // A contagem de Seguro Terceiro é o tamanho do Set de clientes únicos
-            processCounts['SEGURO TERCEIRO'] = clientesComSeguroTerceiro.size;
+            const seguroTerceiroCount = clientesComSeguroTerceiroEsteMes.size;
 
-            // Atualizar os cards com as contagens e metas
-            // Previdenciários
-            const prevCount = processCounts['PREVIDENCIÁRIOS'];
+            // Atualizar os cards
             const prevMeta = metas['PREVIDENCIÁRIOS'];
-            const prevPercent = prevMeta > 0 ? Math.min(100, Math.round((prevCount / prevMeta) * 100)) : 0;
-            document.getElementById('previdenciariosCount').textContent = prevCount;
-            document.getElementById('previdenciariosGoal').textContent = `${prevCount}/${prevMeta}`;
+            const prevPercent = prevMeta > 0 ? Math.min(100, Math.round((previdenciariosCount / prevMeta) * 100)) : 0;
+            document.getElementById('previdenciariosCount').textContent = previdenciariosCount;
+            document.getElementById('previdenciariosGoal').textContent = `${previdenciariosCount}/${prevMeta}`;
             document.getElementById('previdenciariosPercent').textContent = prevPercent;
             
-            // Seguro Terceiro
-            const terCount = processCounts['SEGURO TERCEIRO'];
             const terMeta = metas['SEGURO TERCEIRO'];
-            const terPercent = terMeta > 0 ? Math.min(100, Math.round((terCount / terMeta) * 100)) : 0;
-            document.getElementById('seguroTerceiroCount').textContent = terCount;
-            document.getElementById('seguroTerceiroGoal').textContent = `${terCount}/${terMeta}`;
+            const terPercent = terMeta > 0 ? Math.min(100, Math.round((seguroTerceiroCount / terMeta) * 100)) : 0;
+            document.getElementById('seguroTerceiroCount').textContent = seguroTerceiroCount;
+            document.getElementById('seguroTerceiroGoal').textContent = `${seguroTerceiroCount}/${terMeta}`;
             document.getElementById('seguroTerceiroPercent').textContent = terPercent;
             
-            // Seguro de Vida
-            const vidaCount = processCounts['SEGURO DE VIDA'];
-            const vidaMeta = metas['SEGURO DE VIDA']; // Meta de 90
-            const vidaPercent = vidaMeta > 0 ? Math.min(100, Math.round((vidaCount / vidaMeta) * 100)) : 0;
-            document.getElementById('seguroVidaCount').textContent = vidaCount;
-            document.getElementById('seguroVidaGoal').textContent = `${vidaCount}/${vidaMeta}`;
+            const vidaMeta = metas['SEGURO DE VIDA'];
+            const vidaPercent = vidaMeta > 0 ? Math.min(100, Math.round((seguroVidaCount / vidaMeta) * 100)) : 0;
+            document.getElementById('seguroVidaCount').textContent = seguroVidaCount;
+            document.getElementById('seguroVidaGoal').textContent = `${seguroVidaCount}/${vidaMeta}`;
             document.getElementById('seguroVidaPercent').textContent = vidaPercent;
             
-            // Outros
-            document.getElementById('outrosCount').textContent = processCounts['OUTROS'];
+            document.getElementById('outrosCount').textContent = outrosCount;
         }
 
-
-        // Atualizar tabela de vendas do mês
         function updateMonthSales(monthSales) {
             const sortedSales = [...monthSales].sort((a, b) => {
                 if (!a.data || !b.data) return 0;
-                
                 const [dayA, monthA, yearA] = a.data.split('/');
                 const [dayB, monthB, yearB] = b.data.split('/');
-                const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
-                const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
-                return dateB - dateA;
+                return new Date(`${yearB}-${monthB}-${dayB}`) - new Date(`${yearA}-${monthA}-${dayA}`);
             });
             
             let html = '';
@@ -1356,20 +1265,14 @@
                         <td>${sale.cliente || '-'}</td>
                         <td><span class="process-badge">${sale.processo || '-'}</span></td>
                         <td>${sale.consultor || '-'}</td>
-                    </tr>
-                    `;
+                    </tr>`;
                 });
             } else {
-                html = `<tr>
-                    <td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">
-                        Nenhuma venda encontrada para o mês selecionado
-                    </td>
-                </tr>`;
+                html = `<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">Nenhuma venda para o mês.</td></tr>`;
             }
             document.getElementById('recentSalesTable').innerHTML = html;
         }
 
-        // Atualizar o tempo da última atualização
         function updateLastUpdateTime() {
             if (lastUpdate) {
                 const timeString = lastUpdate.toLocaleTimeString('pt-BR');
@@ -1378,7 +1281,6 @@
             }
         }
 
-        // Funções de controle
         function manualUpdate() {
             document.getElementById('updateIndicator').style.display = 'flex';
             document.getElementById('updateIndicator').style.opacity = '1';
@@ -1394,8 +1296,7 @@
         function toggleAutoUpdate() {
             isAutoUpdateActive = !isAutoUpdateActive;
             const buttonText = document.getElementById('autoUpdateText');
-            const icon = document.querySelector('#autoUpdateText').previousElementSibling;
-            
+            const icon = buttonText.previousElementSibling;
             if (isAutoUpdateActive) {
                 buttonText.textContent = 'Pausar Auto-Update';
                 icon.className = 'fas fa-pause';
@@ -1416,12 +1317,9 @@
             document.getElementById('instructionsModal').style.display = 'none';
         }
 
-        // Inicialização do dashboard
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('updateIndicator').style.display = 'flex';
-            
             fetchSheetData();
-            
             autoUpdateInterval = setInterval(() => {
                 if (isAutoUpdateActive) {
                     document.getElementById('updateIndicator').style.display = 'flex';
@@ -1429,12 +1327,10 @@
                     document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
                     fetchSheetData();
                 }
-            }, 30000); // 30 segundos
+            }, 30000);
             
             document.getElementById('instructionsModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    hideInstructions();
-                }
+                if (e.target === this) hideInstructions();
             });
         });
     </script>
