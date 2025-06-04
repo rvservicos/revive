@@ -1178,8 +1178,7 @@
                 document.getElementById('totalMonth').textContent = '-';
                 document.getElementById('monthLabel').textContent = 'Nenhum mês';
                 document.getElementById('dailyAverage').textContent = '-';
-                // O 'topConsultant' é atualizado em updateConsultantRanking, então não precisa ser resetado aqui
-                // a menos que não haja mês selecionado, o que já é tratado.
+                // O 'topConsultant' é atualizado em updateConsultantRanking
                 return;
             }
             const [month, year] = selectedMonthYear.split('/');
