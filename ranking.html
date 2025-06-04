@@ -859,9 +859,7 @@
         // Função para atualizar status da conexão
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
-            // const statusText = document.getElementById('statusText'); // Re-obter para evitar issues
-            
-            statusElement.className = 'connection-status'; // Reset classes
+            statusElement.className = 'connection-status'; 
             statusElement.classList.add(`status-${status}`);
             
             const icons = {
@@ -895,23 +893,11 @@
             return data.contents;
         }
 
-        async function fetchViaAlternativeProxy() {
-            const sheetId = document.getElementById('sheetId').value;
-            const gid = document.getElementById('sheetGid').value;
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
-            addLog('Tentando método 3: Proxy alternativo (cors-anywhere)...', 'info');
-            const proxyUrl = `https://cors-anywhere.herokuapp.com/${csvUrl}`; // Pode ser instável
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText} (cors-anywhere)`);
-            return await response.text();
-        }
-
         async function fetchSheetData() {
             updateConnectionStatus('loading', 'Conectando com Google Sheets...');
             const methods = [
                 { name: 'CSV Direto', func: fetchViaCsvDirect },
                 { name: 'CORS Proxy (allorigins.win)', func: fetchViaProxy },
-                // { name: 'Proxy Alternativo (cors-anywhere)', func: fetchViaAlternativeProxy } // Removido por instabilidade, pode ser reativado
             ];
 
             for (let method of methods) {
@@ -954,7 +940,7 @@
             
             for (let i = 1; i < lines.length; i++) {
                 const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 5) { // Coluna A a E
+                if (columns.length >= 5) { 
                     const record = {
                         processo: (columns[0] || '').trim(),
                         cliente: (columns[1] || '').trim(),
@@ -962,36 +948,48 @@
                         data: (columns[3] || '').trim(),
                         consultor: (columns[4] || '').trim()
                     };
-                    if (record.processo && record.cliente && record.data && record.consultor) { // Campos essenciais
+                    // Validação básica dos campos essenciais
+                    if (record.processo && record.cliente && record.data && record.consultor) {
                         salesData.push(record);
                     }
                 }
             }
 
-            if (salesData.length === 0) throw new Error('Nenhum registro válido encontrado na planilha');
+            if (salesData.length === 0) {
+                 addLog('Nenhum registro válido encontrado após processar CSV. Verifique o formato da planilha.', 'warning');
+                 // loadSampleData(); // Opcional: carregar dados de exemplo se nenhum dado real for encontrado
+                 // return;
+            }
             generateMonthOptions();
-            updateDashboard();
+            updateDashboard(); // updateDashboard agora é chamado mesmo se salesData estiver vazio, para limpar os painéis
             lastUpdate = new Date();
             updateLastUpdateTime();
         }
 
-        function parseCSVLine(line) {
+       function parseCSVLine(line) {
             const result = [];
             let current = '';
             let inQuotes = false;
+
             for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"' && (i === 0 || line[i-1] !== '"')) { // Trata aspas duplas escapadas ""
-                    inQuotes = !inQuotes;
+                let char = line[i];
+                if (char === '"') {
+                    // Se a próxima aspa também é uma aspa, é uma aspa escapada
+                    if (i + 1 < line.length && line[i+1] === '"') {
+                        if (inQuotes) current += '"'; // Adiciona uma única aspa
+                        i++; // Pula a próxima aspa
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current.replace(/""/g, '"')); // Substitui aspas duplas escapadas
+                    result.push(current);
                     current = '';
                 } else {
                     current += char;
                 }
             }
-            result.push(current.replace(/""/g, '"'));
-            return result.map(item => item.replace(/^"|"$/g, '').trim());
+            result.push(current); // Adiciona o último campo
+            return result.map(item => item.trim()); // Trim em cada item
         }
 
 
@@ -1001,12 +999,16 @@
                 if (sale.data) {
                     const parts = sale.data.split('/');
                     if (parts.length === 3) {
-                        const day = parseInt(parts[0]);
-                        const month = parseInt(parts[1]);
-                        const year = parseInt(parts[2]);
+                        const day = parseInt(parts[0], 10);
+                        const month = parseInt(parts[1], 10);
+                        const year = parseInt(parts[2], 10);
                         if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) {
                              monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
+                        } else {
+                            // addLog(`Data inválida encontrada: ${sale.data}`, 'warning');
                         }
+                    } else {
+                        // addLog(`Formato de data inválido: ${sale.data}`, 'warning');
                     }
                 }
             });
@@ -1018,7 +1020,14 @@
             });
             
             const monthSelect = document.getElementById('monthFilter');
-            monthSelect.innerHTML = '';
+            const currentSelectedMonth = monthSelect.value; // Salva o mês atualmente selecionado
+            monthSelect.innerHTML = ''; // Limpa as opções existentes
+
+            if (months.length === 0 && salesData.length > 0) {
+                 addLog('Nenhum mês válido encontrado nos dados, apesar de haver registros.', 'warning');
+            }
+
+
             months.forEach(month => {
                 const option = document.createElement('option');
                 option.value = month;
@@ -1026,46 +1035,77 @@
                 monthSelect.appendChild(option);
             });
             
-            if (months.length > 0) {
+            // Tenta restaurar a seleção anterior ou seleciona o mais recente
+            if (months.includes(currentSelectedMonth)) {
+                monthSelect.value = currentSelectedMonth;
+            } else if (months.length > 0) {
                 monthSelect.value = months[0];
             }
         }
+        
+        // Dados de exemplo para teste local da lógica de contagem
+        const sampleSalesDataForTesting = [
+            // Junho 2025
+            { processo: 'VIDA,  AUXILIO-DOENÇA,  LOAS', cliente: 'Mario kopelkke', data: '02/06/2025', consultor: 'Augusto Teply' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego armando mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes' },
+            { processo: 'VIDA,  AÇÃO DE ACIDENTE DE TRÂNSITO', cliente: 'Valber Cardoso dos Santos', data: '02/06/2025', consultor: 'Kristin' }, // AÇÃO DE ACIDENTE DE TRÂNSITO será Outro
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Abnorlan daglison Costa dias', data: '02/06/2025', consultor: 'Jackeline Lima da Silva' },
+            { processo: 'AUXILIO-DOENÇA', cliente: 'Willian Andrade Silva', data: '02/06/2025', consultor: 'Debora' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Cristiane Waltrick Zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Vinicius zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Marcos da Silva Rios', data: '02/06/2025', consultor: 'Yudi Alan' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Silso baldo', data: '02/06/2025', consultor: 'Augusto Teply' },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Stanley Hartmann', data: '02/06/2025', consultor: 'Luiz do Seguro' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Matheus Ferreira Silva', data: '02/06/2025', consultor: 'Carlos Antonio Rosa' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Charlonm maurino da rocha', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jose iuris Jesus santos', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sandra Esser', data: '03/06/2025', consultor: 'Flavio Almiron' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Samuel magno do carmo', data: '03/06/2025', consultor: 'Jackeline Lima' },
+            { processo: 'VIDA, TERCEIRO DANO CORPORAL', cliente: 'Ricardo Fischer', data: '03/06/2025', consultor: 'Luiz do Seguro' }, // Tem Seguro Terceiro aqui
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Vanderleia Correa', data: '03/06/2025', consultor: 'Flavio Almiron' },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Renan Maciel de souza', data: '03/06/2025', consultor: 'Thiago Pereira Gomes' }, // OUTRO(...) será Outro
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sidney Ghidolin de Jesus', data: '03/06/2025', consultor: 'Carlos Antonio Rosa' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rosemeri do Amaral Ramos', data: '03/06/2025', consultor: 'Yudi Alan' },
+            { processo: 'VIDA', cliente: 'Carlos Kaique Ezequiel Santos Fonseca', data: '03/06/2025', consultor: 'LUCAS' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'Volnei zepherino', data: '03/06/2025', consultor: 'Flavio Almiron' },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Henri Roepke', data: '03/06/2025', consultor: 'Luiz do Seguro' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Matheus Paim da Costa', data: '03/06/2025', consultor: 'Kristin' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Joao victor zepherino', data: '03/06/2025', consultor: 'Flavio Almiron' },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'André Ricardo rodrigues', data: '03/06/2025', consultor: 'Thiago Pereira gomes' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Bruno João Neto', data: '03/06/2025', consultor: 'Gustavo' },
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'JONATAN FELIPE PEREIRA DE SOUZA', data: '03/06/2025', consultor: 'CRISTIANO' },
+            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Antonio Dias de Sousa Neto', data: '03/06/2025', consultor: 'Luiz do Seguro' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Renato luiz Filagrana', data: '03/06/2025', consultor: 'Flavio Almiron' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rafael Anacleto', data: '03/06/2025', consultor: 'Edilene' },
+            { processo: 'VIDA', cliente: 'Cristian Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Cristiano Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro' },
+            { processo: 'AUXILIO-ACIDENTE,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Marcelo Francisco', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' }, // OUTRO(...) será Outro
+            { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Vanessa kleien', data: '04/06/2025', consultor: 'Edilene' },
+            { processo: 'PENSÃO POR MORTE', cliente: 'Maria Tereza de Souza', data: '04/06/2025', consultor: 'Augusto Teply' }, // PENSÃO POR MORTE será Outro
+            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Fábio dos Santos', data: '04/06/2025', consultor: 'Olska' },
+            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Rafael Clóvis pastorello', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' }, // OUTRO(...) será Outro
+            { processo: 'APOSENTADORIA POR INVALIDEZ,  LOAS', cliente: 'Luciano de Jesus Pereira', data: '04/06/2025', consultor: 'Augusto Teply' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jéssica Caroline Torres da silva', data: '04/06/2025', consultor: 'Thiago Pereira Gomes' },
+            { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Pereira Farias', data: '04/06/2025', consultor: 'Kristin' },
+            // Adicionar um caso claro de Seguro Terceiro para testar a unicidade
+            { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST' },
+            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST' }, // Mesmo cliente, deve contar como 1 para ST
+            { processo: 'TERCEIRO DANO CORPORAL, VIDA', cliente: 'Outro Cliente ST com Vida', data: '01/06/2025', consultor: 'Consultor ST2' }, // ST + SV
+        ];
 
         function loadSampleData() {
-            salesData = [
-                // Junho 2025
-                { processo: 'CONCESSÃO MATERNIDADE', cliente: 'Camila Silva', data: '04/06/2025', consultor: 'Augusto' }, // Prev
-                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Vitor Santos', data: '04/06/2025', consultor: 'Carlos' }, // ST
-                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Vitor Santos', data: '04/06/2025', consultor: 'Carlos' }, // ST (mesmo cliente, conta como 1)
-                { processo: 'VIDA', cliente: 'Adenilson Robak', data: '03/06/2025', consultor: 'Debora' }, // SV
-                { processo: 'VIDA APLICATIVO', cliente: 'Nicolas Sampaio', data: '03/06/2025', consultor: 'Gustavo' }, // SV
-                { processo: 'APOSENTADORIA POR TEMPO DE SERVIÇO', cliente: 'Rodrigo Cardoso', data: '03/06/2025', consultor: 'Olska' }, // Prev
-                { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Silva', data: '02/06/2025', consultor: 'Maria' }, // Prev
-                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Ana Mendes', data: '02/06/2025', consultor: 'Carlos' }, // ST (outro cliente)
-                { processo: 'VIDA', cliente: 'Roberto Almeida', data: '01/06/2025', consultor: 'Augusto' }, // SV
-                { processo: 'APOSENTADORIA POR IDADE', cliente: 'Fernanda Oliveira', data: '01/06/2025', consultor: 'Gustavo' }, // Prev
-                { processo: 'PROCESSO X', cliente: 'Cliente X', data: '01/06/2025', consultor: 'Debora' }, // Outro
-                // Maio 2025
-                { processo: 'AUXILIO-DOENÇA', cliente: 'Marcos Vinicius', data: '31/05/2025', consultor: 'Debora' }, // Prev
-                { processo: 'LOAS', cliente: 'Patricia Souza', data: '30/05/2025', consultor: 'Maria' }, // Prev
-                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Ricardo Pereira', data: '30/05/2025', consultor: 'Olska' }, // ST
-                { processo: 'VIDA APLICATIVO', cliente: 'Juliana Mendes', data: '28/05/2025', consultor: 'Carlos' }, // SV
-                { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Felipe Costa', data: '27/05/2025', consultor: 'Augusto' }, // Prev
-                { processo: 'PROCESSO Y', cliente: 'Cliente Y', data: '27/05/2025', consultor: 'Gustavo' }, // Outro
-            ];
-            /*
-            Contagem esperada para Junho/2025 (com os dados de exemplo acima):
-            - Previdenciários: 4 (Camila, Rodrigo, Leonardo, Fernanda)
-            - Seguro Terceiro: 2 (Vitor Santos - conta como 1, Ana Mendes)
-            - Seguro de Vida: 3 (Adenilson, Nicolas, Roberto)
-            - Outros: 1 (Cliente X)
-            */
+            salesData = JSON.parse(JSON.stringify(sampleSalesDataForTesting)); // Deep copy
+            
             generateMonthOptions();
+            if (months.length > 0) { // Garante que há meses para selecionar
+                document.getElementById('monthFilter').value = '06/2025'; // Força a seleção de Junho/2025 para teste
+            }
             updateDashboard();
             lastUpdate = new Date();
             updateLastUpdateTime();
-            addLog('✅ Dados de exemplo carregados com sucesso', 'success');
+            addLog('✅ Dados de EXEMPLO (para teste) carregados com sucesso. Selecionado Junho/2025.', 'success');
         }
+
 
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
@@ -1079,17 +1119,31 @@
         }
 
         function updateDashboard() {
+            // Se não houver opções de mês e houver dados, tenta gerar as opções
+            if (document.getElementById('monthFilter').options.length === 0 && salesData.length > 0) {
+                generateMonthOptions();
+            }
+
+            // Se, mesmo após tentar gerar, não houver meses, limpa os painéis e retorna
             if (document.getElementById('monthFilter').options.length === 0) {
-                if (salesData.length > 0) generateMonthOptions(); // Tenta gerar se houver dados
-                 // Se ainda não há meses, não prosseguir ou limpar paineis
-                if (document.getElementById('monthFilter').options.length === 0) {
-                    addLog('Nenhum mês disponível para filtro.', 'warning');
-                    // Limpar painéis ou mostrar mensagem
-                    document.getElementById('totalMonth').textContent = '-';
-                    document.getElementById('monthLabel').textContent = 'Nenhum dado';
-                    // ... limpar outros painéis ...
-                    return;
-                }
+                addLog('Nenhum mês disponível para filtro. Painéis não serão atualizados.', 'warning');
+                document.getElementById('totalMonth').textContent = '-';
+                document.getElementById('monthLabel').textContent = 'Nenhum dado';
+                document.getElementById('topConsultant').textContent = '-';
+                document.getElementById('dailyAverage').textContent = '-';
+                document.getElementById('consultantRanking').innerHTML = `<div style="text-align: center; color: #6b7280; padding: 20px;">Nenhum dado para exibir.</div>`;
+                document.getElementById('previdenciariosCount').textContent = '-';
+                document.getElementById('previdenciariosGoal').textContent = '-/-';
+                document.getElementById('previdenciariosPercent').textContent = '-';
+                document.getElementById('seguroTerceiroCount').textContent = '-';
+                document.getElementById('seguroTerceiroGoal').textContent = '-/-';
+                document.getElementById('seguroTerceiroPercent').textContent = '-';
+                document.getElementById('seguroVidaCount').textContent = '-';
+                document.getElementById('seguroVidaGoal').textContent = '-/-';
+                document.getElementById('seguroVidaPercent').textContent = '-';
+                document.getElementById('outrosCount').textContent = '-';
+                document.getElementById('recentSalesTable').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">Nenhum dado para exibir.</td></tr>`;
+                return;
             }
             
             const monthSales = getMonthSales();
@@ -1118,7 +1172,7 @@
             }
             const [month, year] = selectedMonthYear.split('/');
             
-            document.getElementById('totalMonth').textContent = monthSales.length;
+            document.getElementById('totalMonth').textContent = monthSales.length; // Total de linhas da planilha para o mês
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
             
@@ -1138,7 +1192,7 @@
             document.getElementById('topConsultant').textContent = topConsultant;
             
             const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-            const average = daysInMonth > 0 ? (monthSales.length / daysInMonth) : 0;
+            const average = daysInMonth > 0 ? (monthSales.length / daysInMonth) : 0; // Média de linhas da planilha por dia
             document.getElementById('dailyAverage').textContent = average.toFixed(1);
         }
 
@@ -1178,48 +1232,60 @@
                 'SEGURO DE VIDA': 90
             };
 
-            // Tipos de processo como fornecidos (normalizados para maiúsculas para comparação)
             const previdenciarioTypes = [
                 'CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO',
                 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ'
-            ].map(type => type.toUpperCase());
+            ].map(type => type.toUpperCase().trim());
 
             const seguroTerceiroTypes = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL']
-                .map(type => type.toUpperCase());
+                .map(type => type.toUpperCase().trim());
 
             const seguroVidaTypes = ['VIDA', 'VIDA APLICATIVO']
-                .map(type => type.toUpperCase());
+                .map(type => type.toUpperCase().trim());
 
             let previdenciariosCount = 0;
             let seguroVidaCount = 0;
-            let outrosCount = 0;
+            let outrosCount = 0; // Contará linhas da planilha que não se encaixam
             const clientesComSeguroTerceiroEsteMes = new Set();
 
             monthSales.forEach(sale => {
-                const tipoProcessoUpper = (sale.processo || '').toUpperCase().trim();
-                const cliente = sale.cliente; // Assume-se que o nome do cliente é a chave para unicidade
-                let classificadoNestaVenda = false;
+                const cliente = sale.cliente;
+                // A string de processo pode conter múltiplos processos separados por vírgula
+                const processosIndividuaisString = (sale.processo || '').toUpperCase();
+                const processosLista = processosIndividuaisString.split(',').map(p => p.trim()).filter(p => p); // Divide, trim e remove vazios
 
-                if (previdenciarioTypes.includes(tipoProcessoUpper)) {
-                    previdenciariosCount++;
-                    classificadoNestaVenda = true;
+                let classificadoComoPrevidenciarioNestaLinha = false;
+                let classificadoComoVidaNestaLinha = false;
+                let classificadoComoSeguroTerceiroNestaLinha = false;
+                let classificadoComoOutroNestaLinha = false;
+
+                if (processosLista.length === 0) { // Se a célula de processo estiver vazia após trim
+                    outrosCount++; // Conta como "Outro" se a célula de processo estiver vazia
+                    return; // Vai para a próxima venda
                 }
                 
-                if (seguroVidaTypes.includes(tipoProcessoUpper)) {
-                    seguroVidaCount++;
-                    classificadoNestaVenda = true;
-                }
-                
-                // Para Seguro Terceiro, marcamos o cliente. A contagem final será pelo tamanho do Set.
-                // E também marcamos como classificado para não ir para "Outros".
-                if (seguroTerceiroTypes.includes(tipoProcessoUpper)) {
-                    if (cliente) { // Apenas se houver nome de cliente
-                       clientesComSeguroTerceiroEsteMes.add(cliente);
+                let algumProcessoDaLinhaFoiCategorizado = false;
+
+                processosLista.forEach(procIndividual => {
+                    if (previdenciarioTypes.includes(procIndividual)) {
+                        previdenciariosCount++;
+                        algumProcessoDaLinhaFoiCategorizado = true;
                     }
-                    classificadoNestaVenda = true; 
-                }
+                    if (seguroVidaTypes.includes(procIndividual)) {
+                        seguroVidaCount++;
+                        algumProcessoDaLinhaFoiCategorizado = true;
+                    }
+                    if (seguroTerceiroTypes.includes(procIndividual)) {
+                        if (cliente) { // Só adiciona ao Set se houver nome de cliente
+                            clientesComSeguroTerceiroEsteMes.add(cliente);
+                        }
+                        algumProcessoDaLinhaFoiCategorizado = true; 
+                    }
+                });
                 
-                if (!classificadoNestaVenda && tipoProcessoUpper) { // Se não foi classificado em nenhuma das anteriores E tem um nome de processo
+                // Se NENHUM dos processos individuais na linha foi classificado nas categorias principais,
+                // a linha inteira conta como UM "Outro".
+                if (!algumProcessoDaLinhaFoiCategorizado) {
                     outrosCount++;
                 }
             });
@@ -1248,12 +1314,20 @@
             document.getElementById('outrosCount').textContent = outrosCount;
         }
 
+
         function updateMonthSales(monthSales) {
             const sortedSales = [...monthSales].sort((a, b) => {
                 if (!a.data || !b.data) return 0;
                 const [dayA, monthA, yearA] = a.data.split('/');
                 const [dayB, monthB, yearB] = b.data.split('/');
-                return new Date(`${yearB}-${monthB}-${dayB}`) - new Date(`${yearA}-${monthA}-${dayA}`);
+                try {
+                    const dateAVal = new Date(`${yearA}-${monthA}-${dayA}`);
+                    const dateBVal = new Date(`${yearB}-${monthB}-${dayB}`);
+                    if (isNaN(dateAVal.getTime()) || isNaN(dateBVal.getTime())) return 0; // Data inválida
+                    return dateBVal - dateAVal;
+                } catch (e) {
+                    return 0; // Em caso de erro na conversão da data
+                }
             });
             
             let html = '';
@@ -1319,15 +1393,18 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('updateIndicator').style.display = 'flex';
-            fetchSheetData();
+            // fetchSheetData(); // Descomente para carregar dados reais ao iniciar
+            loadSampleData(); // Para teste com os dados fornecidos
+            
             autoUpdateInterval = setInterval(() => {
                 if (isAutoUpdateActive) {
                     document.getElementById('updateIndicator').style.display = 'flex';
                     document.getElementById('updateIndicator').style.opacity = '1';
                     document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
-                    fetchSheetData();
+                    // fetchSheetData(); // Descomente para carregar dados reais no intervalo
+                    // loadSampleData(); // Para teste no intervalo
                 }
-            }, 30000);
+            }, 300000); // Aumentei para 5 minutos para não sobrecarregar durante o teste
             
             document.getElementById('instructionsModal').addEventListener('click', function(e) {
                 if (e.target === this) hideInstructions();
