@@ -1172,31 +1172,47 @@
         }
 
         // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
-        function updateMainStats() { 
+        function updateMainStats() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) {
                 document.getElementById('totalMonth').textContent = '-';
                 document.getElementById('monthLabel').textContent = 'Nenhum mês';
                 document.getElementById('dailyAverage').textContent = '-';
-                // O 'topConsultant' é atualizado em updateConsultantRanking
                 return;
             }
-            const [month, year] = selectedMonthYear.split('/');
-            
+            const [monthStr, yearStr] = selectedMonthYear.split('/');
+            const month = parseInt(monthStr);
+            const year = parseInt(yearStr);
+
             const totalProcessosNoMes = currentMonthCounts.previdenciarios +
                                        currentMonthCounts.seguroTerceiro +
                                        currentMonthCounts.seguroVida +
                                        currentMonthCounts.outros;
-            document.getElementById('totalMonth').textContent = totalProcessosNoMes; 
-            
+            document.getElementById('totalMonth').textContent = totalProcessosNoMes;
+
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            document.getElementById('monthLabel').textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
-            
-            const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-            // Média diária baseada no TOTAL DE PROCESSOS
-            const averageProcessos = daysInMonth > 0 ? (totalProcessosNoMes / daysInMonth) : 0; 
-            document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
-        }
+            document.getElementById('monthLabel').textContent = `${monthNames[month - 1]} ${year}`;
+
+            // Encontrar o maior dia com entrada de dados no mês selecionado
+            const monthSales = getMonthSales(); // Pega as vendas do mês selecionado
+            let maxDayInMonthWithData = 0;
+            if (monthSales.length > 0) {
+                monthSales.forEach(sale => {
+                    if (sale.data) {
+                        const parts = sale.data.split('/');
+                        if (parts.length === 3) {
+                            const saleDay = parseInt(parts[0], 10);
+                            const saleMonth = parseInt(parts[1], 10);
+                            const saleYear = parseInt(parts[2], 10);
+                            if (saleMonth === month && saleYear === year) {
+                                if (saleDay > maxDayInMonthWithData) {
+                                    maxDayInMonthWithData = saleDay;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
 
 
         function updateConsultantRanking(monthSales) {
