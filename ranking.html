@@ -846,7 +846,6 @@
             outros: 0
         };
 
-        // Definições dos tipos de processo (usadas em updateProcessStats e updateConsultantRanking)
         const PREVIDENCIARIO_TYPES = [
             'CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO',
             'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ',
@@ -1158,10 +1157,10 @@
             
             const monthSales = getMonthSales(); 
             
-            updateProcessStats(monthSales); // Primeiro calcula as contagens de processos
-            updateMainStats(); // Agora usa currentMonthCounts para o total e média
-            updateConsultantRanking(monthSales); // Ranking de consultores por processos
-            updateMonthSales(monthSales); // Tabela de linhas da planilha
+            updateProcessStats(monthSales); 
+            updateMainStats(); 
+            updateConsultantRanking(monthSales); 
+            updateMonthSales(monthSales); 
             
             document.getElementById('updateIndicator').innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`;
             setTimeout(() => {
@@ -1173,12 +1172,14 @@
         }
 
         // Atualizar estatísticas principais -- FUNÇÃO CORRIGIDA --
-        function updateMainStats() { // Não precisa mais de monthSales como parâmetro direto para o total
+        function updateMainStats() { 
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) {
                 document.getElementById('totalMonth').textContent = '-';
                 document.getElementById('monthLabel').textContent = 'Nenhum mês';
                 document.getElementById('dailyAverage').textContent = '-';
+                // O 'topConsultant' é atualizado em updateConsultantRanking, então não precisa ser resetado aqui
+                // a menos que não haja mês selecionado, o que já é tratado.
                 return;
             }
             const [month, year] = selectedMonthYear.split('/');
@@ -1193,11 +1194,12 @@
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
             
             const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+            // Média diária baseada no TOTAL DE PROCESSOS
             const averageProcessos = daysInMonth > 0 ? (totalProcessosNoMes / daysInMonth) : 0; 
             document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
         }
 
-        // Atualizar ranking de consultores -- FUNÇÃO CORRIGIDA --
+
         function updateConsultantRanking(monthSales) {
             const consultantProcessCounts = {};
 
@@ -1213,17 +1215,12 @@
                                           .filter(p => p);
                 
                 listaProcessos.forEach(proc => {
-                    // Incrementa para cada processo individual listado na célula,
-                    // independentemente da categoria para o ranking.
-                    // Se a regra para Seguro Terceiro no ranking de consultor deve ser por cliente,
-                    // a lógica aqui precisaria ser mais complexa.
-                    // Por ora, cada menção de processo na célula conta para o consultor.
                     consultantProcessCounts[consultant]++;
                 });
             });
             
             const ranking = Object.entries(consultantProcessCounts)
-                .map(([name, processes]) => ({ name, sales: processes })) // "sales" aqui significa contagem de processos
+                .map(([name, processes]) => ({ name, sales: processes })) 
                 .sort((a, b) => b.sales - a.sales)
                 .slice(0, 5);
             
