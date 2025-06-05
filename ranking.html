@@ -495,7 +495,7 @@
             </div>
 
             <div class="panel">
-                <h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%)</h2>
+                <h2><i class="fas fa-chart-pie"></i> Tipos de Processo</h2>
                 <div class="process-stats">
                     <div class="process-card">
                         <h4>Previdenciários</h4>
@@ -664,7 +664,7 @@
                         consultor: (columns[4] || '').trim(),
                         originalIndex: i 
                     };
-                    if (record.processo || record.cliente || record.data || record.consultor) { // Alterado para aceitar se ao menos um campo principal existir
+                    if (record.processo || record.cliente || record.data || record.consultor) {
                         tempData.push(record);
                     }
                 }
@@ -788,7 +788,8 @@
             { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2', originalIndex: 47 },
             { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Maio ST', data: '12/05/2025', consultor: 'Consultor Maio ST', originalIndex: 48 },
             { processo: 'Dra Renata', cliente: 'Cliente Dra Renata Teste', data: '01/06/2025', consultor: 'Consultor Teste', originalIndex: 49 },
-            { processo: 'VIDA, Dra Renata', cliente: 'Cliente Vida e Dra Renata', data: '02/06/2025', consultor: 'Consultor Teste 2', originalIndex: 50 }
+            { processo: 'VIDA, Dra Renata', cliente: 'Cliente Vida e Dra Renata', data: '02/06/2025', consultor: 'Consultor Teste 2', originalIndex: 50 },
+            { processo: 'Dra Renata, AUXILIO-ACIDENTE, VIDA', cliente: 'Cliente Misto Dra Renata', data: '03/06/2025', consultor: 'Consultor Teste 3', originalIndex: 51 }
         ];
 
         function loadSampleData() {
@@ -925,10 +926,12 @@
                 const processosString = (sale.processo || '').toUpperCase();
                 const listaProcessos = processosString.split(',')
                                           .map(p => p.trim())
-                                          .filter(p => p); // Filtra strings vazias
+                                          .filter(p => p); 
                 
                 listaProcessos.forEach(proc => {
-                    // IGNORAR "DRA RENATA" NA CONTAGEM PARA O RANKING
+                    // IGNORAR "DRA RENATA" NA CONTAGEM PARA O RANKING.
+                    // Se "DRA RENATA" estiver presente, ela não adiciona à contagem de processos do consultor.
+                    // Outros processos válidos na mesma linha são contados.
                     if (proc && proc !== DRA_RENATA_STRING) { 
                          consultantProcessCounts[consultant]++;
                     }
@@ -982,14 +985,18 @@
                 const processosString = (sale.processo || '').toUpperCase();
                 const listaProcessos = processosString.split(',')
                                           .map(p => p.trim())
-                                          .filter(p => p); // Filtra strings vazias
-                
+                                          .filter(p => p); 
+
                 listaProcessos.forEach(proc => {
-                    // IGNORAR "DRA RENATA" COMPLETAMENTE para contagem de tipos
+                    // IGNORAR "DRA RENATA" COMPLETAMENTE para contagem de tipos.
+                    // Se "DRA RENATA" estiver presente na lista de processos da linha,
+                    // ela é pulada, e os outros processos válidos na mesma linha
+                    // são contados e categorizados normalmente.
                     if (proc === DRA_RENATA_STRING) {
-                        return; // Pula para o próximo processo na lista (não conta este)
+                        return; // Pula para o próximo processo na lista (não conta este item "DRA RENATA")
                     }
 
+                    // A partir daqui, 'proc' NÃO é "DRA RENATA"
                     let classificadoPrincipal = false;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) {
                         prevCount++;
@@ -1000,20 +1007,17 @@
                         classificadoPrincipal = true;
                     }
                     if (SEGURO_TERCEIRO_TYPES.includes(proc)) {
-                        if (cliente) clientesST.add(cliente); // Conta cliente único para ST
+                        if (cliente) clientesST.add(cliente); 
                         classificadoPrincipal = true; 
                     }
 
-                    // Se não foi classificado em nenhuma das categorias principais 
-                    // E é um processo válido (não vazio)
-                    // (Já garantido que não é DRA_RENATA_STRING por causa do 'return' acima)
                     if (!classificadoPrincipal && proc) { 
                         outrosIndividuais++;
                     }
                 });
             });
 
-            const stCount = clientesST.size; // Contagem de clientes únicos para Seguro Terceiro
+            const stCount = clientesST.size;
 
             currentMonthCounts = {
                 previdenciarios: prevCount,
@@ -1099,7 +1103,7 @@
             if (updateIndicator) updateIndicator.style.display = 'flex';
             
             fetchSheetData(); 
-            // loadSampleData(); // Descomente para testar com dados de exemplo offline
+            // loadSampleData(); 
             
             autoUpdateInterval = setInterval(() => {
                 if (isAutoUpdateActive) { 
