@@ -1142,20 +1142,32 @@
                 // ===============================
                 if (situacoes.includes('acidente') && 
                     respostas.gravidade === 'permanente_parcial') {
-                    
-                    if (temQualidadeSegurado(respostas)) {
-                        processosAlta.push({
+
+                    // <<<<<<<<<<<<<<<<<<<< INÍCIO DA CORREÇÃO >>>>>>>>>>>>>>>>>>>>
+                    // CORREÇÃO APLICADA: MEI não tem direito ao auxílio-acidente.
+                    if (respostas.vinculoTrabalho === 'mei') {
+                        processosBaixa.push({
                             key: 'auxilio-acidente',
-                            certeza: 'alta',
-                            motivo: 'Sequelas permanentes em acidente. Benefício indenizatório - pode acumular com outros.'
+                            certeza: 'baixa',
+                            motivo: 'O MEI (Microempreendedor Individual) não possui direito ao auxílio-acidente, conforme a legislação previdenciária.'
                         });
                     } else {
-                        processosMedia.push({
-                            key: 'auxilio-acidente',
-                            certeza: 'media',
-                            motivo: 'Sequelas permanentes, mas perdeu qualidade de segurado - analisar caso'
-                        });
+                        // Lógica original para os demais segurados que têm direito
+                        if (temQualidadeSegurado(respostas)) {
+                            processosAlta.push({
+                                key: 'auxilio-acidente',
+                                certeza: 'alta',
+                                motivo: 'Sequelas permanentes em acidente. Benefício indenizatório que pode acumular com outros.'
+                            });
+                        } else {
+                            processosMedia.push({
+                                key: 'auxilio-acidente',
+                                certeza: 'media',
+                                motivo: 'Sequelas permanentes, mas pode ter perdido a qualidade de segurado - analisar caso.'
+                            });
+                        }
                     }
+                    // <<<<<<<<<<<<<<<<<<<<< FIM DA CORREÇÃO >>>>>>>>>>>>>>>>>>>>>
                 }
 
                 // ===============================
