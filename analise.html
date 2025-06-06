@@ -631,8 +631,12 @@
     
     <script>
         // ==================================================
-        // DADOS ATUALIZADOS PARA 2025
+        // DADOS E CONSTANTES GLOBAIS
         // ==================================================
+        const SALARIO_MINIMO_2025 = 1518.00;
+        const LIMITE_BPC_UM_QUARTO = SALARIO_MINIMO_2025 / 4; // 379.50
+        const LIMITE_BPC_MEIO = SALARIO_MINIMO_2025 / 2;     // 759.00
+        
         const processosInfo = {
             'auxilio-doenca': { icon: '🏥', title: 'Auxílio-Doença (Incapacidade Temporária)' },
             'aposentadoria-invalidez': { icon: '♿', title: 'Aposentadoria por Invalidez (Incapacidade Permanente)' },
@@ -764,7 +768,6 @@
                     ]
                 },
 
-                // NOVAS PERGUNTAS DETALHADAS SOBRE HISTÓRICO DE TRABALHO
                 dataUltimoEmprego: {
                     titulo: 'Quando foi seu último emprego/trabalho com registro?',
                     icon: '📅',
@@ -860,18 +863,18 @@
                 },
 
                 rendaFamiliar: {
-                    titulo: 'Qual a renda familiar per capita mensal?',
+                    titulo: 'Qual a renda familiar por pessoa (per capita) mensal?',
                     icon: '💰',
                     condicao: (respostas) => 
                         (respostas.situacao && respostas.situacao.includes('deficiencia')) ||
                         (respostas.idade && parseInt(respostas.idade) >= 65),
                     opcoes: [
-                        { valor: 'menos_1_4', label: 'Menos de 1/4 salário mínimo (R$ 379,50)', icon: '💵' },
-                        { valor: 'ate_1_2', label: 'Entre 1/4 e 1/2 salário mínimo (R$ 379,50 - R$ 759)', icon: '💰' },
-                        { valor: 'mais_1_2', label: 'Mais de 1/2 salário mínimo (+ R$ 759)', icon: '💸' },
+                        { valor: 'menos_1_4', label: `Menos de 1/4 salário mínimo (R$ ${LIMITE_BPC_UM_QUARTO.toFixed(2).replace('.',',')})`, icon: '💵' },
+                        { valor: 'ate_1_2', label: `Entre 1/4 e 1/2 salário mínimo (R$ ${LIMITE_BPC_UM_QUARTO.toFixed(2).replace('.',',')} - R$ ${LIMITE_BPC_MEIO.toFixed(2).replace('.',',')})`, icon: '💰' },
+                        { valor: 'mais_1_2', label: `Mais de 1/2 salário mínimo (+ R$ ${LIMITE_BPC_MEIO.toFixed(2).replace('.',',')})`, icon: '💸' },
                         { valor: 'nao_sei', label: 'Não sei calcular', icon: '❓' }
                     ],
-                    ajuda: 'Some toda renda da família e divida pelo número de pessoas que moram na casa. Salário mínimo 2025: R$ 1.518,00'
+                    ajuda: `Some toda a renda da família e divida pelo número de pessoas que moram na casa. Salário mínimo 2025: R$ ${SALARIO_MINIMO_2025.toFixed(2).replace('.',',')}`
                 },
 
                 seguroVida: {
@@ -890,7 +893,6 @@
                     ]
                 },
 
-                // NOVA PERGUNTA ESPECÍFICA SOBRE QUAL APP
                 qualApp: {
                     titulo: 'Qual aplicativo estava usando no momento do acidente?',
                     icon: '📱',
@@ -994,10 +996,8 @@
                 const processosBaixa = [];
                 const observacoes = [];
                 
-                // Situações já vem como array da primeira pergunta
                 const situacoes = respostas.situacao || [];
                 
-                // Função MELHORADA para verificar qualidade de segurado
                 const temQualidadeSegurado = (respostas) => {
                     if (respostas.vinculoTrabalho === 'aposentado') return true;
                     if (['clt', 'mei', 'autonomo', 'domestico', 'servidor', 'rural'].includes(respostas.vinculoTrabalho)) return true;
@@ -1005,27 +1005,21 @@
                     if (respostas.vinculoTrabalho === 'desempregado') {
                         const hoje = new Date();
                         
-                        // Se recebe/recebeu seguro-desemprego
                         if (respostas.recebeSeguroDesemprego === 'sim_recebendo') return true;
                         if (respostas.recebeSeguroDesemprego === 'sim_recebi_ano') return true;
                         
-                        // Se contribuiu após desemprego
                         if (respostas.contribuiuAposDesemprego === 'sim_sempre') return true;
                         
-                        // Verifica data da última contribuição
                         if (respostas.dataUltimaContribuicao) {
                             const ultimaContrib = new Date(respostas.dataUltimaContribuicao + '-01');
                             const mesesSemContrib = (hoje - ultimaContrib) / (1000 * 60 * 60 * 24 * 30);
                             
-                            // Prazo normal: 12 meses
                             if (mesesSemContrib <= 12) return true;
                             
-                            // Prazo estendido se tem mais de 120 contribuições
                             const tempoTotal = getTempoContribuicaoMeses(respostas.tempoContribuicao);
                             if (tempoTotal >= 120 && mesesSemContrib <= 36) return true;
                         }
                         
-                        // Verifica data do último emprego
                         if (respostas.dataUltimoEmprego) {
                             const ultimoEmprego = new Date(respostas.dataUltimoEmprego);
                             const mesesSemEmprego = (hoje - ultimoEmprego) / (1000 * 60 * 60 * 24 * 30);
@@ -1042,20 +1036,16 @@
                     return respostas.tempoContribuicao && respostas.tempoContribuicao !== '0';
                 };
 
-                // Função para verificar carência suficiente
                 const temCarencia = (mesesNecessarios) => {
                     const tempoContrib = getTempoContribuicaoMeses(respostas.tempoContribuicao);
                     return tempoContrib >= mesesNecessarios;
                 };
 
-                // Função para verificar se doença é grave
                 const isDoencaGrave = (tipoDoenca) => {
                     return doencasGraves.includes(tipoDoenca);
                 };
 
-                // ===============================
                 // AUXÍLIO-DOENÇA
-                // ===============================
                 if (situacoes.includes('doenca') || situacoes.includes('acidente')) {
                     if (respostas.gravidade && 
                         ['temporaria_grave', 'permanente_parcial', 'permanente_total'].includes(respostas.gravidade) &&
@@ -1094,11 +1084,8 @@
                     }
                 }
 
-                // ===============================
                 // APOSENTADORIA POR INVALIDEZ
-                // ===============================
                 if (respostas.gravidade === 'permanente_total') {
-                    
                     if (temQualidadeSegurado(respostas)) {
                         const isAcidente = situacoes.includes('acidente');
                         const isDoencaGraveVal = respostas.tipoDoenca && isDoencaGrave(respostas.tipoDoenca);
@@ -1126,10 +1113,8 @@
                     }
                 }
                 
-                // Verificar invalidez mesmo sem incapacidade total declarada, mas com sinais evidentes
                 if (respostas.gravidade === 'permanente_parcial' && 
                     (respostas.tempoIncapacidade === 'mais1ano' || respostas.tempoIncapacidade === 'mais2anos')) {
-                    
                     processosMedia.push({
                         key: 'aposentadoria-invalidez',
                         certeza: 'media',
@@ -1137,14 +1122,10 @@
                     });
                 }
 
-                // ===============================
                 // AUXÍLIO-ACIDENTE
-                // ===============================
-                if (situacoes.includes('acidente') && 
-                    respostas.gravidade === 'permanente_parcial') {
-
-                    // <<<<<<<<<<<<<<<<<<<< INÍCIO DA CORREÇÃO >>>>>>>>>>>>>>>>>>>>
-                    // CORREÇÃO APLICADA: MEI não tem direito ao auxílio-acidente.
+                if (situacoes.includes('acidente') && respostas.gravidade === 'permanente_parcial') {
+                    // <<<<<<<<<<<<<<< CORREÇÃO CRÍTICA APLICADA >>>>>>>>>>>>>>>
+                    // MEI não tem direito ao Auxílio-Acidente.
                     if (respostas.vinculoTrabalho === 'mei') {
                         processosBaixa.push({
                             key: 'auxilio-acidente',
@@ -1152,12 +1133,12 @@
                             motivo: 'O MEI (Microempreendedor Individual) não possui direito ao auxílio-acidente, conforme a legislação previdenciária.'
                         });
                     } else {
-                        // Lógica original para os demais segurados que têm direito
+                        // Lógica para os demais segurados que têm direito
                         if (temQualidadeSegurado(respostas)) {
                             processosAlta.push({
                                 key: 'auxilio-acidente',
                                 certeza: 'alta',
-                                motivo: 'Sequelas permanentes em acidente. Benefício indenizatório que pode acumular com outros.'
+                                motivo: 'Sequelas permanentes de acidente. Benefício indenizatório que pode acumular com outros.'
                             });
                         } else {
                             processosMedia.push({
@@ -1167,147 +1148,89 @@
                             });
                         }
                     }
-                    // <<<<<<<<<<<<<<<<<<<<< FIM DA CORREÇÃO >>>>>>>>>>>>>>>>>>>>>
+                    // <<<<<<<<<<<<<<<<<<< FIM DA CORREÇÃO >>>>>>>>>>>>>>>>>>>>>
                 }
 
-                // ===============================
-                // SEGURO DE VIDA - APPS ESPECÍFICOS
-                // ===============================
+                // SEGURO DE VIDA
                 if (situacoes.includes('acidente') && respostas.seguroVida && 
                     respostas.seguroVida.includes('sim_app') && respostas.qualApp) {
-                    
-                    if (respostas.gravidade && 
-                        ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
-                        
+                    if (respostas.gravidade && ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
                         const infoApp = getInfoSeguroApp(respostas.qualApp, respostas.statusTrabalhoApp);
-                        
                         if (infoApp.temCobertura) {
-                            processosAlta.push({
-                                key: 'seguro-vida',
-                                certeza: 'alta',
-                                motivo: `${infoApp.nome}: ${infoApp.motivoCobertura}. ${infoApp.valores}`
-                            });
+                            processosAlta.push({ key: 'seguro-vida', certeza: 'alta', motivo: `${infoApp.nome}: ${infoApp.motivoCobertura}. ${infoApp.valores}` });
                         } else {
-                            processosBaixa.push({
-                                key: 'seguro-vida',
-                                certeza: 'baixa',
-                                motivo: `${infoApp.nome}: ${infoApp.motivoCobertura}`
-                            });
+                            processosBaixa.push({ key: 'seguro-vida', certeza: 'baixa', motivo: `${infoApp.nome}: ${infoApp.motivoCobertura}` });
                         }
                     }
                 }
-
-                // Outros seguros de vida (não app)
                 if (situacoes.includes('acidente') && respostas.seguroVida && 
                     respostas.seguroVida.some(tipo => ['sim_empresa', 'sim_individual', 'sim_consorcio'].includes(tipo))) {
-                    
-                    if (respostas.gravidade && 
-                        ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
-                        
-                        processosAlta.push({
-                            key: 'seguro-vida',
-                            certeza: 'alta',
-                            motivo: 'Acidente com lesões/sequelas e seguro ativo - verificar apólice'
-                        });
+                    if (respostas.gravidade && ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
+                        processosAlta.push({ key: 'seguro-vida', certeza: 'alta', motivo: 'Acidente com lesões/sequelas e seguro ativo - verificar apólice' });
                     }
                 }
 
-                // ===============================
-                // BPC/LOAS
-                // ===============================
+                // <<<<<<<<<<<<<<<<<<< INÍCIO DA CORREÇÃO SOLICITADA: BPC/LOAS >>>>>>>>>>>>>>>>>>>>
+                // BPC/LOAS com a nova regra
                 if (situacoes.includes('deficiencia') || (respostas.idade && parseInt(respostas.idade) >= 65)) {
+                    const motivoBase = (situacoes.includes('deficiencia') ? 'Deficiência' : 'Idade 65+');
+                    
                     if (respostas.rendaFamiliar === 'menos_1_4') {
                         processosAlta.push({
                             key: 'bpc-loas',
                             certeza: 'alta',
-                            motivo: (situacoes.includes('deficiencia') ? 'Deficiência' : 'Idade 65+') + 
-                                    ' + renda per capita inferior a R$ 379,50'
+                            motivo: `${motivoBase}. Renda per capita abaixo do critério de 1/4 do salário mínimo (R$ ${LIMITE_BPC_UM_QUARTO.toFixed(2).replace('.',',')}). Alta chance de aprovação.`
                         });
                     } else if (respostas.rendaFamiliar === 'ate_1_2') {
-                        processosMedia.push({
+                        // APLICANDO A NOVA REGRA AQUI
+                        processosAlta.push({ // Classificado como ALTA probabilidade devido à nova regra.
                             key: 'bpc-loas',
-                            certeza: 'media',
-                            motivo: 'Renda acima do limite legal, mas possível revisão judicial'
+                            certeza: 'alta', 
+                            motivo: `${motivoBase}. Com a nova regra, a renda de até 1/2 do salário mínimo (R$ ${LIMITE_BPC_MEIO.toFixed(2).replace('.',',')}) pode ser aceita após a dedução de despesas comprovadas (aluguel, remédios, etc.).`
                         });
                     }
                 }
+                // <<<<<<<<<<<<<<<<<<<<<<<< FIM DA CORREÇÃO SOLICITADA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                // ===============================
                 // APOSENTADORIAS
-                // ===============================
                 if (situacoes.includes('idade_aposentar') && respostas.idade && respostas.sexo && 
                     respostas.tempoContribuicao && temQualidadeSegurado(respostas)) {
-                    
                     const idade = parseInt(respostas.idade);
                     const anosContrib = getTempoContribuicaoMeses(respostas.tempoContribuicao) / 12;
 
-                    // Aposentadoria rural
                     if (respostas.vinculoTrabalho === 'rural') {
                         if ((respostas.sexo === 'feminino' && idade >= 55 && anosContrib >= 15) ||
                             (respostas.sexo === 'masculino' && idade >= 60 && anosContrib >= 15)) {
-                            processosAlta.push({
-                                key: 'aposentadoria-idade',
-                                certeza: 'alta',
-                                motivo: 'Atende requisitos para aposentadoria por idade rural'
-                            });
+                            processosAlta.push({ key: 'aposentadoria-idade', certeza: 'alta', motivo: 'Atende requisitos para aposentadoria por idade rural' });
                         }
                     } else {
-                        // Aposentadoria urbana por idade
                         if ((respostas.sexo === 'feminino' && idade >= 62 && anosContrib >= 15) ||
                             (respostas.sexo === 'masculino' && idade >= 65 && anosContrib >= 15)) {
-                            processosAlta.push({
-                                key: 'aposentadoria-idade',
-                                certeza: 'alta',
-                                motivo: 'Atende requisitos para aposentadoria por idade urbana'
-                            });
+                            processosAlta.push({ key: 'aposentadoria-idade', certeza: 'alta', motivo: 'Atende requisitos para aposentadoria por idade urbana' });
                         }
-                        
-                        // Aposentadoria por tempo de contribuição (regras de transição)
-                        if ((respostas.sexo === 'feminino' && anosContrib >= 30) || 
-                            (respostas.sexo === 'masculino' && anosContrib >= 35)) {
-                            processosMedia.push({
-                                key: 'aposentadoria-tempo',
-                                certeza: 'media',
-                                motivo: 'Alto tempo de contribuição - verificar regras de transição pós-Reforma'
-                            });
+                        if ((respostas.sexo === 'feminino' && anosContrib >= 30) || (respostas.sexo === 'masculino' && anosContrib >= 35)) {
+                            processosMedia.push({ key: 'aposentadoria-tempo', certeza: 'media', motivo: 'Alto tempo de contribuição - verificar regras de transição pós-Reforma' });
                         }
                     }
                 }
 
-                // ===============================
                 // SALÁRIO-MATERNIDADE
-                // ===============================
                 if (situacoes.includes('maternidade')) {
                     if (respostas.sexo === 'feminino') {
                         if (temQualidadeSegurado(respostas)) {
-                            processosAlta.push({
-                                key: 'auxilio-maternidade',
-                                certeza: 'alta',
-                                motivo: 'STF 2024 eliminou carência - basta qualidade de segurado'
-                            });
+                            processosAlta.push({ key: 'auxilio-maternidade', certeza: 'alta', motivo: 'STF 2024 eliminou carência - basta qualidade de segurado' });
                         } else {
-                            processosMedia.push({
-                                key: 'auxilio-maternidade',
-                                certeza: 'media',
-                                motivo: 'Sem qualidade de segurado - possível contribuição como individual'
-                            });
+                            processosMedia.push({ key: 'auxilio-maternidade', certeza: 'media', motivo: 'Sem qualidade de segurado - possível contribuição como individual' });
                         }
                     } else if (respostas.sexo === 'masculino') {
-                        processosMedia.push({
-                            key: 'auxilio-maternidade',
-                            certeza: 'media',
-                            motivo: 'Homem segurado - direito em caso de adoção ou guarda judicial'
-                        });
+                        processosMedia.push({ key: 'auxilio-maternidade', certeza: 'media', motivo: 'Homem segurado - direito em caso de adoção ou guarda judicial' });
                     }
                 }
 
-                // ===============================
                 // PENSÃO POR MORTE
-                // ===============================
                 if (situacoes.includes('falecimento') && respostas.parentescoFalecido) {
                     let certeza = 'media';
                     let motivo = 'Dependente de segurado falecido. ';
-                    
                     if (['conjuge', 'filho'].includes(respostas.parentescoFalecido)) {
                         certeza = 'alta';
                         motivo += 'Dependência presumida (classe 1). ';
@@ -1315,7 +1238,6 @@
                         motivo += 'Necessário comprovar dependência econômica. ';
                     }
                     motivo += 'Verificar qualidade de segurado do falecido.';
-                    
                     if (certeza === 'alta') {
                         processosAlta.push({ key: 'pensao-morte', certeza, motivo });
                     } else {
@@ -1323,367 +1245,98 @@
                     }
                 }
 
-                // ===============================
-                // ANÁLISES ADICIONAIS DE MÉDIA/BAIXA PROBABILIDADE
-                // ===============================
-                
-                // Casos de auxílio-doença com carência borderline
-                if ((situacoes.includes('doenca') || situacoes.includes('acidente')) && 
-                    respostas.gravidade === 'temporaria_grave' && 
-                    respostas.tempoIncapacidade === 'menos15') {
-                    
-                    processosBaixa.push({
-                        key: 'auxilio-doenca',
-                        certeza: 'baixa',
-                        motivo: 'Incapacidade menor que 15 dias - não atende carência mínima do INSS'
-                    });
-                }
-                
-                // BPC para quem não cumpre renda mas tem outras possibilidades
+                // ANÁLISES ADICIONAIS DE BAIXA PROBABILIDADE
                 if (situacoes.includes('deficiencia') && respostas.rendaFamiliar === 'mais_1_2') {
                     processosBaixa.push({
                         key: 'bpc-loas',
                         certeza: 'baixa',
-                        motivo: 'Renda familiar acima do limite, mas possível contestação judicial em casos especiais'
+                        motivo: 'Renda familiar acima do limite, mas possível contestação judicial em casos especiais (despesas muito altas).'
                     });
                 }
-                
-                // Aposentadorias em casos borderline
-                if (situacoes.includes('idade_aposentar') && respostas.idade && respostas.sexo) {
-                    const idade = parseInt(respostas.idade);
-                    const anosContrib = getTempoContribuicaoMeses(respostas.tempoContribuicao) / 12;
-                    
-                    // Casos próximos aos requisitos
-                    if (respostas.vinculoTrabalho !== 'rural') {
-                        if ((respostas.sexo === 'feminino' && idade >= 60 && idade < 62 && anosContrib >= 15) ||
-                            (respostas.sexo === 'masculino' && idade >= 62 && idade < 65 && anosContrib >= 15)) {
-                            processosMedia.push({
-                                key: 'aposentadoria-idade',
-                                certeza: 'media',
-                                motivo: 'Próximo da idade mínima - aguardar requisitos ou verificar regras de transição'
-                            });
-                        }
-                        
-                        // Tempo alto mas idade baixa
-                        if ((respostas.sexo === 'feminino' && anosContrib >= 25 && idade < 60) ||
-                            (respostas.sexo === 'masculino' && anosContrib >= 30 && idade < 62)) {
-                            processosMedia.push({
-                                key: 'aposentadoria-tempo',
-                                certeza: 'media',
-                                motivo: 'Alto tempo de contribuição - verificar regras de transição e pontuação'
-                            });
-                        }
-                    }
-                }
-                
-                // Seguros de vida sem cobertura clara
-                if (situacoes.includes('acidente') && respostas.seguroVida && 
-                    respostas.seguroVida.includes('nao_sei')) {
-                    
-                    processosMedia.push({
-                        key: 'seguro-vida',
-                        certeza: 'media',
-                        motivo: 'Incerteza sobre seguro de vida - investigar contratos e apólices existentes'
-                    });
-                }
-                
-                // Casos de pensão por morte com dependência duvidosa
-                if (situacoes.includes('falecimento') && respostas.parentescoFalecido === 'outro') {
-                    processosBaixa.push({
-                        key: 'pensao-morte',
-                        certeza: 'baixa',
-                        motivo: 'Parentesco distante - difícil comprovação de dependência econômica'
-                    });
-                }
-                
-                // Fraudes com baixo valor de dano
-                if (situacoes.includes('fraude') && ['whatsapp', 'compra_online'].includes(respostas.tipoFraude)) {
-                    processosBaixa.push({
-                        key: 'fraude',
-                        certeza: 'baixa',
-                        motivo: 'Tipo de fraude com baixo valor típico - analisar viabilidade econômica da ação'
-                    });
-                }
-                
-                // Casos sem qualidade de segurado
-                if (respostas.vinculoTrabalho === 'nunca_trabalhou' && 
-                    (situacoes.includes('doenca') || situacoes.includes('acidente'))) {
-                    
-                    if (!situacoes.includes('deficiencia') && !(respostas.idade && parseInt(respostas.idade) >= 65)) {
-                        processosBaixa.push({
-                            key: 'auxilio-doenca',
-                            certeza: 'baixa',
-                            motivo: 'Nunca contribuiu para o INSS - sem qualidade de segurado'
-                        });
-                    }
-                }
-                // ===============================
+
                 // DPVAT E SEGUROS DE TRÂNSITO
-                // ===============================
                 if (respostas.tipoAcidente === 'transito' && respostas.dataAcidente) {
                     const dataAcidenteDate = new Date(respostas.dataAcidente + "T00:00:00");
                     const dataLimiteDPVAT = new Date('2023-11-14T23:59:59');
                     
-                    // DPVAT só para acidentes ANTES da extinção
                     if (dataAcidenteDate <= dataLimiteDPVAT) {
-                        if (respostas.gravidade && 
-                            ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
-                            processosAlta.push({
-                                key: 'dpvat',
-                                certeza: 'alta',
-                                motivo: 'Acidente de trânsito com lesões antes de 14/11/2023'
-                            });
+                        if (respostas.gravidade && ['permanente_parcial', 'permanente_total', 'temporaria_grave'].includes(respostas.gravidade)) {
+                            processosAlta.push({ key: 'dpvat', certeza: 'alta', motivo: 'Acidente de trânsito com lesões antes de 14/11/2023' });
                         } else if (respostas.gravidade === 'temporaria_leve') {
-                            processosMedia.push({
-                                key: 'dpvat',
-                                certeza: 'media',
-                                motivo: 'Acidente antes da extinção, mas lesões leves - verificar cobertura'
-                            });
+                            processosMedia.push({ key: 'dpvat', certeza: 'media', motivo: 'Acidente antes da extinção, mas lesões leves - verificar cobertura' });
                         }
                     }
-                    // NÃO adicionar nada para acidentes após 14/11/2023
                     
-                    // Seguro de terceiro e ações de trânsito
                     if (respostas.terceiroCausador === 'sim_seguro') {
-                        processosAlta.push({
-                            key: 'seguro-terceiro',
-                            certeza: 'alta',
-                            motivo: 'Terceiro causador com seguro - processo administrativo'
-                        });
+                        processosAlta.push({ key: 'seguro-terceiro', certeza: 'alta', motivo: 'Terceiro causador com seguro - processo administrativo' });
                     } else if (respostas.terceiroCausador === 'sim_sem_seguro') {
-                        processosMedia.push({
-                            key: 'acao-acidente-transito',
-                            certeza: 'media',
-                            motivo: 'Terceiro identificado sem seguro - ação judicial dependente de patrimônio'
-                        });
+                        processosMedia.push({ key: 'acao-acidente-transito', certeza: 'media', motivo: 'Terceiro identificado sem seguro - ação judicial dependente de patrimônio' });
                     } else if (respostas.terceiroCausador === 'sem_culpado') {
-                        processosMedia.push({
-                            key: 'acao-acidente-transito',
-                            certeza: 'media',
-                            motivo: 'Sem culpado definido - possível ação judicial para esclarecimento de responsabilidade'
-                        });
+                        processosMedia.push({ key: 'acao-acidente-transito', certeza: 'media', motivo: 'Sem culpado definido - possível ação judicial para esclarecimento de responsabilidade' });
                     } else if (respostas.terceiroCausador === 'nao_identificado') {
-                        processosBaixa.push({
-                            key: 'acao-acidente-transito',
-                            certeza: 'baixa',
-                            motivo: 'Terceiro não identificado - dificuldade para ação de reparação'
-                        });
+                        processosBaixa.push({ key: 'acao-acidente-transito', certeza: 'baixa', motivo: 'Terceiro não identificado - dificuldade para ação de reparação' });
                     }
                 }
 
-                // ===============================
                 // FRAUDE
-                // ===============================
                 if (situacoes.includes('fraude') && respostas.tipoFraude) {
                     const tipoFraudeTexto = {
-                        'pix': 'PIX', 'cartao': 'cartão', 'emprestimo': 'empréstimo',
-                        'investimento': 'falso investimento', 'compra_online': 'compra online',
-                        'whatsapp': 'WhatsApp', 'falso_banco': 'falso funcionário de banco',
-                        'outro': 'golpe'
+                        'pix': 'PIX', 'cartao': 'cartão', 'emprestimo': 'empréstimo', 'investimento': 'falso investimento', 
+                        'compra_online': 'compra online', 'whatsapp': 'WhatsApp', 'falso_banco': 'falso funcionário de banco', 'outro': 'golpe'
                     };
-                    
-                    processosMedia.push({
-                        key: 'fraude',
-                        certeza: 'media',
-                        motivo: `Vítima de golpe do ${tipoFraudeTexto[respostas.tipoFraude]} - ação civil/criminal`
-                    });
+                    processosMedia.push({ key: 'fraude', certeza: 'media', motivo: `Vítima de golpe do ${tipoFraudeTexto[respostas.tipoFraude]} - ação civil/criminal` });
                 }
 
-                // ===============================
-                // VERIFICAR ACUMULAÇÕES E GARANTIR RESULTADOS
-                // ===============================
-                
-                // Se não há nenhum resultado, adicionar algumas análises gerais
-                if (processosAlta.length === 0 && processosMedia.length === 0 && processosBaixa.length === 0) {
-                    
-                    // Sempre verificar BPC por idade se for idoso
-                    if (respostas.idade && parseInt(respostas.idade) >= 65) {
-                        if (respostas.rendaFamiliar === 'menos_1_4') {
-                            processosAlta.push({
-                                key: 'bpc-loas',
-                                certeza: 'alta',
-                                motivo: 'Idade 65+ com renda per capita inferior a R$ 379,50'
-                            });
-                        } else {
-                            processosMedia.push({
-                                key: 'bpc-loas',
-                                certeza: 'media',
-                                motivo: 'Idade 65+ - verificar cálculo correto de renda familiar'
-                            });
-                        }
-                    }
-                    
-                    // Sempre analisar aposentadoria se tem idade
-                    if (respostas.idade && parseInt(respostas.idade) >= 55 && respostas.sexo) {
-                        processosMedia.push({
-                            key: 'aposentadoria-idade',
-                            certeza: 'media',
-                            motivo: 'Verificar requisitos de idade e contribuição para aposentadoria'
-                        });
-                    }
-                    
-                    // Se tem problemas de saúde, sempre considerar auxílio
-                    if (situacoes.includes('doenca')) {
-                        processosBaixa.push({
-                            key: 'auxilio-doenca',
-                            certeza: 'baixa',
-                            motivo: 'Problema de saúde declarado - analisar requisitos de contribuição e perícia'
-                        });
-                    }
-                }
-                
-                // Verificar regras de acumulação
+                // VERIFICAR ACUMULAÇÕES
                 if (processosAlta.length > 1 || processosMedia.length > 0) {
                     let podeAcumular = [];
                     let naoAcumula = [];
-                    
                     const beneficiosIdentificados = [...processosAlta, ...processosMedia].map(p => p.key);
                     
-                    // Regras de acumulação
-                    if (beneficiosIdentificados.includes('auxilio-acidente')) {
-                        podeAcumular.push('Auxílio-acidente PODE acumular com pensão por morte e aposentadorias');
-                    }
-                    
-                    if (beneficiosIdentificados.includes('pensao-morte')) {
-                        podeAcumular.push('Pensão por morte PODE acumular com aposentadoria (com desconto pós-2019)');
-                    }
-                    
-                    if (beneficiosIdentificados.includes('auxilio-doenca') && 
-                        beneficiosIdentificados.includes('aposentadoria-invalidez')) {
-                        naoAcumula.push('Auxílio-doença NÃO acumula com aposentadoria por invalidez');
-                    }
-                    
-                    if (beneficiosIdentificados.includes('bpc-loas')) {
-                        naoAcumula.push('BPC/LOAS NÃO acumula com aposentadoria ou outros benefícios');
-                    }
+                    if (beneficiosIdentificados.includes('auxilio-acidente')) podeAcumular.push('Auxílio-acidente PODE acumular com pensão por morte e aposentadorias');
+                    if (beneficiosIdentificados.includes('pensao-morte')) podeAcumular.push('Pensão por morte PODE acumular com aposentadoria (com desconto pós-2019)');
+                    if (beneficiosIdentificados.includes('auxilio-doenca') && beneficiosIdentificados.includes('aposentadoria-invalidez')) naoAcumula.push('Auxílio-doença NÃO acumula com aposentadoria por invalidez');
+                    if (beneficiosIdentificados.includes('bpc-loas') && (beneficiosIdentificados.includes('aposentadoria_inss') || beneficiosIdentificados.includes('pensao_morte'))) naoAcumula.push('BPC/LOAS NÃO acumula com aposentadoria ou pensão por morte');
                     
                     if (podeAcumular.length > 0 || naoAcumula.length > 0) {
-                        observacoes.push({
-                            tipo: 'acumulacao',
-                            titulo: 'Regras de Acumulação de Benefícios',
-                            podeAcumular,
-                            naoAcumula
-                        });
+                        observacoes.push({ tipo: 'acumulacao', titulo: 'Regras de Acumulação de Benefícios', podeAcumular, naoAcumula });
                     }
                 }
 
-                return { 
-                    alta: processosAlta, 
-                    media: processosMedia, 
-                    baixa: processosBaixa,
-                    observacoes: observacoes
-                };
+                return { alta: processosAlta, media: processosMedia, baixa: processosBaixa, observacoes: observacoes };
             }
         };
 
-        // ===============================
-        // FUNÇÕES AUXILIARES ESPECÍFICAS
-        // ===============================
-        
-        // Função para converter tempo de contribuição para meses
+        // FUNÇÕES AUXILIARES
         function getTempoContribuicaoMeses(tempo) {
             const tempoMap = {
-                '0': 0, 'menos1': 6, '1a5': 36, '5a10': 90, '10a15': 150,
-                '15a20': 210, '20a30': 300, '30a35': 390, 'mais35': 480, 'nao_sei': 60
+                '0': 0, 'menos1': 6, '1a5': 36, '5a10': 90, '10a15': 150, '15a20': 210, 
+                '20a30': 300, '30a35': 390, 'mais35': 480, 'nao_sei': 60
             };
             return tempoMap[tempo] || 0;
         }
         
-        // Função específica para analisar seguros de aplicativos
         function getInfoSeguroApp(qualApp, statusTrabalho) {
-            const info = {
-                nome: '',
-                valores: '',
-                temCobertura: false,
-                motivoCobertura: ''
-            };
-            
+            const info = { nome: '', valores: '', temCobertura: false, motivoCobertura: '' };
             switch(qualApp) {
                 case 'rappi':
                     info.nome = 'Rappi';
                     info.valores = 'Morte: R$ 100.000 | Invalidez: até R$ 100.000 | Despesas médicas: R$ 30.000 | Funeral: R$ 5.000 | DIT: R$ 100/dia (após 11º dia, até 30 diárias)';
-                    
-                    if (statusTrabalho === 'em_entrega') {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'COBERTO - Estava realizando entrega pela Rappi';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'NÃO COBERTO - Rappi só cobre durante entrega ativa';
-                    }
+                    if (statusTrabalho === 'em_entrega') { info.temCobertura = true; info.motivoCobertura = 'COBERTO - Estava realizando entrega pela Rappi'; } 
+                    else { info.temCobertura = false; info.motivoCobertura = 'NÃO COBERTO - Rappi só cobre durante entrega ativa'; }
                     break;
-                    
                 case 'ifood':
                     info.nome = 'iFood';
                     info.valores = 'Invalidez permanente: até R$ 60.000';
-                    
-                    if (['em_entrega', 'voltando_casa', 'indo_retirar'].includes(statusTrabalho)) {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'COBERTO - iFood cobre entrega + trajeto volta (até 30km/1h após última entrega)';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'NÃO COBERTO - Fora do período de cobertura do iFood';
-                    }
+                    if (['em_entrega', 'voltando_casa', 'indo_retirar'].includes(statusTrabalho)) { info.temCobertura = true; info.motivoCobertura = 'COBERTO - iFood cobre entrega + trajeto volta (até 30km/1h após última entrega)'; } 
+                    else { info.temCobertura = false; info.motivoCobertura = 'NÃO COBERTO - Fora do período de cobertura do iFood'; }
                     break;
-                    
-                case 'uber':
-                    info.nome = 'Uber (passageiros)';
-                    info.valores = 'Morte: R$ 150.000 | Invalidez: R$ 50.000';
-                    
-                    if (statusTrabalho === 'em_entrega') {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'COBERTO - Durante corrida ativa com passageiro';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'NÃO COBERTO - Uber só cobre durante corrida com passageiro';
-                    }
-                    break;
-                    
-                case '99':
-                    info.nome = '99 (passageiros)';
-                    info.valores = 'Morte: R$ 100.000 | Invalidez: valores parciais';
-                    
-                    if (statusTrabalho === 'em_entrega') {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'COBERTO - Durante corrida ativa com passageiro';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'NÃO COBERTO - 99 só cobre durante corrida com passageiro';
-                    }
-                    break;
-                    
-                case 'uber_eats':
-                    info.nome = 'Uber Eats';
-                    info.valores = 'Invalidez permanente: até R$ 50.000';
-                    
-                    if (['em_entrega', 'voltando_casa', 'indo_retirar'].includes(statusTrabalho)) {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'COBERTO - Durante entrega + trajeto';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'NÃO COBERTO - Fora do período de cobertura';
-                    }
-                    break;
-                    
-                case 'loggi':
-                    info.nome = 'Loggi';
-                    info.valores = 'Conforme apólice específica';
-                    
-                    if (['em_entrega', 'indo_retirar'].includes(statusTrabalho)) {
-                        info.temCobertura = true;
-                        info.motivoCobertura = 'PROVÁVEL COBERTURA - Durante entrega ativa';
-                    } else {
-                        info.temCobertura = false;
-                        info.motivoCobertura = 'VERIFICAR APÓLICE - Loggi tem regras específicas';
-                    }
-                    break;
-                    
                 default:
                     info.nome = 'App não especificado';
                     info.valores = 'Verificar apólice específica';
                     info.temCobertura = false;
                     info.motivoCobertura = 'ANALISAR CASO A CASO - Cada app tem regras próprias';
             }
-            
             return info;
         }
 
@@ -1693,11 +1346,10 @@
         const respostasAnalise = {};
         let perguntaAtualIdx = 0;
         const ordemPerguntasAnalise = [
-            'situacao', 'tipoAcidente', 'dataAcidente', 'gravidade',
-            'tempoIncapacidade', 'tipoDoenca', 'vinculoTrabalho', 'dataUltimoEmprego',
-            'tempoDesempregado', 'recebeSeguroDesemprego', 'contribuiuAposDesemprego',
-            'dataUltimaContribuicao', 'tempoContribuicao', 'idade', 'sexo', 'rendaFamiliar',
-            'seguroVida', 'qualApp', 'statusTrabalhoApp', 'terceiroCausador', 'tipoFraude',
+            'situacao', 'tipoAcidente', 'dataAcidente', 'gravidade', 'tempoIncapacidade', 'tipoDoenca', 
+            'vinculoTrabalho', 'dataUltimoEmprego', 'tempoDesempregado', 'recebeSeguroDesemprego', 
+            'contribuiuAposDesemprego', 'dataUltimaContribuicao', 'tempoContribuicao', 'idade', 'sexo', 
+            'rendaFamiliar', 'seguroVida', 'qualApp', 'statusTrabalhoApp', 'terceiroCausador', 'tipoFraude',
             'parentescoFalecido', 'beneficiosAtuais'
         ];
 
@@ -1715,81 +1367,58 @@
                 const perguntaKey = ordemPerguntasAnalise[perguntaAtualIdx];
                 const perguntaConfig = analiseProcessos.perguntas[perguntaKey];
 
-                if (!perguntaConfig) {
-                    perguntaAtualIdx++;
-                    continue;
-                }
-
-                if (perguntaConfig.condicao && !perguntaConfig.condicao(respostasAnalise)) {
+                if (!perguntaConfig || (perguntaConfig.condicao && !perguntaConfig.condicao(respostasAnalise))) {
                     perguntaAtualIdx++;
                     continue;
                 }
 
                 const card = document.createElement('div');
                 card.className = 'pergunta-card';
-
                 let inputHtml = '';
+
                 if (perguntaConfig.opcoes) {
                     inputHtml = `<div class="opcoes-grid">`;
                     perguntaConfig.opcoes.forEach(opcao => {
-                        inputHtml += `
-                            <button class="opcao-btn" data-pergunta="${perguntaKey}" data-valor="${opcao.valor}" ${perguntaConfig.multiple ? 'data-multiple="true"' : ''}>
-                                <span style="font-size: 1.2em;">${opcao.icon}</span>
-                                <span>${opcao.label}</span>
-                            </button>
-                        `;
+                        inputHtml += `<button class="opcao-btn" data-pergunta="${perguntaKey}" data-valor="${opcao.valor}" ${perguntaConfig.multiple ? 'data-multiple="true"' : ''}>
+                                        <span style="font-size: 1.2em;">${opcao.icon}</span>
+                                        <span>${opcao.label}</span>
+                                    </button>`;
                     });
                     inputHtml += `</div>`;
                 } else if (perguntaConfig.tipo === 'date') {
                     inputHtml = `<input type="date" id="resposta-${perguntaKey}" class="input-field">`;
-                } else if (perguntaConfig.tipo === 'number') {
+                } else {
                     inputHtml = `<input type="number" id="resposta-${perguntaKey}" class="input-field" 
                                     ${perguntaConfig.min !== undefined ? `min="${perguntaConfig.min}"` : ''}
                                     ${perguntaConfig.max !== undefined ? `max="${perguntaConfig.max}"` : ''}>`;
-                } else {
-                    inputHtml = `<input type="text" id="resposta-${perguntaKey}" class="input-field" placeholder="Digite sua resposta...">`;
                 }
 
-                card.innerHTML = `
-                    <div class="pergunta-titulo">
-                        <span>${perguntaConfig.icon || '❓'}</span>
-                        <span>${perguntaConfig.titulo}</span>
-                    </div>
-                    ${inputHtml}
-                    ${perguntaConfig.ajuda ? `<p class="ajuda-text">${perguntaConfig.ajuda}</p>` : ''}
-                `;
+                card.innerHTML = `<div class="pergunta-titulo"><span>${perguntaConfig.icon || '❓'}</span><span>${perguntaConfig.titulo}</span></div>
+                                  ${inputHtml}
+                                  ${perguntaConfig.ajuda ? `<p class="ajuda-text">${perguntaConfig.ajuda}</p>` : ''}`;
                 perguntasContainer.appendChild(card);
 
                 if (perguntaConfig.opcoes) {
                     if (perguntaConfig.multiple) {
                         card.querySelectorAll('.opcao-btn').forEach(btn => {
                             btn.addEventListener('click', () => {
-                                if (!respostasAnalise[perguntaKey]) {
-                                    respostasAnalise[perguntaKey] = [];
-                                }
-                                
+                                if (!respostasAnalise[perguntaKey]) respostasAnalise[perguntaKey] = [];
                                 const valor = btn.dataset.valor;
                                 if (btn.classList.contains('selected')) {
                                     btn.classList.remove('selected');
                                     respostasAnalise[perguntaKey] = respostasAnalise[perguntaKey].filter(v => v !== valor);
                                 } else {
                                     btn.classList.add('selected');
-                                    if (!respostasAnalise[perguntaKey].includes(valor)) {
-                                        respostasAnalise[perguntaKey].push(valor);
-                                    }
+                                    if (!respostasAnalise[perguntaKey].includes(valor)) respostasAnalise[perguntaKey].push(valor);
                                 }
                             });
                         });
-                        
                         const btnContinuar = document.createElement('button');
                         btnContinuar.textContent = 'Continuar Análise';
                         btnContinuar.className = 'btn-continuar';
                         btnContinuar.onclick = () => {
-                            if (respostasAnalise[perguntaKey] && respostasAnalise[perguntaKey].length > 0) {
-                                avancarPerguntaAnalise();
-                            } else {
-                                alert("Por favor, selecione ao menos uma opção para continuar.");
-                            }
+                            if (respostasAnalise[perguntaKey] && respostasAnalise[perguntaKey].length > 0) avancarPerguntaAnalise();
+                            else alert("Por favor, selecione ao menos uma opção para continuar.");
                         };
                         card.appendChild(btnContinuar);
                     } else {
@@ -1837,28 +1466,17 @@
 
             const { alta, media, baixa, observacoes } = analiseProcessos.calcularProcessos(respostasAnalise);
             
-            // Debug - remover em produção
-            console.log('Resultados calculados:', { alta, media, baixa, observacoes });
-            
-            // Resumo das respostas
             let htmlResultados = '<div class="respostas-resumo"><h4>📋 Resumo das Informações Coletadas:</h4>';
             for (const key in respostasAnalise) {
                 if (respostasAnalise.hasOwnProperty(key) && analiseProcessos.perguntas[key]) {
                     const perguntaCfg = analiseProcessos.perguntas[key];
                     let valorResposta = respostasAnalise[key];
-                    
                     if (Array.isArray(valorResposta)) {
-                        const opcoesSelecionadas = valorResposta.map(val => {
-                            const opcao = perguntaCfg.opcoes?.find(o => o.valor === val);
-                            return opcao ? opcao.label : val;
-                        }).join(', ');
-                        valorResposta = opcoesSelecionadas;
+                        valorResposta = valorResposta.map(val => (perguntaCfg.opcoes?.find(o => o.valor === val) || {label: val}).label).join(', ');
                     } else if (perguntaCfg.opcoes) {
-                        const opcaoSelecionada = perguntaCfg.opcoes.find(o => o.valor === valorResposta);
-                        valorResposta = opcaoSelecionada ? opcaoSelecionada.label : valorResposta;
+                        valorResposta = (perguntaCfg.opcoes.find(o => o.valor === valorResposta) || {label: valorResposta}).label;
                     }
-                    
-                    if (valorResposta && valorResposta !== '') {
+                    if (valorResposta) {
                         htmlResultados += `<div class="resposta-item">
                             <span>${perguntaCfg.titulo.replace(/\?.*/, '').replace('Qual ', '').trim()}:</span>
                             <span class="resposta-valor">${valorResposta}</span>
@@ -1868,481 +1486,72 @@
             }
             htmlResultados += '</div>';
 
-            // Alertas sobre acumulação
             if (observacoes.length > 0) {
                 observacoes.forEach(obs => {
                     if (obs.tipo === 'acumulacao') {
-                        htmlResultados += `<div class="alert-acumulacao">
-                            <div class="icon">⚖️</div>
-                            <div class="content">
-                                <strong>${obs.titulo}</strong><br>
-                                ${obs.podeAcumular.map(item => `✅ ${item}`).join('<br>')}
-                                ${obs.naoAcumula.length > 0 ? '<br>' + obs.naoAcumula.map(item => `❌ ${item}`).join('<br>') : ''}
-                            </div>
-                        </div>`;
+                        htmlResultados += `<div class="alert-acumulacao"><div class="icon">⚖️</div><div class="content">
+                            <strong>${obs.titulo}</strong><br>
+                            ${obs.podeAcumular.map(item => `✅ ${item}`).join('<br>')}
+                            ${obs.naoAcumula.length > 0 ? '<br>' + obs.naoAcumula.map(item => `❌ ${item}`).join('<br>') : ''}
+                        </div></div>`;
                     }
                 });
             }
 
-            // Resultados por certeza
             if (alta.length === 0 && media.length === 0 && baixa.length === 0) {
-                htmlResultados += `<div class="empty-state">
-                    <div class="empty-icon">🔍</div>
+                htmlResultados += `<div class="empty-state"><div class="empty-icon">🔍</div>
                     <div class="empty-title">Análise Inconclusiva</div>
-                    <div class="empty-text">Com base nas informações fornecidas, não foi possível identificar benefícios específicos. Considere uma consulta presencial para análise mais detalhada.</div>
-                </div>`;
+                    <div class="empty-text">Com base nas informações, não foi possível identificar benefícios. Considere uma consulta para análise detalhada.</div></div>`;
             } else {
-                // Benefícios de ALTA probabilidade
                 if (alta.length > 0) {
-                    htmlResultados += `<h4 style="text-align:center; margin-bottom:1rem; font-size:1.3rem; color:var(--success);">
-                        🎯 Benefícios com Alta Probabilidade (${alta.length}):
-                    </h4>`;
+                    htmlResultados += `<h4 style="text-align:center; margin-bottom:1rem; font-size:1.3rem; color:var(--success);">🎯 Benefícios com Alta Probabilidade (${alta.length}):</h4>`;
                     alta.forEach(p => {
                         const processoInfo = processosInfo[p.key];
-                        if (processoInfo) {
-                            htmlResultados += criarCardResultado(processoInfo, p, 'alta');
-                        }
+                        if (processoInfo) htmlResultados += criarCardResultado(processoInfo, p, 'alta');
                     });
                 }
-                
-                // Benefícios de MÉDIA probabilidade
                 if (media.length > 0) {
-                    htmlResultados += `<h4 style="text-align:center; margin-top:2rem; margin-bottom:1rem; font-size:1.2rem; color:var(--warning);">
-                        ⚖️ Benefícios com Média Probabilidade (${media.length}):
-                    </h4>`;
+                    htmlResultados += `<h4 style="text-align:center; margin-top:2rem; margin-bottom:1rem; font-size:1.2rem; color:var(--warning);">⚖️ Benefícios com Média Probabilidade (${media.length}):</h4>`;
                     media.forEach(p => {
                         const processoInfo = processosInfo[p.key];
-                        if (processoInfo) {
-                            htmlResultados += criarCardResultado(processoInfo, p, 'media');
-                        }
+                        if (processoInfo) htmlResultados += criarCardResultado(processoInfo, p, 'media');
                     });
                 }
-                
-                // Benefícios de BAIXA probabilidade
                 if (baixa.length > 0) {
-                    htmlResultados += `<h4 style="text-align:center; margin-top:2rem; margin-bottom:1rem; font-size:1.1rem; color:var(--info);">
-                        🔍 Benefícios para Análise Detalhada (${baixa.length}):
-                    </h4>`;
+                    htmlResultados += `<h4 style="text-align:center; margin-top:2rem; margin-bottom:1rem; font-size:1.1rem; color:var(--info);">🔍 Benefícios para Análise Detalhada (${baixa.length}):</h4>`;
                     baixa.forEach(p => {
                         const processoInfo = processosInfo[p.key];
-                        if (processoInfo) {
-                            htmlResultados += criarCardResultado(processoInfo, p, 'baixa');
-                        }
+                        if (processoInfo) htmlResultados += criarCardResultado(processoInfo, p, 'baixa');
                     });
                 }
-                
-                // Adicionar estatísticas de resumo
-                const totalBeneficios = alta.length + media.length + baixa.length;
-                htmlResultados += `<div style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; text-align: center;">
-                    <h5 style="color: var(--dark); margin-bottom: 1rem; font-weight: 600;">📊 Resumo da Análise</h5>
-                    <p style="color: #6b7280; margin-bottom: 1rem;">Total de ${totalBeneficios} possibilidades identificadas:</p>
-                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-                        ${alta.length > 0 ? `<div><strong style="color: var(--success);">${alta.length}</strong> Alta probabilidade</div>` : ''}
-                        ${media.length > 0 ? `<div><strong style="color: var(--warning);">${media.length}</strong> Média probabilidade</div>` : ''}
-                        ${baixa.length > 0 ? `<div><strong style="color: var(--info);">${baixa.length}</strong> Análise detalhada</div>` : ''}
-                    </div>
-                </div>`;
             }
-            
             resultadosContent.innerHTML = htmlResultados;
         }
 
         function criarCardResultado(processoInfo, processo, nivel) {
-            const explicacao = gerarExplicacaoPersonalizada(processo.key, respostasAnalise);
-            
-            return `
-                <div class="resultado-card ${nivel}">
-                    <div class="resultado-header">
-                        <div class="resultado-titulo">
-                            <span>${processoInfo.icon}</span>
-                            <span>${processoInfo.title}</span>
+            return `<div class="resultado-card ${nivel}">
+                        <div class="resultado-header">
+                            <div class="resultado-titulo"><span>${processoInfo.icon}</span><span>${processoInfo.title}</span></div>
+                            <span class="certeza-badge certeza-${nivel}">${processo.certeza.toUpperCase()}</span>
                         </div>
-                        <span class="certeza-badge certeza-${nivel}">
-                            ${processo.certeza.toUpperCase()}
-                        </span>
-                    </div>
-                    <p class="resultado-motivo">${processo.motivo}</p>
-                    
-                    ${explicacao ? `
-                        <div class="explicacao-personalizada">
-                            <h5 style="font-weight: 600; color: var(--dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>🎯</span>
-                                <span>Por que você tem direito:</span>
-                            </h5>
-                            <div class="explicacao-content">
-                                ${explicacao}
-                            </div>
+                        <p class="resultado-motivo">${processo.motivo}</p>
+                        <div class="resultado-acoes">
+                            <a href="#" class="btn-info">📋 Ver Documentos</a>
+                            <button class="btn-docs">📖 Mais Informações</button>
                         </div>
-                    ` : ''}
-                    
-                    <div class="resultado-acoes">
-                        <a href="index.html?processo=${processo.key}" class="btn-info" target="_blank">
-                            📋 Ver Documentos Necessários
-                        </a>
-                        <button class="btn-docs" onclick="mostrarMaisDetalhes('${processo.key}')">
-                            📖 Mais Informações
-                        </button>
-                    </div>
-                </div>`;
+                    </div>`;
         }
 
         function reiniciarAnalise() {
-            for (const key in respostasAnalise) { 
-                delete respostasAnalise[key]; 
-            }
+            for (const key in respostasAnalise) delete respostasAnalise[key];
             perguntaAtualIdx = 0;
             resultadosContainer.style.display = 'none';
             perguntasContainer.style.display = 'block';
             renderizarPerguntaAnalise();
         }
 
-        function gerarExplicacaoPersonalizada(processoKey, respostas) {
-            const situacoes = respostas.situacao || [];
-            
-            const idade = respostas.idade ? parseInt(respostas.idade) : 0;
-            const sexo = respostas.sexo || '';
-            const gravidade = respostas.gravidade || '';
-            const tipoDoenca = respostas.tipoDoenca || '';
-            const vinculoTrabalho = respostas.vinculoTrabalho || '';
-            const tempoContribuicao = respostas.tempoContribuicao || '';
-            
-            switch (processoKey) {
-                case 'auxilio-doenca':
-                    const isAcidenteAD = situacoes.includes('acidente');
-                    const isDoencaGraveAD = tipoDoenca && isDoencaGrave(tipoDoenca);
-                    const tempoContribAD = getTempoContribuicaoMeses(tempoContribuicao);
-                    
-                    return `
-                        <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h6 style="color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;"><span>⚖️</span> Fundamentação Legal - Art. 59 a 64 da Lei 8.213/91</h6>
-                        </div>
-                        
-                        <p><strong>✅ REQUISITOS CUMPRIDOS:</strong></p>
-                        <ul>
-                            <li><strong>1. Qualidade de Segurado:</strong> <span class="explicacao-highlight">${getVinculoTrabalhoLabel(vinculoTrabalho)}</span> ${temQualidadeSeguradoTexto(respostas)}</li>
-                            
-                            <li><strong>2. Incapacidade Temporária:</strong> <span class="explicacao-highlight">${getGravidadeLabel(gravidade)}</span>
-                                ${respostas.tempoIncapacidade ? ` há <span class="explicacao-highlight">${getTempoIncapacidadeLabel(respostas.tempoIncapacidade)}</span>` : ''}
-                                <br><em>• Comprovação: Perícia médica do INSS (Art. 60, §1º)</em>
-                            </li>
-                            
-                            ${isAcidenteAD ? `
-                                <li><strong>3. Carência:</strong> <span class="explicacao-highlight">DISPENSADA</span> por acidente ${getTipoAcidenteLabel(respostas.tipoAcidente)}
-                                    <br><em>• Base legal: Art. 26, II da Lei 8.213/91</em>
-                                </li>
-                            ` : isDoencaGraveAD ? `
-                                <li><strong>3. Carência:</strong> <span class="explicacao-highlight">DISPENSADA</span> por doença grave
-                                    <br><em>• Base legal: Art. 151 da Lei 8.213/91 - ${getTipoDoencaLabel(tipoDoenca)}</em>
-                                </li>
-                            ` : `
-                                <li><strong>3. Carência:</strong> ${tempoContribAD >= 12 ? 
-                                    `<span class="explicacao-highlight">CUMPRIDA</span> (~${tempoContribAD} meses de contribuição)` :
-                                    `<span style="color: #dc2626;">INSUFICIENTE</span> (~${tempoContribAD} meses - necessário 12 meses)`}
-                                    <br><em>• Base legal: Art. 25, I da Lei 8.213/91</em>
-                                </li>
-                            `}
-                        </ul>
-                        
-                        <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>💰 VALOR DO BENEFÍCIO:</strong></p>
-                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                                <li>91% da média dos 80% maiores salários desde Jul/1994</li>
-                                <li>Valor mínimo: R$ 1.518,00 (salário mínimo 2025)</li>
-                                <li>Valor máximo: R$ 8.157,41 (teto do INSS 2025)</li>
-                            </ul>
-                        </div>
-                        
-                        <p><strong>📋 PRÓXIMOS PASSOS:</strong></p>
-                        <ol style="padding-left: 1.5rem; margin: 0.5rem 0;">
-                            <li>Agendar perícia médica no INSS (presencial ou digital)</li>
-                            <li>Aguardar carência de 15 dias se ainda não completou</li>
-                            <li>Reunir atestados médicos e exames comprobatórios</li>
-                        </ol>
-                    `;
-
-                case 'aposentadoria-invalidez':
-                    const isAcidenteAI = situacoes.includes('acidente');
-                    const isDoencaGraveAI = tipoDoenca && isDoencaGrave(tipoDoenca);
-                    const tempoContribAI = getTempoContribuicaoMeses(tempoContribuicao);
-                    
-                    return `
-                        <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h6 style="color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;"><span>⚖️</span> Fundamentação Legal - Art. 42 a 47 da Lei 8.213/91</h6>
-                        </div>
-                        
-                        <p><strong>✅ REQUISITOS CUMPRIDOS:</strong></p>
-                        <ul>
-                            <li><strong>1. Qualidade de Segurado:</strong> <span class="explicacao-highlight">${getVinculoTrabalhoLabel(vinculoTrabalho)}</span> ${temQualidadeSeguradoTexto(respostas)}</li>
-                            
-                            <li><strong>2. Incapacidade Permanente e Total:</strong> <span class="explicacao-highlight">${getGravidadeLabel(gravidade)}</span>
-                                ${respostas.tempoIncapacidade ? ` há <span class="explicacao-highlight">${getTempoIncapacidadeLabel(respostas.tempoIncapacidade)}</span>` : ''}
-                                <br><em>• Definição legal: Impossibilidade para qualquer atividade laborativa (Art. 42)</em>
-                            </li>
-                            
-                            ${isAcidenteAI ? `
-                                <li><strong>3. Carência:</strong> <span class="explicacao-highlight">DISPENSADA</span> por acidente ${getTipoAcidenteLabel(respostas.tipoAcidente)}
-                                    <br><em>• Base legal: Art. 26, II da Lei 8.213/91</em>
-                                </li>
-                            ` : isDoencaGraveAI ? `
-                                <li><strong>3. Carência:</strong> <span class="explicacao-highlight">DISPENSADA</span> por doença grave
-                                    <br><em>• Base legal: Art. 151 da Lei 8.213/91 - ${getTipoDoencaLabel(tipoDoenca)}</em>
-                                </li>
-                            ` : `
-                                <li><strong>3. Carência:</strong> ${tempoContribAI >= 12 ? 
-                                    `<span class="explicacao-highlight">CUMPRIDA</span> (~${tempoContribAI} meses de contribuição)` :
-                                    `<span style="color: #dc2626;">INSUFICIENTE</span> (~${tempoContribAI} meses - necessário 12 meses)`}
-                                    <br><em>• Base legal: Art. 25, I da Lei 8.213/91</em>
-                                </li>
-                            `}
-                        </ul>
-                        
-                        <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>💰 VALOR DO BENEFÍCIO:</strong></p>
-                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                                <li><strong>100%</strong> da média dos 80% maiores salários desde Jul/1994</li>
-                                <li>Valor mínimo: R$ 1.518,00 (salário mínimo 2025)</li>
-                                <li>Valor máximo: R$ 8.157,41 (teto do INSS 2025)</li>
-                                <li><strong>Acréscimo 25%:</strong> Se necessitar assistência permanente de terceiros</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>⚠️ ATENÇÃO - CRITÉRIO RÍGIDO:</strong></p>
-                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                                <li>Perícia médica deve confirmar <strong>incapacidade total e definitiva</strong></li>
-                                <li>Impossibilidade para <strong>qualquer</strong> trabalho, não apenas o habitual</li>
-                                <li>Não há possibilidade de reabilitação profissional</li>
-                                <li>Revisão obrigatória a cada 2 anos (se reversível)</li>
-                            </ul>
-                        </div>
-                    `;
-
-                case 'auxilio-acidente':
-                    return `
-                        <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h6 style="color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;"><span>⚖️</span> Fundamentação Legal - Art. 86 da Lei 8.213/91</h6>
-                        </div>
-                        
-                        <p><strong>✅ REQUISITOS CUMPRIDOS:</strong></p>
-                        <ul>
-                            <li><strong>1. Acidente:</strong> <span class="explicacao-highlight">Acidente ${getTipoAcidenteLabel(respostas.tipoAcidente)}</span>
-                                ${respostas.dataAcidente ? ` em <span class="explicacao-highlight">${new Date(respostas.dataAcidente + 'T00:00:00').toLocaleDateString('pt-BR')}</span>` : ''}
-                                <br><em>• Definição: Evento súbito que causa lesão corporal ou perturbação funcional</em>
-                            </li>
-                            
-                            <li><strong>2. Sequela Permanente:</strong> <span class="explicacao-highlight">${getGravidadeLabel(gravidade)}</span>
-                                <br><em>• Requisito: Redução da capacidade para o trabalho que habitualmente exercia</em>
-                            </li>
-                            
-                            <li><strong>3. Qualidade de Segurado:</strong> <span class="explicacao-highlight">${getVinculoTrabalhoLabel(vinculoTrabalho)}</span>
-                                <br><em>• Sem necessidade de carência (Art. 26, II)</em>
-                            </li>
-                        </ul>
-                        
-                        <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>💰 CARACTERÍSTICAS ESPECIAIS:</strong></p>
-                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                                <li><strong>Valor:</strong> 50% do salário-de-benefício</li>
-                                <li><strong>Natureza:</strong> Indenizatória (não substitui salário)</li>
-                                <li><strong>Acumulação:</strong> ✅ PODE acumular com aposentadoria</li>
-                                <li><strong>Acumulação:</strong> ✅ PODE acumular com salário</li>
-                                <li><strong>Duração:</strong> Vitalício (enquanto houver redução de capacidade)</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>🎯 DIFERENCIAL ESTRATÉGICO:</strong></p>
-                            <p>Este é um dos <strong>únicos benefícios</strong> que pode ser acumulado com aposentadoria e salário, representando uma <strong>renda extra permanente</strong> de até R$ 4.078,70/mês (50% do teto do INSS).</p>
-                        </div>
-                        
-                        <p><strong>📋 PROVA PERICIAL:</strong></p>
-                        <ul style="padding-left: 1.5rem; margin: 0.5rem 0;">
-                            <li>Nexo causal entre acidente e sequela</li>
-                            <li>Redução da capacidade laborativa (não precisa ser total)</li>
-                            <li>Permanência da limitação funcional</li>
-                        </ul>
-                    `;
-
-                case 'seguro-vida':
-                    const tiposSeguro = Array.isArray(respostas.seguroVida) ? respostas.seguroVida : [respostas.seguroVida];
-                    const temSeguroApp = tiposSeguro.includes('sim_app');
-                    
-                    return `
-                        <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h6 style="color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;"><span>⚖️</span> Fundamentação Legal - Lei 10.406/2002 (Código Civil) + CDC</h6>
-                        </div>
-                        
-                        <p><strong>✅ DIREITO À INDENIZAÇÃO:</strong></p>
-                        <ul>
-                            <li><strong>1. Acidente Coberto:</strong> <span class="explicacao-highlight">Acidente ${getTipoAcidenteLabel(respostas.tipoAcidente)}</span>
-                                ${respostas.dataAcidente ? ` em <span class="explicacao-highlight">${new Date(respostas.dataAcidente + 'T00:00:00').toLocaleDateString('pt-BR')}</span>` : ''}
-                            </li>
-                            
-                            <li><strong>2. Consequências:</strong> <span class="explicacao-highlight">${getGravidadeLabel(gravidade)}</span>
-                                <br><em>• Tabela SUSEP: Percentual conforme sequela</em>
-                            </li>
-                            
-                            <li><strong>3. Vigência da Apólice:</strong> 
-                                ${tiposSeguro.map(tipo => {
-                                    const detalhes = {
-                                        'sim_empresa': 'Seguro empresarial/empregador - Verificar vigência na data do acidente',
-                                        'sim_individual': 'Seguro individual/banco - Confirmar pagamento em dia',
-                                        'sim_app': 'Seguro por app - Cobertura específica por aplicativo',
-                                        'sim_consorcio': 'Seguro por consórcio - Verificar parcelas em dia'
-                                    };
-                                    return `<br>• <span class="explicacao-highlight">${detalhes[tipo] || tipo}</span>`;
-                                }).join('')}
-                            </li>
-                        </ul>
-                        
-                        ${temSeguroApp && respostas.qualApp ? `
-                            <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0;">
-                                <p><strong>📱 ANÁLISE ESPECÍFICA DO APP:</strong></p>
-                                
-                                ${(() => {
-                                    const infoApp = getInfoSeguroApp(respostas.qualApp, respostas.statusTrabalhoApp);
-                                    return `
-                                        <h6 style="color: #1e40af; margin: 1rem 0 0.5rem 0; font-weight: 600;">🛵 ${infoApp.nome}:</h6>
-                                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem; font-size: 0.9rem;">
-                                            <li><strong>Status da Cobertura:</strong> ${infoApp.temCobertura ? '✅' : '❌'} ${infoApp.motivoCobertura}</li>
-                                            <li><strong>Valores:</strong> ${infoApp.valores}</li>
-                                        </ul>
-                                    `;
-                                })()}
-                                
-                                <div style="background: #fef3c7; padding: 0.75rem; border-radius: 6px; margin: 1rem 0;">
-                                    <p style="margin: 0; font-size: 0.85rem; color: #92400e;"><strong>💡 IMPORTANTE:</strong> Cada app tem regras específicas de cobertura. A análise acima é baseada no status informado no momento do acidente.</p>
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 1rem; margin: 1rem 0;">
-                            <p><strong>💰 VALORES ESTIMADOS:</strong></p>
-                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                                ${tiposSeguro.includes('sim_empresa') ? '<li><strong>Empresarial:</strong> R$ 10.000 a R$ 200.000+ (varia por apólice)</li>' : ''}
-                                ${tiposSeguro.includes('sim_individual') ? '<li><strong>Individual/Banco:</strong> R$ 5.000 a R$ 100.000+ (conforme contrato)</li>' : ''}
-                                ${tiposSeguro.includes('sim_consorcio') ? '<li><strong>Consórcio:</strong> Valor da cota + cobertura adicional</li>' : ''}
-                            </ul>
-                        </div>
-                        
-                        <p><strong>📋 PRÓXIMOS PASSOS:</strong></p>
-                        <ol style="padding-left: 1.5rem; margin: 0.5rem 0;">
-                            <li><strong>Comunicar sinistro</strong> à seguradora (prazo: até 30 dias)</li>
-                            <li><strong>Reunir documentos:</strong> BO, laudos médicos, comprovante de cadastro ativo</li>
-                            <li><strong>Aceitar perícia:</strong> Direito a segunda opinião se necessário</li>
-                            <li><strong>Contestar recusa:</strong> Se negado injustamente, acionar judicialmente</li>
-                        </ol>
-                    `;
-
-                default:
-                    return `
-                        <p>Com base nas suas informações, você se enquadra nos requisitos deste benefício.</p>
-                        <p><strong>📋 Próximo passo:</strong> Verificar documentos necessários e dar entrada no processo.</p>
-                    `;
-            }
-        }
-
-        // Funções auxiliares para labels
-        function temQualidadeSeguradoTexto(respostas) {
-            if (respostas.vinculoTrabalho === 'desempregado') {
-                const qualidade = respostas.recebeSeguroDesemprego;
-                if (qualidade === 'sim_recebendo') return '(recebendo seguro-desemprego)';
-                if (qualidade === 'sim_recebi_ano') return '(recebeu seguro-desemprego no último ano)';
-                if (respostas.contribuiuAposDesemprego === 'sim_sempre') return '(contribuindo como autônomo)';
-                return '(verificar qualidade pelos prazos)';
-            }
-            return '(ativo)';
-        }
-
-        function getTipoDoencaLabel(tipo) {
-            const labels = {
-                'cancer': 'Câncer',
-                'cardiopatia_grave': 'Cardiopatia grave',
-                'mental': 'Transtorno mental',
-                'hiv': 'HIV/AIDS',
-                'nefropatia_grave': 'Doença renal crônica',
-                'tuberculose_ativa': 'Tuberculose ativa',
-                'esclerose_multipla': 'Esclerose múltipla',
-                'hanseniase': 'Hanseníase',
-                'parkinson': 'Doença de Parkinson',
-                'hepatopatia_grave': 'Hepatopatia grave',
-                'cegueira': 'Cegueira',
-                'paralisia_irreversivel': 'Paralisia irreversível',
-                'outra_grave': 'Doença grave',
-                'outra': 'Doença comum'
-            };
-            return labels[tipo] || tipo;
-        }
-
-        function getTipoAcidenteLabel(tipo) {
-            const labels = {
-                'transito': 'de trânsito',
-                'trabalho': 'de trabalho', 
-                'domestico': 'doméstico',
-                'outro': 'outro tipo'
-            };
-            return labels[tipo] || tipo;
-        }
-
-        function getVinculoTrabalhoLabel(vinculo) {
-            const labels = {
-                'clt': 'Empregado CLT',
-                'mei': 'MEI',
-                'autonomo': 'Autônomo',
-                'rural': 'Trabalhador rural',
-                'domestico': 'Empregado doméstico',
-                'servidor': 'Servidor público',
-                'desempregado': 'Desempregado',
-                'aposentado': 'Aposentado',
-                'nunca_trabalhou': 'Nunca trabalhou'
-            };
-            return labels[vinculo] || vinculo;
-        }
-
-        function getTempoIncapacidadeLabel(tempo) {
-            const labels = {
-                'menos15': 'menos de 15 dias',
-                '15_60': '15 dias a 2 meses',
-                '2_6meses': '2 a 6 meses',
-                '6_12meses': '6 meses a 1 ano',
-                'mais1ano': 'mais de 1 ano',
-                'mais2anos': 'mais de 2 anos'
-            };
-            return labels[tempo] || tempo;
-        }
-
-        function getGravidadeLabel(gravidade) {
-            const labels = {
-                'permanente_total': 'Incapacidade permanente total',
-                'permanente_parcial': 'Sequelas permanentes parciais',
-                'temporaria_grave': 'Incapacidade temporária grave',
-                'temporaria_leve': 'Incapacidade temporária leve',
-                'sem_incapacidade': 'Sem incapacidade significativa',
-                'nao_sei': 'Em avaliação'
-            };
-            return labels[gravidade] || gravidade;
-        }
-
-        function isDoencaGrave(tipoDoenca) {
-            const doencasGravesLista = [
-                'tuberculose_ativa', 'hanseniase', 'alienacao_mental', 'esclerose_multipla',
-                'hepatopatia_grave', 'cancer', 'cegueira', 'paralisia_irreversivel',
-                'cardiopatia_grave', 'parkinson', 'espondiloartrose_anquilosante',
-                'nefropatia_grave', 'estado_avancado_doenca_paget', 'hiv',
-                'contaminacao_radiacao', 'sindrome_talidomida', 'acidente_vascular_encefálico_agudo',
-                'abdome_agudo_cirurgico'
-            ];
-            return doencasGravesLista.includes(tipoDoenca);
-        }
-
-        function mostrarMaisDetalhes(processoKey) {
-            alert(`Funcionalidade "Mais Informações" para ${processoKey} será implementada em breve!`);
-        }
-
         // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            renderizarPerguntaAnalise();
-        });
+        document.addEventListener('DOMContentLoaded', renderizarPerguntaAnalise);
     </script>
 </body>
 </html>
