@@ -847,8 +847,8 @@
             const monthSales = getMonthSales(); 
             
             updateProcessStats(monthSales); 
+            updateConsultantRanking(monthSales); // Esta função agora também atualiza o "Melhor Consultor"
             updateMainStats(monthSales);  
-            updateConsultantRanking(monthSales); 
             updateMonthSales(monthSales); 
             
             const updateIndicator = document.getElementById('updateIndicator');
@@ -913,45 +913,76 @@
             document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
         }
 
+        // ===================================================================================
+        // FUNÇÃO CORRIGIDA - INÍCIO
+        // ===================================================================================
+        /**
+         * Normaliza o nome de um consultor para criar uma chave de agrupamento consistente.
+         * Ex: "Thiago Pereira Gomes" -> "thiago"
+         * Ex: "Flávio" -> "flavio"
+         * @param {string} fullName - O nome completo do consultor.
+         * @returns {string} - O primeiro nome, em minúsculas e sem acentos.
+         */
+        function getNormalizedConsultantKey(fullName) {
+            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
+            return fullName
+                .trim()
+                .normalize("NFD") // Separa acentos dos caracteres (ex: 'á' -> 'a' + ´)
+                .replace(/[\u0300-\u036f]/g, "") // Remove os acentos
+                .toLowerCase() // Converte para minúsculas
+                .split(' ')[0]; // Pega apenas o primeiro nome
+        }
 
         function updateConsultantRanking(monthSales) {
-            const consultantProcessCounts = {};
+            const consultantStats = {}; // Objeto para agrupar processos por consultor normalizado
 
             monthSales.forEach(sale => {
-                const consultant = sale.consultor;
-                if (!consultantProcessCounts[consultant]) {
-                    consultantProcessCounts[consultant] = 0;
+                const rawConsultantName = sale.consultor;
+                if (!rawConsultantName || !rawConsultantName.trim()) {
+                    return; // Pula a linha se o nome do consultor estiver vazio
                 }
 
-                const processosString = (sale.processo || '').toUpperCase();
-                const listaProcessos = processosString.split(',')
-                                          .map(p => p.trim())
-                                          .filter(p => p); 
+                // Cria uma chave única e consistente para o consultor (ex: "thiago", "flavio")
+                const normalizedKey = getNormalizedConsultantKey(rawConsultantName);
                 
-                listaProcessos.forEach(proc => {
-                    // IGNORAR "DRA RENATA" NA CONTAGEM PARA O RANKING.
-                    // Se "DRA RENATA" estiver presente, ela não adiciona à contagem de processos do consultor.
-                    // Outros processos válidos na mesma linha são contados.
-                    if (proc && proc !== DRA_RENATA_STRING) { 
-                         consultantProcessCounts[consultant]++;
-                    }
-                });
+                // Se for a primeira vez que vemos este consultor, inicializa seus dados
+                if (!consultantStats[normalizedKey]) {
+                    // Pega o primeiro nome para exibição e capitaliza a primeira letra para ficar bonito
+                    const displayName = rawConsultantName.trim().split(' ')[0];
+                    const capitalizedDisplayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                    
+                    consultantStats[normalizedKey] = {
+                        name: capitalizedDisplayName, // Nome que será exibido no ranking
+                        sales: 0 // Contagem inicial de processos
+                    };
+                }
+
+                // Conta quantos processos válidos existem nesta linha da planilha
+                const processosString = (sale.processo || '').toUpperCase();
+                const numProcessos = processosString.split(',')
+                    .map(p => p.trim())
+                    .filter(p => p && p !== DRA_RENATA_STRING) // Filtra strings vazias e "DRA RENATA"
+                    .length;
+                
+                // Adiciona o número de processos ao total do consultor
+                consultantStats[normalizedKey].sales += numProcessos;
             });
             
-            const ranking = Object.entries(consultantProcessCounts)
-                .map(([name, processes]) => ({ name, sales: processes })) 
-                .sort((a, b) => b.sales - a.sales)
-                .slice(0, 5);
+            // Converte o objeto de estatísticas em um array para poder ordenar
+            const ranking = Object.values(consultantStats)
+                .sort((a, b) => b.sales - a.sales); // Ordena do maior para o menor
             
+            // Atualiza o card "Melhor Consultor"
             let topConsultantName = '-';
             if (ranking.length > 0) {
-                topConsultantName = ranking[0].name;
+                topConsultantName = ranking[0].name; // Pega o nome do primeiro do ranking
             }
             document.getElementById('topConsultant').textContent = topConsultantName;
 
+            // Gera o HTML para a lista do ranking (Top 10)
             let html = '';
             if (ranking.length > 0) {
-                ranking.forEach((consultant, index) => {
+                ranking.slice(0, 10).forEach((consultant, index) => { // Mostra até os 10 primeiros
                     html += `
                     <div class="ranking-item">
                         <div class="consultant-info">
@@ -966,6 +997,9 @@
             }
             document.getElementById('consultantRanking').innerHTML = html;
         }
+        // ===================================================================================
+        // FUNÇÃO CORRIGIDA - FIM
+        // ===================================================================================
 
 
         function updateProcessStats(monthSales) {
