@@ -893,7 +893,6 @@
                     ]
                 },
                 
-                // <<<<<<< INÍCIO DA NOVA PERGUNTA >>>>>>>
                 dataFimTratamento: {
                     titulo: 'Quando o tratamento médico foi finalizado?',
                     icon: '🏁',
@@ -904,7 +903,6 @@
                     tipo: 'date',
                     ajuda: 'Data em que o tratamento foi concluído (alta médica). Importante para o prazo do seguro de vida (geralmente 1 ano após a alta).'
                 },
-                // <<<<<<< FIM DA NOVA PERGUNTA >>>>>>>
 
                 qualApp: {
                     titulo: 'Qual aplicativo estava usando no momento do acidente?',
@@ -1160,10 +1158,9 @@
                     }
                 }
 
-                // <<<<<<<<<<<<<<<<<<< INÍCIO DA CORREÇÃO SOLICITADA: SEGURO DE VIDA >>>>>>>>>>>>>>>>>>>>
+                // SEGURO DE VIDA
                 if (situacoes.includes('acidente') || situacoes.includes('falecimento')) {
                     if (respostas.seguroVida && !respostas.seguroVida.includes('nao') && !respostas.seguroVida.includes('nao_sei')) {
-                        // Invalidez Permanente (trigger para a regra de 1 ano)
                         if (respostas.gravidade && ['permanente_parcial', 'permanente_total'].includes(respostas.gravidade)) {
                             if (respostas.dataFimTratamento) {
                                 const hoje = new Date();
@@ -1192,7 +1189,6 @@
                                 });
                             }
                         }
-                        // Caso de morte
                         else if (situacoes.includes('falecimento')) {
                             processosAlta.push({
                                 key: 'seguro-vida',
@@ -1200,7 +1196,6 @@
                                 motivo: 'Em caso de falecimento, o prazo para os beneficiários acionarem o seguro é diferente (geralmente maior). Verificar apólice.'
                             });
                         }
-                        // Incapacidade temporária (algumas apólices cobrem)
                         else if (respostas.gravidade === 'temporaria_grave') {
                              processosMedia.push({
                                 key: 'seguro-vida',
@@ -1210,7 +1205,6 @@
                         }
                     }
                 }
-                // <<<<<<<<<<<<<<<<<<<<<<<< FIM DA CORREÇÃO SOLICITADA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
                 // BPC/LOAS com a nova regra
                 if (situacoes.includes('deficiencia') || (respostas.idade && parseInt(respostas.idade) >= 65)) {
@@ -1567,7 +1561,15 @@
             resultadosContent.innerHTML = htmlResultados;
         }
 
+        // =========================================================================
+        // FUNÇÃO CORRIGIDA - Gera links dinâmicos para os botões de resultado
+        // =========================================================================
         function criarCardResultado(processoInfo, processo, nivel) {
+            // Usa caminhos relativos. Se a página principal está em /revive/, 
+            // estes links apontarão para /revive/documentos/nome-do-processo.html
+            const urlDocs = `documentos/${processo.key}.html`;
+            const urlInfo = `info/${processo.key}.html`;
+            
             return `<div class="resultado-card ${nivel}">
                         <div class="resultado-header">
                             <div class="resultado-titulo"><span>${processoInfo.icon}</span><span>${processoInfo.title}</span></div>
@@ -1575,8 +1577,8 @@
                         </div>
                         <p class="resultado-motivo">${processo.motivo}</p>
                         <div class="resultado-acoes">
-                            <a href="#" class="btn-info">📋 Ver Documentos</a>
-                            <button class="btn-docs">📖 Mais Informações</button>
+                            <a href="${urlDocs}" target="_blank" rel="noopener noreferrer" class="btn-info">📋 Ver Documentos</a>
+                            <a href="${urlInfo}" target="_blank" rel="noopener noreferrer" class="btn-docs">📖 Mais Informações</a>
                         </div>
                     </div>`;
         }
