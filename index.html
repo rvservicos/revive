@@ -1434,10 +1434,8 @@
                 icon: '📗', title: 'Carnê de Contribuição', description: 'MEI ou contribuinte individual',
                 content: {
                     title: '📗 Carnê de Contribuição',
-                    sections: [
-                        { title: '📋 Para quem', items: ['MEI (Microempreendedor Individual)', 'Contribuinte individual', 'Autônomos', 'Profissionais liberais'] },
-                        { title: '✅ Documentos', items: ['Carnês de pagamento ao INSS', 'Comprovantes de DAS (MEI)', 'GPS quitadas', 'Extrato de contribuições'] }
-                    ]
+                    sections: [{ title: '📋 Para quem', items: ['MEI (Microempreendedor Individual)', 'Contribuinte individual', 'Autônomos', 'Profissionais liberais'] },
+                        { title: '✅ Documentos', items: ['Carnês de pagamento ao INSS', 'Comprovantes de DAS (MEI)', 'GPS quitadas', 'Extrato de contribuições'] }]
                 }
             },
             'itr-terra': {
@@ -1924,6 +1922,41 @@
                 }
             });
 
+            // =========================================================================
+            // INÍCIO DA MODIFICAÇÃO: Lógica para lidar com ações da URL
+            // =========================================================================
+            const handleUrlActions = () => {
+                const params = new URLSearchParams(window.location.search);
+                const action = params.get('action');
+                const key = params.get('key');
+
+                if (action && key) {
+                    // Usamos um pequeno timeout para garantir que a página esteja totalmente pronta
+                    setTimeout(() => {
+                        if (action === 'showInfo') {
+                            if (processos[key]) {
+                                showProcessInfo(key);
+                            } else {
+                                console.error(`Ação na URL: Processo com a chave "${key}" não foi encontrado.`);
+                            }
+                        } else if (action === 'showDocs') {
+                            if (processos[key]) {
+                                showProcessDetails(key);
+                            } else {
+                                console.error(`Ação na URL: Processo com a chave "${key}" não foi encontrado.`);
+                            }
+                        }
+                    }, 150); // Um pequeno atraso para evitar problemas de renderização
+                }
+            };
+
+            // Executa a função ao carregar a página para verificar se há alguma ação na URL
+            handleUrlActions();
+            // =========================================================================
+            // FIM DA MODIFICAÇÃO
+            // =========================================================================
+
+
             const initialActiveTab = document.querySelector('.nav-tab.active');
             if (initialActiveTab && !initialActiveTab.href) {
                  switchTabInternal(initialActiveTab); 
@@ -1940,4 +1973,3 @@
     </script>
 </body>
 </html>
-            
