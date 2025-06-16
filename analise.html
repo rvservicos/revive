@@ -1562,13 +1562,12 @@
         }
 
         // =========================================================================
-        // FUNÇÃO CORRIGIDA - Gera links dinâmicos para os botões de resultado
+        // FUNÇÃO MODIFICADA - Gera links com parâmetros para a página index.html
         // =========================================================================
         function criarCardResultado(processoInfo, processo, nivel) {
-            // Usa caminhos relativos. Se a página principal está em /revive/, 
-            // estes links apontarão para /revive/documentos/nome-do-processo.html
-            const urlDocs = `documentos/${processo.key}.html`;
-            const urlInfo = `info/${processo.key}.html`;
+            // Links agora apontam para index.html com parâmetros para acionar os modais
+            const urlInfo = `index.html?action=showInfo&key=${processo.key}`;
+            const urlDocs = `index.html?action=showDocs&key=${processo.key}`;
             
             return `<div class="resultado-card ${nivel}">
                         <div class="resultado-header">
@@ -1577,8 +1576,8 @@
                         </div>
                         <p class="resultado-motivo">${processo.motivo}</p>
                         <div class="resultado-acoes">
-                            <a href="${urlDocs}" target="_blank" rel="noopener noreferrer" class="btn-info">📋 Ver Documentos</a>
-                            <a href="${urlInfo}" target="_blank" rel="noopener noreferrer" class="btn-docs">📖 Mais Informações</a>
+                            <a href="${urlInfo}" target="_blank" rel="noopener noreferrer" class="btn-info">📖 Mais Informações</a>
+                            <a href="${urlDocs}" target="_blank" rel="noopener noreferrer" class="btn-docs">📋 Ver Documentos</a>
                         </div>
                     </div>`;
         }
