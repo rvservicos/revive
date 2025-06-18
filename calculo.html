@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Seguro de Vida - Múltiplas Lesões</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #C8A2C8 0%, #DDA0DD 50%, #FFE4B5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #9370DB 0%, #BA55D3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative; /* Adicionado para posicionar o botão de voltar */
+        }
+        
+        /* NOVO: Estilo para o botão de voltar, mantendo o design da página principal */
+        .back-to-dashboard-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); /* Cores da página index.html */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .back-to-dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-section h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #DDA0DD;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #8B4A8B;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #DDA0DD;
+            box-shadow: 0 0 10px rgba(221, 160, 221, 0.3);
+        }
+
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: 'R$';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .currency-input input {
+            padding-left: 40px;
+        }
+
+        .percentage-input {
+            position: relative;
+        }
+
+        .percentage-input::after {
+            content: '%';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .percentage-input input {
+            padding-right: 35px;
+        }
+
+        .lesao-item {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .lesao-item.highlight {
+            border-color: #FF7F50;
+            background: #FFF8DC;
+        }
+
+        .lesao-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lesao-title {
+            font-weight: bold;
+            color: #9370DB;
+        }
+
+        .remove-btn {
+            background: #FF6347;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .add-lesao-btn {
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #DDA0DD 0%, #C8A2C8 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .results-section h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-item h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-item .value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #9370DB 0%, #DDA0DD 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(147, 112, 219, 0.3);
+        }
+
+        .analysis-section {
+            grid-column: span 2;
+            background: #FFF8DC;
+            border: 2px solid #FF8C00;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .analysis-section h2 {
+            color: #FF6347;
+            margin-bottom: 15px;
+        }
+
+        .recommendation {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .recommendation.worth-it {
+            background: #E6FFE6;
+            color: #228B22;
+            border: 2px solid #32CD32;
+        }
+
+        .recommendation.not-worth {
+            background: #FFE4E1;
+            color: #DC143C;
+            border: 2px solid #FF6347;
+        }
+
+        .recommendation.marginal {
+            background: #FFF8DC;
+            color: #FF8C00;
+            border: 2px solid #FFA500;
+        }
+
+        .lesoes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .lesoes-table th,
+        .lesoes-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .lesoes-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .formula-explanation {
+            background: #F0E6FF;
+            border: 2px solid #DDA0DD;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .formula-explanation h4 {
+            color: #9370DB;
+            margin-bottom: 10px;
+        }
+
+        .formula {
+            font-family: monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .analysis-section {
+                grid-column: span 1;
+            }
+            .back-to-dashboard-btn {
+                position: static;
+                display: block;
+                width: fit-content;
+                margin: -15px auto 15px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- NOVO: Link para voltar à página principal -->
+            <a href="index.html" class="back-to-dashboard-btn">← Voltar ao Painel</a>
+
+            <h1>🧮 Calculadora de Seguro de Vida</h1>
+            <p>Múltiplas lesões - Cálculo baseado em porcentagem da tabela SUSEP</p>
+        </div>
+
+        <div class="main-content">
+            <!-- SEÇÃO DE ENTRADA DE DADOS -->
+            <div class="form-section">
+                <h2>💰 Dados Básicos</h2>
+                
+                <div class="form-group currency-input">
+                    <label for="capitalSegurado">Capital Segurado:</label>
+                    <input type="number" id="capitalSegurado" placeholder="100000" step="0.01">
+                </div>
+
+                <div class="form-group currency-input">
+                    <label for="valorRecebido">Valor Recebido:</label>
+                    <input type="number" id="valorRecebido" placeholder="50000" step="0.01">
+                </div>
+
+                <h2 style="margin-top: 30px;">🏥 Lesões/Invalidez</h2>
+                
+                <button class="add-lesao-btn" onclick="adicionarLesao()">
+                    ➕ Adicionar Lesão
+                </button>
+
+                <div id="lesoesContainer">
+                    <!-- Lesões serão adicionadas aqui dinamicamente -->
+                </div>
+
+                <button class="calculate-btn" onclick="calcular()">
+                    🧮 CALCULAR
+                </button>
+            </div>
+
+            <!-- SEÇÃO DE RESULTADOS -->
+            <div class="results-section">
+                <h2>📊 Resultados</h2>
+                
+                <div class="result-item">
+                    <h3>% Total SUSEP</h3>
+                    <div class="value" id="percentualTotalSusep">0.00%</div>
+                </div>
+
+                <div class="result-item">
+                    <h3>% Total Nosso Laudo</h3>
+                    <div class="value" id="percentualTotalLaudo">0.00%</div>
+                </div>
+
+                <div class="result-item">
+                    <h3>% Pago pela Seguradora</h3>
+                    <div class="value" id="percentualPago">0.00%</div>
+                </div>
+
+                <div class="result-item">
+                    <h3>Valor Devido (SUSEP)</h3>
+                    <div class="value" id="valorDevidoSusep">R$ 0,00</div>
+                </div>
+
+                <div class="result-item">
+                    <h3>Valor Devido (Nosso Laudo)</h3>
+                    <div class="value" id="valorDevidoLaudo">R$ 0,00</div>
+                </div>
+
+                <div class="result-item">
+                    <h3>Diferença a Receber</h3>
+                    <div class="value" id="diferencaReceber">R$ 0,00</div>
+                </div>
+            </div>
+
+            <!-- ANÁLISE E RECOMENDAÇÃO -->
+            <div class="analysis-section">
+                <h2>📈 Análise Detalhada</h2>
+                
+                <div class="formula-explanation">
+                    <h4>💡 Como funciona o cálculo:</h4>
+                    <div class="formula">Valor por lesão = Capital × (% Membro SUSEP × % Comprometimento)</div>
+                    <p><strong>Exemplo:</strong> Perna com 75% de comprometimento = R$ 100.000 × (70% × 75%) = R$ 52.500</p>
+                </div>
+
+                <table class="lesoes-table" id="tabelaLesoes" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Lesão</th>
+                            <th>% SUSEP</th>
+                            <th>% Comprometimento</th>
+                            <th>% Final</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaLesoes">
+                    </tbody>
+                </table>
+
+                <div id="recomendacao"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let contadorLesoes = 0;
+        const susepPercentuais = {
+            'braco': 70,
+            'mao': 55,
+            'polegar': 25,
+            'indicador': 20,
+            'medio': 15,
+            'anelar': 12,
+            'minimo': 6,
+            'perna': 70,
+            'pe': 50,
+            'halux': 10,
+            'dedo_pe': 3,
+            'visao_total': 100,
+            'visao_um_olho': 30,
+            'audicao_total': 60,
+            'audicao_um_ouvido': 20,
+            'paraplegia': 100,
+            'tetraplegia': 100,
+            'coluna_grave': 50,
+            'coluna_moderada': 30
+        };
+
+        function adicionarLesao() {
+            contadorLesoes++;
+            const container = document.getElementById('lesoesContainer');
+            
+            const lesaoDiv = document.createElement('div');
+            lesaoDiv.className = 'lesao-item';
+            lesaoDiv.id = `lesao-${contadorLesoes}`;
+            
+            lesaoDiv.innerHTML = `
+                <div class="lesao-header">
+                    <span class="lesao-title">Lesão ${contadorLesoes}</span>
+                    <button class="remove-btn" onclick="removerLesao(${contadorLesoes})">&times;</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de Membro/Órgão (% SUSEP):</label>
+                    <select onchange="atualizarPercentualSusep(${contadorLesoes})">
+                        <option value="">Selecione...</option>
+                        <optgroup label="Membros Superiores">
+                            <option value="braco">Braço (70%)</option>
+                            <option value="mao">Mão (55%)</option>
+                            <option value="polegar">Polegar (25%)</option>
+                            <option value="indicador">Indicador (20%)</option>
+                            <option value="medio">Dedo médio (15%)</option>
+                            <option value="anelar">Anelar (12%)</option>
+                            <option value="minimo">Mínimo (6%)</option>
+                        </optgroup>
+                        <optgroup label="Membros Inferiores">
+                            <option value="perna">Perna (70%)</option>
+                            <option value="pe">Pé (50%)</option>
+                            <option value="halux">Hálux (10%)</option>
+                            <option value="dedo_pe">Outros dedos do pé (3%)</option>
+                        </optgroup>
+                        <optgroup label="Órgãos dos Sentidos">
+                            <option value="visao_total">Perda total da visão (100%)</option>
+                            <option value="visao_um_olho">Perda visão um olho (30%)</option>
+                            <option value="audicao_total">Perda total audição (60%)</option>
+                            <option value="audicao_um_ouvido">Perda audição um ouvido (20%)</option>
+                        </optgroup>
+                        <optgroup label="Coluna Vertebral">
+                            <option value="paraplegia">Paraplegia (100%)</option>
+                            <option value="tetraplegia">Tetraplegia (100%)</option>
+                            <option value="coluna_grave">Limitação grave (50%)</option>
+                            <option value="coluna_moderada">Limitação moderada (30%)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <div class="form-group percentage-input">
+                    <label>% SUSEP do Membro:</label>
+                    <input type="number" id="susep-${contadorLesoes}" min="0" max="100" step="0.01" readonly>
+                </div>
+                
+                <div class="form-group percentage-input">
+                    <label>% Comprometimento (Nosso Laudo):</label>
+                    <input type="number" id="comprometimento-${contadorLesoes}" min="0" max="100" step="0.01" placeholder="75">
+                </div>
+                
+                <div class="form-group percentage-input">
+                    <label>% Final Calculado:</label>
+                    <input type="number" id="final-${contadorLesoes}" readonly>
+                </div>
+            `;
+            
+            container.appendChild(lesaoDiv);
+        }
+
+        function removerLesao(id) {
+            const lesao = document.getElementById(`lesao-${id}`);
+            if (lesao) {
+                lesao.remove();
+            }
+        }
+
+        function atualizarPercentualSusep(id) {
+            const select = event.target;
+            const susepInput = document.getElementById(`susep-${id}`);
+            const comprometimentoInput = document.getElementById(`comprometimento-${id}`);
+            const finalInput = document.getElementById(`final-${id}`);
+            
+            if (select.value) {
+                const percentualSusep = susepPercentuais[select.value];
+                susepInput.value = percentualSusep;
+                
+                // Calcular automaticamente o percentual final quando alterar o comprometimento
+                comprometimentoInput.oninput = function() {
+                    const comprometimento = parseFloat(this.value) || 0;
+                    const percentualFinal = (percentualSusep * comprometimento) / 100;
+                    finalInput.value = percentualFinal.toFixed(2);
+                };
+            }
+        }
+
+        function calcular() {
+            const capitalSegurado = parseFloat(document.getElementById('capitalSegurado').value) || 0;
+            const valorRecebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
+            
+            if (capitalSegurado <= 0) {
+                alert('Insira um capital segurado válido');
+                return;
+            }
+
+            let percentualTotalSusep = 0;
+            let percentualTotalLaudo = 0;
+            const lesoes = [];
+
+            // Calcular totais das lesões
+            const lesoesElements = document.querySelectorAll('.lesao-item');
+            lesoesElements.forEach((lesao, index) => {
+                const id = lesao.id.split('-')[1];
+                const susepValue = parseFloat(document.getElementById(`susep-${id}`).value) || 0;
+                const comprometimentoValue = parseFloat(document.getElementById(`comprometimento-${id}`).value) || 0;
+                const finalValue = parseFloat(document.getElementById(`final-${id}`).value) || 0;
+                
+                if (susepValue > 0 && comprometimentoValue > 0) {
+                    percentualTotalSusep += susepValue;
+                    percentualTotalLaudo += finalValue;
+                    
+                    lesoes.push({
+                        nome: `Lesão ${id}`,
+                        susep: susepValue,
+                        comprometimento: comprometimentoValue,
+                        final: finalValue,
+                        valor: capitalSegurado * (finalValue / 100)
+                    });
+                }
+            });
+
+            // Limitar a 100%
+            percentualTotalSusep = Math.min(percentualTotalSusep, 100);
+            percentualTotalLaudo = Math.min(percentualTotalLaudo, 100);
+
+            // Cálculos
+            const percentualPago = capitalSegurado > 0 ? (valorRecebido / capitalSegurado * 100) : 0;
+            const valorDevidoSusep = capitalSegurado * (percentualTotalSusep / 100);
+            const valorDevidoLaudo = capitalSegurado * (percentualTotalLaudo / 100);
+            const diferencaReceber = Math.max(valorDevidoLaudo - valorRecebido, 0);
+
+            // Atualizar resultados
+            document.getElementById('percentualTotalSusep').textContent = percentualTotalSusep.toFixed(2) + '%';
+            document.getElementById('percentualTotalLaudo').textContent = percentualTotalLaudo.toFixed(2) + '%';
+            document.getElementById('percentualPago').textContent = percentualPago.toFixed(2) + '%';
+            document.getElementById('valorDevidoSusep').textContent = formatarMoeda(valorDevidoSusep);
+            document.getElementById('valorDevidoLaudo').textContent = formatarMoeda(valorDevidoLaudo);
+            document.getElementById('diferencaReceber').textContent = formatarMoeda(diferencaReceber);
+
+            // Mostrar tabela de lesões
+            mostrarTabelaLesoes(lesoes);
+
+            // Gerar recomendação
+            gerarRecomendacao(diferencaReceber);
+        }
+
+        function mostrarTabelaLesoes(lesoes) {
+            const tabela = document.getElementById('tabelaLesoes');
+            const corpo = document.getElementById('corpoTabelaLesoes');
+            
+            if (lesoes.length === 0) {
+                tabela.style.display = 'none';
+                return;
+            }
+
+            corpo.innerHTML = '';
+            lesoes.forEach(lesao => {
+                const linha = corpo.insertRow();
+                linha.innerHTML = `
+                    <td>${lesao.nome}</td>
+                    <td>${lesao.susep}%</td>
+                    <td>${lesao.comprometimento}%</td>
+                    <td>${lesao.final.toFixed(2)}%</td>
+                    <td>${formatarMoeda(lesao.valor)}</td>
+                `;
+            });
+            
+            tabela.style.display = 'table';
+        }
+
+        function gerarRecomendacao(diferenca) {
+            const recomendacaoDiv = document.getElementById('recomendacao');
+            let classe, icone, titulo, texto;
+
+            if (diferenca >= 10000) {
+                classe = 'worth-it';
+                icone = '✅';
+                titulo = 'VALE A PENA RECORRER!';
+                texto = `Diferença significativa de ${formatarMoeda(diferenca)}. Recomendamos fortemente entrar com recurso.`;
+            } else if (diferenca >= 3000) {
+                classe = 'marginal';
+                icone = '⚠️';
+                titulo = 'ANÁLISE NECESSÁRIA';
+                texto = `Diferença de ${formatarMoeda(diferenca)}. Avaliar custos do processo vs. benefício.`;
+            } else if (diferenca > 0) {
+                classe = 'not-worth';
+                icone = '❌';
+                titulo = 'DIFERENÇA BAIXA';
+                texto = `Diferença de apenas ${formatarMoeda(diferenca)}. Pode não compensar os custos do processo.`;
+            } else {
+                classe = 'not-worth';
+                icone = '✅';
+                titulo = 'PAGAMENTO ADEQUADO';
+                texto = 'O valor pago está de acordo ou superior ao esperado.';
+            }
+
+            recomendacaoDiv.innerHTML = `
+                <div class="recommendation ${classe}">
+                    ${icone} ${titulo}<br>
+                    <span style="font-size: 14px; font-weight: normal;">${texto}</span>
+                </div>
+            `;
+        }
+
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
+
+        // Adicionar primeira lesão automaticamente
+        window.onload = function() {
+            adicionarLesao();
+        };
+    </script>
+</body>
+</html>
