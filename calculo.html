@@ -593,6 +593,8 @@
                             <option value="Allianz">Allianz</option>
                             <option value="Tokio Marine">Tokio Marine</option>
                             <option value="Liberty Seguros">Liberty Seguros</option>
+                            <option value="Icatu">Icatu</option>
+                            <option value="Metlife">Metlife</option>
                             <option value="outro">Outro (digitar manualmente)</option>
                         </select>
                         <input type="text" id="seguradoraOutro" placeholder="Digite o nome da seguradora" style="display: none; margin-top: 10px;">
@@ -617,14 +619,15 @@
                             <option value="Sicoob">Sicoob</option>
                             <option value="Sicredi">Sicredi</option>
                             <option value="C6 Bank">C6 Bank</option>
+                            <option value="Viacredi">Viacredi</option>
                             <option value="outro">Outro (digitar manualmente)</option>
                         </select>
                         <input type="text" id="bancoOutro" placeholder="Digite o nome do banco" style="display: none; margin-top: 10px;">
                     </div>
 
-                    <div class="form-group percentage-input">
+                    <div class="form-group full-width">
                         <label for="porcentagemRTM">Porcentagem RTM:</label>
-                        <input type="number" id="porcentagemRTM" placeholder="75" min="0" max="100" step="0.01">
+                        <textarea id="porcentagemRTM" rows="3" placeholder="Descreva a porcentagem RTM e detalhes..."></textarea>
                     </div>
 
                     <div class="form-group full-width">
@@ -986,7 +989,7 @@
 
 🏥 DETALHES MÉDICOS:
 • Fraturas Identificadas: ${fraturas}
-• Porcentagem RTM: ${porcentagemRTM}%
+• Porcentagem RTM: ${porcentagemRTM}
 • Memória de Cálculo da Seguradora: ${memoriaCalculo}
 
 💳 INFORMAÇÕES BANCÁRIAS:
@@ -1004,7 +1007,7 @@ Os honorários advocatícios no valor de ${formatarMoeda(honorarios)} (30% sobre
 📝 OBSERVAÇÕES FINAIS:
 - Todos os documentos necessários foram apresentados
 - A análise foi baseada na tabela SUSEP vigente
-- O percentual RTM de ${porcentagemRTM}% foi aplicado conforme laudo médico
+- ${porcentagemRTM}
 - A seguradora ${seguradora} procedeu com o pagamento conforme apólice
 
 ==================================================
