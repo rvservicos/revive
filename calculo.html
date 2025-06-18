@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Seguro de Vida - Múltiplas Lesões</title>
+    <title>Sistema Completo - Seguro de Vida</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -28,32 +28,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #9370DB 0%, #BA55D3 100%);
+            background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%);
             color: white;
             padding: 30px;
             text-align: center;
-            position: relative; /* Adicionado para posicionar o botão de voltar */
-        }
-        
-        /* NOVO: Estilo para o botão de voltar, mantendo o design da página principal */
-        .back-to-dashboard-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); /* Cores da página index.html */
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .back-to-dashboard-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .header h1 {
@@ -64,6 +43,62 @@
         .header p {
             font-size: 16px;
             opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #FF7F00;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background: #9370DB;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #e9ecef;
+            color: #9370DB;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .main-content {
@@ -96,10 +131,10 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #8B4A8B;
+            color: #6A4C93;
         }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -108,7 +143,7 @@
             transition: border-color 0.3s;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: #DDA0DD;
             box-shadow: 0 0 10px rgba(221, 160, 221, 0.3);
@@ -162,7 +197,7 @@
         }
 
         .lesao-item.highlight {
-            border-color: #FF7F50;
+            border-color: #FF8C00;
             background: #FFF8DC;
         }
 
@@ -202,7 +237,7 @@
         }
 
         .results-section {
-            background: linear-gradient(135deg, #DDA0DD 0%, #9370DB 100%);
+            background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%);
             color: white;
             padding: 25px;
             border-radius: 10px;
@@ -233,7 +268,7 @@
         }
 
         .calculate-btn {
-            background: linear-gradient(135deg, #9370DB 0%, #DDA0DD 100%);
+            background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -334,6 +369,48 @@
             font-weight: bold;
         }
 
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .generated-text {
+            background: white;
+            border: 2px solid #9370DB;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 400px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .honorarios-auto {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .honorarios-auto input[readonly] {
+            background-color: #f8f9fa;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -344,14 +421,13 @@
             .analysis-section {
                 grid-column: span 1;
             }
-            .back-to-dashboard-btn {
-                position: static;
-                display: block;
-                width: fit-content;
-                margin: -15px auto 15px;
+
+            .two-column {
+                grid-template-columns: 1fr;
             }
-            .header h1 {
-                font-size: 24px;
+
+            .full-width {
+                grid-column: span 1;
             }
         }
     </style>
@@ -359,103 +435,228 @@
 <body>
     <div class="container">
         <div class="header">
-            <!-- NOVO: Link para voltar à página principal -->
-            <a href="index.html" class="back-to-dashboard-btn">← Voltar ao Painel</a>
-
-            <h1>🧮 Calculadora de Seguro de Vida</h1>
-            <p>Múltiplas lesões - Cálculo baseado em porcentagem da tabela SUSEP</p>
+            <a href="https://rvservicos.github.io/revive/index.html" class="back-btn">← Voltar</a>
+            <h1>🧮 Sistema Completo - Seguro de Vida</h1>
+            <p>Cálculos e Geração de Textos de Indenização</p>
         </div>
 
-        <div class="main-content">
-            <!-- SEÇÃO DE ENTRADA DE DADOS -->
-            <div class="form-section">
-                <h2>💰 Dados Básicos</h2>
-                
-                <div class="form-group currency-input">
-                    <label for="capitalSegurado">Capital Segurado:</label>
-                    <input type="number" id="capitalSegurado" placeholder="100000" step="0.01">
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('calculadora')">📊 Calculadora</button>
+            <button class="tab-button" onclick="showTab('indenizacao')">📝 Texto Indenização</button>
+        </div>
+
+        <!-- ABA CALCULADORA -->
+        <div id="calculadora" class="tab-content active">
+            <div class="main-content">
+                <!-- SEÇÃO DE ENTRADA DE DADOS -->
+                <div class="form-section">
+                    <h2>💰 Dados Básicos</h2>
+                    
+                    <div class="form-group currency-input">
+                        <label for="capitalSegurado">Capital Segurado:</label>
+                        <input type="number" id="capitalSegurado" placeholder="100000" step="0.01">
+                    </div>
+
+                    <div class="form-group currency-input">
+                        <label for="valorRecebido">Valor Recebido:</label>
+                        <input type="number" id="valorRecebido" placeholder="50000" step="0.01">
+                    </div>
+
+                    <h2 style="margin-top: 30px;">🏥 Lesões/Invalidez</h2>
+                    
+                    <button class="add-lesao-btn" onclick="adicionarLesao()">
+                        ➕ Adicionar Lesão
+                    </button>
+
+                    <div id="lesoesContainer">
+                        <!-- Lesões serão adicionadas aqui dinamicamente -->
+                    </div>
+
+                    <button class="calculate-btn" onclick="calcular()">
+                        🧮 CALCULAR
+                    </button>
                 </div>
 
-                <div class="form-group currency-input">
-                    <label for="valorRecebido">Valor Recebido:</label>
-                    <input type="number" id="valorRecebido" placeholder="50000" step="0.01">
+                <!-- SEÇÃO DE RESULTADOS -->
+                <div class="results-section">
+                    <h2>📊 Resultados</h2>
+                    
+                    <div class="result-item">
+                        <h3>% Total SUSEP</h3>
+                        <div class="value" id="percentualTotalSusep">0.00%</div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>% Total Nosso Laudo</h3>
+                        <div class="value" id="percentualTotalLaudo">0.00%</div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>% Pago pela Seguradora</h3>
+                        <div class="value" id="percentualPago">0.00%</div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>Valor Devido (SUSEP)</h3>
+                        <div class="value" id="valorDevidoSusep">R$ 0,00</div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>Valor Devido (Nosso Laudo)</h3>
+                        <div class="value" id="valorDevidoLaudo">R$ 0,00</div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>Diferença a Receber</h3>
+                        <div class="value" id="diferencaReceber">R$ 0,00</div>
+                    </div>
                 </div>
 
-                <h2 style="margin-top: 30px;">🏥 Lesões/Invalidez</h2>
+                <!-- ANÁLISE E RECOMENDAÇÃO -->
+                <div class="analysis-section">
+                    <h2>📈 Análise Detalhada</h2>
+                    
+                    <div class="formula-explanation">
+                        <h4>💡 Como funciona o cálculo:</h4>
+                        <div class="formula">Valor por lesão = Capital × (% Membro SUSEP × % Comprometimento)</div>
+                        <p><strong>Exemplo:</strong> Perna com 75% de comprometimento = R$ 100.000 × (70% × 75%) = R$ 52.500</p>
+                    </div>
+
+                    <table class="lesoes-table" id="tabelaLesoes" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Lesão</th>
+                                <th>% SUSEP</th>
+                                <th>% Comprometimento</th>
+                                <th>% Final</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaLesoes">
+                        </tbody>
+                    </table>
+
+                    <div id="recomendacao"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA TEXTO INDENIZAÇÃO -->
+        <div id="indenizacao" class="tab-content">
+            <div style="padding: 30px;">
+                <h2 style="color: #9370DB; margin-bottom: 30px;">📝 Gerador de Texto de Indenização</h2>
                 
-                <button class="add-lesao-btn" onclick="adicionarLesao()">
-                    ➕ Adicionar Lesão
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="tipoSeguro">Tipo de Seguro:</label>
+                        <select id="tipoSeguro">
+                            <option value="individual">Individual</option>
+                            <option value="empresarial">Empresarial</option>
+                            <option value="diarias">Diárias</option>
+                            <option value="despesas_medicas">Despesas Médicas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="segurado">Segurado:</label>
+                        <input type="text" id="segurado" placeholder="Nome do segurado">
+                    </div>
+
+                    <div class="form-group currency-input">
+                        <label for="valorIndenizacao">Valor da Indenização:</label>
+                        <input type="number" id="valorIndenizacao" placeholder="50000" step="0.01" oninput="calcularHonorarios()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="honorarios">Honorários (30%):</label>
+                        <div class="honorarios-auto">
+                            <input type="text" id="honorarios" readonly placeholder="R$ 0,00">
+                            <span style="color: #9370DB; font-size: 12px;">(Calculado automaticamente)</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group currency-input">
+                        <label for="valorApolice">Valor da Apólice:</label>
+                        <input type="number" id="valorApolice" placeholder="100000" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="seguradoraSelect">Seguradora:</label>
+                        <select id="seguradoraSelect">
+                            <option value="">Selecione a seguradora</option>
+                            <option value="Bradesco Seguros">Bradesco Seguros</option>
+                            <option value="Porto Seguro">Porto Seguro</option>
+                            <option value="Sul América">Sul América</option>
+                            <option value="BB Seguros">BB Seguros</option>
+                            <option value="Mapfre">Mapfre</option>
+                            <option value="Zurich">Zurich</option>
+                            <option value="Allianz">Allianz</option>
+                            <option value="Tokio Marine">Tokio Marine</option>
+                            <option value="Liberty Seguros">Liberty Seguros</option>
+                            <option value="outro">Outro (digitar manualmente)</option>
+                        </select>
+                        <input type="text" id="seguradoraOutro" placeholder="Digite o nome da seguradora" style="display: none; margin-top: 10px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consultor">Consultor:</label>
+                        <input type="text" id="consultor" placeholder="Nome do consultor">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bancoSelect">Banco que irá cair:</label>
+                        <select id="bancoSelect">
+                            <option value="">Selecione o banco</option>
+                            <option value="Banco do Brasil">Banco do Brasil</option>
+                            <option value="Bradesco">Bradesco</option>
+                            <option value="Itaú">Itaú</option>
+                            <option value="Santander">Santander</option>
+                            <option value="Caixa Econômica Federal">Caixa Econômica Federal</option>
+                            <option value="Nubank">Nubank</option>
+                            <option value="Inter">Inter</option>
+                            <option value="Sicoob">Sicoob</option>
+                            <option value="Sicredi">Sicredi</option>
+                            <option value="C6 Bank">C6 Bank</option>
+                            <option value="outro">Outro (digitar manualmente)</option>
+                        </select>
+                        <input type="text" id="bancoOutro" placeholder="Digite o nome do banco" style="display: none; margin-top: 10px;">
+                    </div>
+
+                    <div class="form-group percentage-input">
+                        <label for="porcentagemRTM">Porcentagem RTM:</label>
+                        <input type="number" id="porcentagemRTM" placeholder="75" min="0" max="100" step="0.01">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="fraturas">Fraturas:</label>
+                        <textarea id="fraturas" rows="3" placeholder="Descreva as fraturas..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="memoriaCalculo">Memória de Cálculo da Seguradora:</label>
+                        <textarea id="memoriaCalculo" rows="3" placeholder="Descreva a memória de cálculo..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jaCaiu">Já caiu na conta:</label>
+                        <select id="jaCaiu">
+                            <option value="nao">Não</option>
+                            <option value="sim">Sim</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="gerarTextoIndenizacao()">
+                    📝 Gerar Texto de Indenização
                 </button>
 
-                <div id="lesoesContainer">
-                    <!-- Lesões serão adicionadas aqui dinamicamente -->
+                <div class="generated-text" id="textoGerado">
+                    Preencha os campos acima e clique em "Gerar Texto de Indenização" para ver o resultado.
                 </div>
 
-                <button class="calculate-btn" onclick="calcular()">
-                    🧮 CALCULAR
+                <button class="copy-btn" onclick="copiarTexto()" style="display: none;" id="copyBtn">
+                    📋 Copiar Texto
                 </button>
-            </div>
-
-            <!-- SEÇÃO DE RESULTADOS -->
-            <div class="results-section">
-                <h2>📊 Resultados</h2>
-                
-                <div class="result-item">
-                    <h3>% Total SUSEP</h3>
-                    <div class="value" id="percentualTotalSusep">0.00%</div>
-                </div>
-
-                <div class="result-item">
-                    <h3>% Total Nosso Laudo</h3>
-                    <div class="value" id="percentualTotalLaudo">0.00%</div>
-                </div>
-
-                <div class="result-item">
-                    <h3>% Pago pela Seguradora</h3>
-                    <div class="value" id="percentualPago">0.00%</div>
-                </div>
-
-                <div class="result-item">
-                    <h3>Valor Devido (SUSEP)</h3>
-                    <div class="value" id="valorDevidoSusep">R$ 0,00</div>
-                </div>
-
-                <div class="result-item">
-                    <h3>Valor Devido (Nosso Laudo)</h3>
-                    <div class="value" id="valorDevidoLaudo">R$ 0,00</div>
-                </div>
-
-                <div class="result-item">
-                    <h3>Diferença a Receber</h3>
-                    <div class="value" id="diferencaReceber">R$ 0,00</div>
-                </div>
-            </div>
-
-            <!-- ANÁLISE E RECOMENDAÇÃO -->
-            <div class="analysis-section">
-                <h2>📈 Análise Detalhada</h2>
-                
-                <div class="formula-explanation">
-                    <h4>💡 Como funciona o cálculo:</h4>
-                    <div class="formula">Valor por lesão = Capital × (% Membro SUSEP × % Comprometimento)</div>
-                    <p><strong>Exemplo:</strong> Perna com 75% de comprometimento = R$ 100.000 × (70% × 75%) = R$ 52.500</p>
-                </div>
-
-                <table class="lesoes-table" id="tabelaLesoes" style="display: none;">
-                    <thead>
-                        <tr>
-                            <th>Lesão</th>
-                            <th>% SUSEP</th>
-                            <th>% Comprometimento</th>
-                            <th>% Final</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpoTabelaLesoes">
-                    </tbody>
-                </table>
-
-                <div id="recomendacao"></div>
             </div>
         </div>
     </div>
@@ -484,6 +685,23 @@
             'coluna_moderada': 30
         };
 
+        function showTab(tabName) {
+            // Esconder todas as abas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remover active de todos os botões
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar aba selecionada
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // FUNÇÕES DA CALCULADORA
         function adicionarLesao() {
             contadorLesoes++;
             const container = document.getElementById('lesoesContainer');
@@ -568,7 +786,6 @@
                 const percentualSusep = susepPercentuais[select.value];
                 susepInput.value = percentualSusep;
                 
-                // Calcular automaticamente o percentual final quando alterar o comprometimento
                 comprometimentoInput.oninput = function() {
                     const comprometimento = parseFloat(this.value) || 0;
                     const percentualFinal = (percentualSusep * comprometimento) / 100;
@@ -590,7 +807,6 @@
             let percentualTotalLaudo = 0;
             const lesoes = [];
 
-            // Calcular totais das lesões
             const lesoesElements = document.querySelectorAll('.lesao-item');
             lesoesElements.forEach((lesao, index) => {
                 const id = lesao.id.split('-')[1];
@@ -630,10 +846,7 @@
             document.getElementById('valorDevidoLaudo').textContent = formatarMoeda(valorDevidoLaudo);
             document.getElementById('diferencaReceber').textContent = formatarMoeda(diferencaReceber);
 
-            // Mostrar tabela de lesões
             mostrarTabelaLesoes(lesoes);
-
-            // Gerar recomendação
             gerarRecomendacao(diferencaReceber);
         }
 
@@ -695,6 +908,124 @@
             `;
         }
 
+        // FUNÇÕES DO GERADOR DE TEXTO
+        function calcularHonorarios() {
+            const valorIndenizacao = parseFloat(document.getElementById('valorIndenizacao').value) || 0;
+            const honorarios = valorIndenizacao * 0.30;
+            document.getElementById('honorarios').value = formatarMoeda(honorarios);
+        }
+
+        // Mostrar/esconder campos "outro"
+        document.getElementById('seguradoraSelect').addEventListener('change', function() {
+            const outroInput = document.getElementById('seguradoraOutro');
+            if (this.value === 'outro') {
+                outroInput.style.display = 'block';
+                outroInput.required = true;
+            } else {
+                outroInput.style.display = 'none';
+                outroInput.required = false;
+                outroInput.value = '';
+            }
+        });
+
+        document.getElementById('bancoSelect').addEventListener('change', function() {
+            const outroInput = document.getElementById('bancoOutro');
+            if (this.value === 'outro') {
+                outroInput.style.display = 'block';
+                outroInput.required = true;
+            } else {
+                outroInput.style.display = 'none';
+                outroInput.required = false;
+                outroInput.value = '';
+            }
+        });
+
+        function gerarTextoIndenizacao() {
+            // Obter valores dos campos
+            const tipoSeguro = document.getElementById('tipoSeguro').value;
+            const segurado = document.getElementById('segurado').value;
+            const valorIndenizacao = parseFloat(document.getElementById('valorIndenizacao').value) || 0;
+            const honorarios = valorIndenizacao * 0.30;
+            const valorApolice = parseFloat(document.getElementById('valorApolice').value) || 0;
+            const seguradora = document.getElementById('seguradoraSelect').value === 'outro' ? 
+                              document.getElementById('seguradoraOutro').value : 
+                              document.getElementById('seguradoraSelect').value;
+            const consultor = document.getElementById('consultor').value;
+            const banco = document.getElementById('bancoSelect').value === 'outro' ? 
+                         document.getElementById('bancoOutro').value : 
+                         document.getElementById('bancoSelect').value;
+            const fraturas = document.getElementById('fraturas').value;
+            const porcentagemRTM = document.getElementById('porcentagemRTM').value;
+            const memoriaCalculo = document.getElementById('memoriaCalculo').value;
+            const jaCaiu = document.getElementById('jaCaiu').value;
+
+            // Validações básicas
+            if (!segurado) {
+                alert('Por favor, preencha o nome do segurado');
+                return;
+            }
+
+            // Gerar texto
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            
+            let texto = `RELATÓRIO DE INDENIZAÇÃO - SEGURO DE VIDA
+==================================================
+
+📋 DADOS GERAIS:
+• Tipo de Seguro: ${tipoSeguro.toUpperCase()}
+• Segurado: ${segurado}
+• Data do Relatório: ${dataAtual}
+• Seguradora: ${seguradora}
+• Consultor Responsável: ${consultor}
+
+💰 VALORES:
+• Valor da Apólice: ${formatarMoeda(valorApolice)}
+• Valor da Indenização: ${formatarMoeda(valorIndenizacao)}
+• Honorários Advocatícios (30%): ${formatarMoeda(honorarios)}
+• Valor Líquido ao Cliente: ${formatarMoeda(valorIndenizacao - honorarios)}
+
+🏥 DETALHES MÉDICOS:
+• Fraturas Identificadas: ${fraturas}
+• Porcentagem RTM: ${porcentagemRTM}%
+• Memória de Cálculo da Seguradora: ${memoriaCalculo}
+
+💳 INFORMAÇÕES BANCÁRIAS:
+• Banco de Destino: ${banco}
+• Status do Pagamento: ${jaCaiu === 'sim' ? 'JÁ DEPOSITADO' : 'AGUARDANDO DEPÓSITO'}
+
+📊 ANÁLISE:
+${jaCaiu === 'sim' ? 
+    `✅ O valor de ${formatarMoeda(valorIndenizacao)} já foi depositado na conta do segurado.` :
+    `⏳ Aguardando depósito do valor de ${formatarMoeda(valorIndenizacao)} na conta do segurado.`
+}
+
+Os honorários advocatícios no valor de ${formatarMoeda(honorarios)} (30% sobre o valor da indenização) serão descontados conforme contrato de prestação de serviços advocatícios.
+
+📝 OBSERVAÇÕES FINAIS:
+- Todos os documentos necessários foram apresentados
+- A análise foi baseada na tabela SUSEP vigente
+- O percentual RTM de ${porcentagemRTM}% foi aplicado conforme laudo médico
+- A seguradora ${seguradora} procedeu com o pagamento conforme apólice
+
+==================================================
+Relatório gerado em ${dataAtual}
+Sistema de Gestão de Seguros de Vida`;
+
+            // Mostrar texto gerado
+            document.getElementById('textoGerado').textContent = texto;
+            document.getElementById('copyBtn').style.display = 'block';
+        }
+
+        function copiarTexto() {
+            const texto = document.getElementById('textoGerado').textContent;
+            navigator.clipboard.writeText(texto).then(function() {
+                alert('Texto copiado para a área de transferência!');
+            }, function(err) {
+                console.error('Erro ao copiar texto: ', err);
+                alert('Erro ao copiar texto. Tente selecionar e copiar manualmente.');
+            });
+        }
+
         function formatarMoeda(valor) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -702,7 +1033,7 @@
             }).format(valor);
         }
 
-        // Adicionar primeira lesão automaticamente
+        // Adicionar primeira lesão automaticamente na aba calculadora
         window.onload = function() {
             adicionarLesao();
         };
