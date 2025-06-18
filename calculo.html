@@ -149,6 +149,10 @@
             box-shadow: 0 0 10px rgba(221, 160, 221, 0.3);
         }
 
+        .form-group input[type="number"] {
+            text-align: right;
+        }
+
         .currency-input {
             position: relative;
         }
@@ -454,12 +458,12 @@
                     
                     <div class="form-group currency-input">
                         <label for="capitalSegurado">Capital Segurado:</label>
-                        <input type="number" id="capitalSegurado" placeholder="100000" step="0.01">
+                        <input type="text" id="capitalSegurado" placeholder="100.000,00" onkeyup="formatarCampoMoeda(this)">
                     </div>
 
                     <div class="form-group currency-input">
                         <label for="valorRecebido">Valor Recebido:</label>
-                        <input type="number" id="valorRecebido" placeholder="50000" step="0.01">
+                        <input type="text" id="valorRecebido" placeholder="50.000,00" onkeyup="formatarCampoMoeda(this)">
                     </div>
 
                     <h2 style="margin-top: 30px;">🏥 Lesões/Invalidez</h2>
@@ -564,7 +568,7 @@
 
                     <div class="form-group currency-input">
                         <label for="valorIndenizacao">Valor da Indenização:</label>
-                        <input type="number" id="valorIndenizacao" placeholder="50000" step="0.01" oninput="calcularHonorarios()">
+                        <input type="text" id="valorIndenizacao" placeholder="50.000,00" onkeyup="formatarCampoMoeda(this); calcularHonorarios()">
                     </div>
 
                     <div class="form-group">
@@ -577,7 +581,7 @@
 
                     <div class="form-group currency-input">
                         <label for="valorApolice">Valor da Apólice:</label>
-                        <input type="number" id="valorApolice" placeholder="100000" step="0.01">
+                        <input type="text" id="valorApolice" placeholder="100.000,00" onkeyup="formatarCampoMoeda(this)">
                     </div>
 
                     <div class="form-group">
@@ -646,6 +650,11 @@
                             <option value="nao">Não</option>
                             <option value="sim">Sim</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataIndenizacao">Data que vai cair a indenização:</label>
+                        <input type="date" id="dataIndenizacao">
                     </div>
                 </div>
 
@@ -798,8 +807,8 @@
         }
 
         function calcular() {
-            const capitalSegurado = parseFloat(document.getElementById('capitalSegurado').value) || 0;
-            const valorRecebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
+            const capitalSegurado = converterMoedaParaNumero(document.getElementById('capitalSegurado').value) || 0;
+            const valorRecebido = converterMoedaParaNumero(document.getElementById('valorRecebido').value) || 0;
             
             if (capitalSegurado <= 0) {
                 alert('Insira um capital segurado válido');
@@ -913,9 +922,24 @@
 
         // FUNÇÕES DO GERADOR DE TEXTO
         function calcularHonorarios() {
-            const valorIndenizacao = parseFloat(document.getElementById('valorIndenizacao').value) || 0;
+            const valorIndenizacao = converterMoedaParaNumero(document.getElementById('valorIndenizacao').value) || 0;
             const honorarios = valorIndenizacao * 0.30;
             document.getElementById('honorarios').value = formatarMoeda(honorarios);
+        }
+
+        // Função para formatar campos de moeda em tempo real
+        function formatarCampoMoeda(input) {
+            let valor = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            valor = (valor / 100).toFixed(2); // Divide por 100 e fixa 2 decimais
+            valor = valor.replace('.', ','); // Troca ponto por vírgula
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adiciona pontos a cada 3 dígitos
+            input.value = valor;
+        }
+
+        // Função para converter valor formatado para número
+        function converterMoedaParaNumero(valor) {
+            if (!valor) return 0;
+            return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
         }
 
         // Mostrar/esconder campos "outro"
@@ -947,9 +971,9 @@
             // Obter valores dos campos
             const tipoSeguro = document.getElementById('tipoSeguro').value;
             const segurado = document.getElementById('segurado').value;
-            const valorIndenizacao = parseFloat(document.getElementById('valorIndenizacao').value) || 0;
+            const valorIndenizacao = converterMoedaParaNumero(document.getElementById('valorIndenizacao').value) || 0;
             const honorarios = valorIndenizacao * 0.30;
-            const valorApolice = parseFloat(document.getElementById('valorApolice').value) || 0;
+            const valorApolice = converterMoedaParaNumero(document.getElementById('valorApolice').value) || 0;
             const seguradora = document.getElementById('seguradoraSelect').value === 'outro' ? 
                               document.getElementById('seguradoraOutro').value : 
                               document.getElementById('seguradoraSelect').value;
@@ -961,6 +985,7 @@
             const porcentagemRTM = document.getElementById('porcentagemRTM').value;
             const memoriaCalculo = document.getElementById('memoriaCalculo').value;
             const jaCaiu = document.getElementById('jaCaiu').value;
+            const dataIndenizacao = document.getElementById('dataIndenizacao').value;
 
             // Validações básicas
             if (!segurado) {
@@ -970,6 +995,7 @@
 
             // Gerar texto
             const dataAtual = new Date().toLocaleDateString('pt-BR');
+            const dataFormatada = dataIndenizacao ? new Date(dataIndenizacao + 'T00:00:00').toLocaleDateString('pt-BR') : '';
             
             let texto = `RELATÓRIO DE INDENIZAÇÃO - SEGURO DE VIDA
 ==================================================
@@ -977,7 +1003,6 @@
 📋 DADOS GERAIS:
 • Tipo de Seguro: ${tipoSeguro.toUpperCase()}
 • Segurado: ${segurado}
-• Data do Relatório: ${dataAtual}
 • Seguradora: ${seguradora}
 • Consultor Responsável: ${consultor}
 
@@ -985,7 +1010,6 @@
 • Valor da Apólice: ${formatarMoeda(valorApolice)}
 • Valor da Indenização: ${formatarMoeda(valorIndenizacao)}
 • Honorários Advocatícios (30%): ${formatarMoeda(honorarios)}
-• Valor Líquido ao Cliente: ${formatarMoeda(valorIndenizacao - honorarios)}
 
 🏥 DETALHES MÉDICOS:
 • Fraturas Identificadas: ${fraturas}
@@ -995,20 +1019,7 @@
 💳 INFORMAÇÕES BANCÁRIAS:
 • Banco de Destino: ${banco}
 • Status do Pagamento: ${jaCaiu === 'sim' ? 'JÁ DEPOSITADO' : 'AGUARDANDO DEPÓSITO'}
-
-📊 ANÁLISE:
-${jaCaiu === 'sim' ? 
-    `✅ O valor de ${formatarMoeda(valorIndenizacao)} já foi depositado na conta do segurado.` :
-    `⏳ Aguardando depósito do valor de ${formatarMoeda(valorIndenizacao)} na conta do segurado.`
-}
-
-Os honorários advocatícios no valor de ${formatarMoeda(honorarios)} (30% sobre o valor da indenização) serão descontados conforme contrato de prestação de serviços advocatícios.
-
-📝 OBSERVAÇÕES FINAIS:
-- Todos os documentos necessários foram apresentados
-- A análise foi baseada na tabela SUSEP vigente
-- ${porcentagemRTM}
-- A seguradora ${seguradora} procedeu com o pagamento conforme apólice
+${dataFormatada ? `• Data prevista para depósito: ${dataFormatada}` : ''}
 
 ==================================================
 Relatório gerado em ${dataAtual}
