@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passo a Passo - ReVive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            animation: slideDown 0.5s ease-out;
+            position: relative;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .back-btn {
+            position: absolute;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) translateY(-2px);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-text h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            min-height: 600px;
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        .details-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+        
+        .details-overlay.active {
+            display: flex;
+            animation: overlayFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .details-modal {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .flow-container {
+            max-width: 100%;
+        }
+        
+        .flow-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .flow-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .flow-step {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .flow-step:hover::before {
+            width: 100%;
+        }
+        
+        .flow-step:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0.5rem 0;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        
+        .flow-branch {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .branch-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .branch-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .branch-success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .branch-warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .branch-danger {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .branch-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-box {
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border: 2px solid #6ee7b7;
+            color: #047857;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background: #fee2e2;
+            border: 2px solid #fca5a5;
+            color: #991b1b;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            border: 2px solid #93c5fd;
+            color: #1e40af;
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: var(--dark);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .substep-list {
+            list-style: none;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .substep-list li {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            font-size: 0.875rem;
+        }
+
+        .substep-list li::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            .header, .content-wrapper {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+            .back-btn {
+                left: 1rem;
+                padding: 0.5rem 1rem;
+                font-size: 12px;
+            }
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .flow-branch {
+                grid-template-columns: 1fr;
+            }
+            .modal-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← Voltar</a>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">📖</div>
+                    <div class="logo-text">
+                        <h1>Passo a Passo - ReVive</h1>
+                        <p>Guias Detalhados de Processos e Procedimentos</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <main class="content-wrapper">
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--dark); text-align: center; margin-bottom: 2rem;">
+                Selecione o Passo a Passo que Deseja Visualizar
+            </h2>
+            <div class="grid-container" id="passosGrid">
+                <!-- Cards serão renderizados aqui via JavaScript -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal de Detalhes -->
+    <div class="details-overlay" id="detailsOverlay">
+        <div class="details-modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">×</button>
+                <div id="modalHeaderContent">
+                    <!-- Conteúdo do cabeçalho do modal aqui -->
+                </div>
+            </div>
+            <div class="modal-body" id="modalBodyContent">
+                <!-- Conteúdo do corpo do modal aqui -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const passosPasso = {
+            'fluxograma-solicitacao': {
+                icon: '🎯',
+                title: 'Fluxograma Solicitação de Documentos',
+                description: 'Fluxo principal de solicitação e contato com clientes',
+                content: {
+                    title: '🎯 Fluxograma de Solicitação de Documentos',
+                    sections: [
+                        {
+                            title: 'Fluxo Principal de Solicitação',
+                            steps: [
+                                {
+                                    title: 'INÍCIO: Identificar processo na planilha',
+                                    content: 'Localizar o processo do cliente na planilha de controle'
+                                },
+                                {
+                                    title: 'Verificar processo no ASTREA',
+                                    content: 'Consultar status atual do processo no sistema ASTREA'
+                                }
+                            ],
+                            branches: [
+                                {
+                                    type: 'success',
+                                    title: 'Já Protocolado ADM/Judicial',
+                                    content: ['Retirar pendências (colocar "O")', 'Mudar etiqueta para "OK" ou "Protocolado"']
+                                },
+                                {
+                                    type: 'warning',
+                                    title: 'Processo Continua Ativo',
+                                    content: ['Voltar para planilha', 'Começar a identificar pendências']
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Processo de Contato com Cliente',
+                            steps: [
+                                {
+                                    title: '1️⃣ BotConversa',
+                                    content: 'Primeira tentativa de contato - Enviar mensagem automatizada'
+                                },
+                                {
+                                    title: '2️⃣ WhatsApp',
+                                    content: 'Se não encontrar no BotConversa - Atribuir para você e pausar automação'
+                                },
+                                {
+                                    title: '3️⃣ Ligação',
+                                    content: 'Ligar pelo menos 2 vezes - Se atender, explicar pendências'
+                                }
+                            ],
+                            alert: {
+                                type: 'warning',
+                                text: 'Script de Ligação: "Olá, sou [nome], estou resolvendo as pendências do seu processo e gostaria de solicitar alguns documentos. Você teria disponibilidade para enviá-los agora? Vou mandar a lista no WhatsApp."'
+                            }
+                        },
+                        {
+                            title: 'Após Contato com Cliente',
+                            branches: [
+                                {
+                                    type: 'success',
+                                    title: 'Cliente Respondeu',
+                                    content: ['Enviar lista de documentos', 'Marcar X nos recebidos', 'Lançar no ASTREA']
+                                },
+                                {
+                                    type: 'warning',
+                                    title: 'Sem Resposta',
+                                    content: ['Colocar pendências no Slack', 'Notificar consultor', 'Acompanhar semanalmente']
+                                }
+                            ],
+                            alert: {
+                                type: 'danger',
+                                text: 'IMPORTANTE: Sempre lançar no ASTREA as pendências solicitadas, se teve sucesso ou se passou para o consultor!'
+                            }
+                        }
+                    ]
+                }
+            },
+            'reclamacao-reclame-aqui': {
+                icon: '📢',
+                title: 'Reclamação no Reclame Aqui',
+                description: 'Passo a passo para fazer reclamações formais',
+                content: {
+                    title: '📢 Reclamação no Reclame Aqui',
+                    sections: [
+                        {
+                            title: 'Acesso e Login',
+                            steps: [
+                                {
+                                    title: 'Acessar o site',
+                                    content: 'Entrar em https://www.reclameaqui.com.br/'
+                                },
+                                {
+                                    title: 'Fazer login',
+                                    content: 'Usar e-mail: sinistrovidarv@gmail.com'
+                                },
+                                {
+                                    title: 'Escolher ação',
+                                    content: 'Minhas reclamações (verificar andamento) OU Faça uma reclamação (nova)'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Processo de Reclamação',
+                            steps: [
+                                {
+                                    title: 'Buscar empresa',
+                                    content: 'Procurar pelo nome da empresa ou seguradora'
+                                },
+                                {
+                                    title: 'Preencher formulário',
+                                    content: 'Completar dados específicos da empresa/seguradora'
+                                },
+                                {
+                                    title: 'Usar modelo padrão',
+                                    content: 'Utilizar template de reclamação com informações do caso'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Finalização',
+                            steps: [
+                                {
+                                    title: 'Selecionar motivo',
+                                    content: 'Escolher categoria da reclamação nas opções'
+                                },
+                                {
+                                    title: 'Anexar evidências',
+                                    content: 'Incluir procurações e cópia da apólice de seguro'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'planilha-seguro-vida': {
+                icon: '📊',
+                title: 'Planilha Seguro de Vida',
+                description: 'Controle de processos de seguro de vida',
+                content: {
+                    title: '📊 Planilha Seguro de Vida',
+                    sections: [
+                        {
+                            title: 'Recebimento de Novos Processos',
+                            steps: [
+                                {
+                                    title: 'Receber protocolo',
+                                    content: 'Quando o setor receber protocolo com novos processos'
+                                },
+                                {
+                                    title: 'Preencher colunas iniciais',
+                                    content: 'Unidade, consultor, cliente, data do acidente, seguradora, tipo (empresarial/individual)'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Atualização Após Despacho',
+                            steps: [
+                                {
+                                    title: 'Alterar status',
+                                    content: 'Mudar para externo, perícia ou status atual'
+                                },
+                                {
+                                    title: 'Preencher informações',
+                                    content: 'Número do sinistro, data despacho, data perícia (formato: 10/02/2025 -- 10h25)'
+                                },
+                                {
+                                    title: 'Dados de indenização',
+                                    content: 'Data da indenização e valor da indenização'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Abas Complementares',
+                            substeps: [
+                                {
+                                    title: 'Aba Junta Médica',
+                                    content: ['Cliente quer junta médica após indenização/indeferimento', 'Nova perícia com três médicos', 'Mesmo padrão da aba administrativa']
+                                },
+                                {
+                                    title: 'Aba Revisões Judiciais',
+                                    content: ['Cliente já passou pela junta ou não quer fazer', 'Colunas: Pendente e Status', 'Status: se cliente foi chamado', 'Pendente: documentos em falta', 'Alterar para "PRONTO" quando documentos completos']
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'conferencia-laudo-rtm': {
+                icon: '🏥',
+                title: 'Conferência Laudo RTM',
+                description: 'Verificação e validação de laudos médicos',
+                content: {
+                    title: '🏥 Conferência do Laudo RTM',
+                    sections: [
+                        {
+                            title: 'Verificações Básicas',
+                            steps: [
+                                {
+                                    title: 'Dados pessoais',
+                                    content: 'Nome correto com documento pessoal, data de nascimento'
+                                },
+                                {
+                                    title: 'Datas importantes',
+                                    content: 'Data atendimento = data perícia, data alta médica, data acidente = prontuário/BO'
+                                },
+                                {
+                                    title: 'Informações médicas',
+                                    content: 'Fraturas batem com prontuário médico'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Conclusão do Laudo',
+                            steps: [
+                                {
+                                    title: 'Verificar porcentagem',
+                                    content: 'Porcentagem das sequelas deve constar na conclusão'
+                                },
+                                {
+                                    title: 'Verificar CID',
+                                    content: 'CID deve estar presente na parte da conclusão'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Verificação Específica',
+                            steps: [
+                                {
+                                    title: 'Seguro de vida',
+                                    content: 'Verificar se constam informações da fisioterapia'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'junta-medica': {
+                icon: '👩‍⚕️',
+                title: 'Solicitação Junta Médica',
+                description: 'Como solicitar junta médica para revisão',
+                content: {
+                    title: '👩‍⚕️ Solicitação de Junta Médica',
+                    sections: [
+                        {
+                            title: 'Processo Geral',
+                            steps: [
+                                {
+                                    title: 'Consultar planilha',
+                                    content: 'Ver instruções de como enviar documentos para seguradora'
+                                },
+                                {
+                                    title: 'Enviar carta',
+                                    content: 'Carta de solicitação de junta será enviada pela planilha'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Casos Específicos (Bradesco)',
+                            steps: [
+                                {
+                                    title: 'Reclamação Reclame Aqui',
+                                    content: 'Fazer reclamação solicitando junta e discordando do valor'
+                                },
+                                {
+                                    title: 'Carta básica',
+                                    content: 'Informar discordância do valor, solicitar junta médica, acordo com honorários'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Modelo de Carta',
+                            text: `Prezados,
+
+O segurado [NOME], discorda do valor da indenização de R$ [VALOR]. Pedimos uma junta médica.
+
+Estamos de acordo com o pagamento dos honorários do nosso médico e de metade dos honorários do médico desempatador.
+
+Segue os dados da nossa médica:
+- Vitória Augusta Piva Caminski
+- Rua Maria das Dores Santos mueller 289
+- vitoriacaminski1@gmail.com
+- CRM 35458
+
+Camila: moraesmedicina@gmail.com
+Rua Joinville 561, bairro Vila Nova, Blumenau.`
+                        },
+                        {
+                            title: 'Custos e Orientações',
+                            alert: {
+                                type: 'warning',
+                                text: 'VALOR: R$ 250 nossa médica + R$ 250 a R$ 300 ao desempatador. Sempre cobrar cliente pelos horários da médica e informar sobre pagamento do desempatador.'
+                            }
+                        }
+                    ]
+                }
+            },
+            'materiais-ortopedicos': {
+                icon: '🦽',
+                title: 'Controle Materiais Ortopédicos',
+                description: 'Checklist e controle de equipamentos',
+                content: {
+                    title: '🦽 Controle de Materiais Ortopédicos',
+                    sections: [
+                        {
+                            title: 'Processo de Controle',
+                            steps: [
+                                {
+                                    title: 'Recebimento',
+                                    content: 'Dar baixa na lista quando receber material ortopédico'
+                                },
+                                {
+                                    title: 'Empréstimo',
+                                    content: 'Quando consultor levar, pegar contrato de alocação assinado pelo cliente'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Tipos de Materiais',
+                            substeps: [
+                                {
+                                    title: 'CADEIRA DE BANHO',
+                                    content: ['Assento com encosto e apoios', 'Para uso no chuveiro ou banheira', 'Segurança para pessoas com mobilidade reduzida']
+                                },
+                                {
+                                    title: 'CADEIRA DE RODAS C/ EXTENSOR',
+                                    content: ['Equipada com apoio extensível para pernas/pés', 'Para manter membros inferiores elevados', 'Indicada para imobilização']
+                                },
+                                {
+                                    title: 'MULETA CANADENSE',
+                                    content: ['Com apoio antebraquial (braçadeira)', 'Maior estabilidade que axilar', 'Ideal para uso prolongado']
+                                },
+                                {
+                                    title: 'MULETA AXILAR',
+                                    content: ['Tradicional com apoio sob axila', 'Uso temporário', 'Para descarregar peso de membro inferior']
+                                },
+                                {
+                                    title: 'ANDADOR',
+                                    content: ['Estrutura com quatro pontos de contato', 'Máxima estabilidade para marcha', 'Para pacientes com equilíbrio comprometido']
+                                },
+                                {
+                                    title: 'BOTA ORTOPÉDICA',
+                                    content: ['Calçado rígido especial', 'Imobilização pé/tornozelo', 'Proteção durante recuperação']
+                                },
+                                {
+                                    title: 'TIPÓIA',
+                                    content: ['Suporte em tecido para braço/antebraço', 'Suspender e imobilizar membro', 'Posição de repouso para cicatrização']
+                                },
+                                {
+                                    title: 'TALA DE MÃO',
+                                    content: ['Dispositivo rígido ou semi-rígido', 'Imobilizar punho, dedos ou mão', 'Manter alinhamento durante recuperação']
+                                },
+                                {
+                                    title: 'BENGALA',
+                                    content: ['Bastão de apoio simples', 'Auxílio na marcha', 'Suporte adicional e melhora equilíbrio']
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'agendamentos-rtm': {
+                icon: '📅',
+                title: 'Planilha Agendamentos RTM',
+                description: 'Como alimentar agendamentos de perícias',
+                content: {
+                    title: '📅 Planilha de Agendamentos RTM',
+                    sections: [
+                        {
+                            title: 'Acesso ao Sistema',
+                            steps: [
+                                {
+                                    title: 'Abrir Slack',
+                                    content: 'Procurar o setor administrativo no Slack'
+                                },
+                                {
+                                    title: 'Navegar para perícias',
+                                    content: 'Nas abas superiores, procurar aba "perícias RTM"'
+                                },
+                                {
+                                    title: 'Acessar lista',
+                                    content: 'Clicar na aba para acessar lista de perícias agendadas'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Adicionar Novo Agendamento',
+                            steps: [
+                                {
+                                    title: 'Localizar botão',
+                                    content: 'Na parte inferior direita, opção "adicionar item"'
+                                },
+                                {
+                                    title: 'Preencher dados',
+                                    content: 'Nova aba abrirá para inserir dados do cliente e informações da perícia RTM'
+                                },
+                                {
+                                    title: 'Finalizar',
+                                    content: 'Após preenchimento, apenas fechar a aba'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'planilha-consultores': {
+                icon: '👥',
+                title: 'Lista Pendências Consultores',
+                description: 'Como filtrar e gerenciar pendências',
+                content: {
+                    title: '👥 Lista de Pendências dos Consultores',
+                    sections: [
+                        {
+                            title: 'Sobre a Planilha',
+                            steps: [
+                                {
+                                    title: 'Nome da planilha',
+                                    content: '03 - PENDENCIAS CONSULTORES'
+                                },
+                                {
+                                    title: 'Organização',
+                                    content: 'Separada por unidades'
+                                },
+                                {
+                                    title: 'Origem',
+                                    content: 'Reflexo direto da planilha administrativa com exibição diferente'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Como Filtrar',
+                            steps: [
+                                {
+                                    title: 'Selecionar coluna',
+                                    content: 'Clicar na coluna de dados para filtrar'
+                                },
+                                {
+                                    title: 'Configurar filtro',
+                                    content: 'Entrar em "filtrar por condição" e selecionar "o texto contém"'
+                                },
+                                {
+                                    title: 'Aplicar filtro',
+                                    content: 'Preencher nome do consultor no campo e dar OK'
+                                }
+                            ]
+                        },
+                        {
+                            title: 'Filtros Adicionais',
+                            steps: [
+                                {
+                                    title: 'Por processo',
+                                    content: 'Em vez do nome do consultor, colocar inicial do processo'
+                                },
+                                {
+                                    title: 'Exemplos',
+                                    content: 'vida, AA, entre outros tipos de processo'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'cadastro-processos': {
+                icon: '📝',
+                title: 'Cadastro de Processos',
+                description: 'Organização completa de novos processos',
+                content: {
+                    title: '📝 Organização de Processos - Cadastro',
+                    sections: [
+                        {
+                            title: '1. Preparação Inicial',
+                            steps: [
+                                {
+                                    title: 'Baixar processo',
+                                    content: 'Baixar do e-mail (conferir quantidade de anexos - não pode ter menos de oito)'
+                                },
+                                {
+                                    title: 'Criar pasta',
+                                    content: 'No drive, pasta "0 - novos clientes zapsign"'
+                                },
+                                {
+                                    title: 'Extrair dados',
+                                    content: 'Da capa de rosto e inserir na planilha através do script "3 - DADOS DOS NOVOS PARA ASTREA"'
+                                }
+                            ]
+                        },
+                        {
+                            title: '2. Preenchimento de Cadastro',
+                            steps: [
+                                {
+                                    title: 'Nome do cliente',
+                                    content: 'Inserir apenas com iniciais em maiúsculas'
+                                },
+                                {
+                                    title: 'Dados automáticos',
+                                    content: 'Contato preenchido automaticamente'
+                                },
+                                {
+                                    title: 'Dados manuais',
+                                    content: 'Exceções: telefone adicional e data de nascimento'
+                                },
+                                {
+                                    title: 'Conferir dados',
+                                    content: 'Verificar se todas informações estão corretas'
+                                }
+                            ]
+                        },
+                        {
+                            title: '3. Nomeação e Categorização',
+                            steps: [
+                                {
+                                    title: 'Ir em processos',
+                                    content: 'Depois de cadastrado o contato, ir em processos e adicionar'
+                                },
+                                {
+                                    title: 'Nome da pasta',
+                                    content: 'Nome do cliente - data do acidente'
+                                },
+                                {
+                                    title: 'Definir campos',
+                                    content: 'Autor: Nome do cliente | Réu: Nome do processo | Título: Nome cliente X Nome processo'
+                                },
+                                {
+                                    title: 'Observação',
+                                    content: 'Lesão do cliente e tipo de acidente'
+                                },
+                                {
+                                    title: 'Caso óbito',
+                                    content: 'Nome do cliente x Nome do falecido x processo'
+                                }
+                            ]
+                        },
+                        {
+                            title: '4. Etiquetas',
+                            steps: [
+                                {
+                                    title: 'Etiquetas padrão',
+                                    content: 'Nome do consultor, unidade, interno, nome do processo'
+                                }
+                            ],
+                            substeps: [
+                                {
+                                    title: 'Etiquetas Excepcionais',
+                                    content: [
+                                        '"Grupo Renato Ventura" - para processos previdenciários',
+                                        '"Doutora Renata" - para processos feitos pela Dra. Renata',
+                                        '"Doutora Alyne" - para processos trabalhistas'
+                                    ]
+                                }
+                            ],
+                            alert: {
+                                type: 'info',
+                                text: 'As etiquetas excepcionais devem ser aplicadas conforme o tipo de processo e profissional responsável. Sempre verificar qual etiqueta especial aplicar antes de finalizar o cadastro.'
+                            }
+                        },
+                        {
+                            title: '5. Finalização',
+                            steps: [
+                                {
+                                    title: 'Inserir observações',
+                                    content: 'Observações pertinentes da capa de rosto no histórico do processo'
+                                },
+                                {
+                                    title: 'Mover pasta',
+                                    content: 'De "0 - NOVOS CLIENTES ZAPSIGN" para "02 - CLIENTES"'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        };
+
+        function openModal() {
+            const overlay = document.getElementById('detailsOverlay');
+            if (overlay) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('detailsOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showPassoDetails(passoKey) {
+            const passo = passosPasso[passoKey];
+            if (!passo || !passo.content) {
+                return;
+            }
+
+            const modalHeaderEl = document.getElementById('modalHeaderContent');
+            const modalBodyEl = document.getElementById('modalBodyContent');
+
+            if (!modalHeaderEl || !modalBodyEl) {
+                return;
+            }
+
+            modalHeaderEl.innerHTML = `
+                <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">
+                    ${passo.icon || '📖'} ${passo.content.title}
+                </h2>
+                <p style="opacity: 0.9;">${passo.description}</p>
+            `;
+
+            let contentHTML = '';
+
+            if (passo.content.sections && passo.content.sections.length > 0) {
+                passo.content.sections.forEach(section => {
+                    contentHTML += `<div class="flow-card">`;
+                    contentHTML += `<h3 class="flow-title">${section.title}</h3>`;
+
+                    if (section.text) {
+                        contentHTML += `<pre style="background: white; padding: 1rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif;">${section.text}</pre>`;
+                    }
+
+                    if (section.steps && section.steps.length > 0) {
+                        section.steps.forEach((step, index) => {
+                            contentHTML += `<div class="flow-step"><span>${step.title}</span>`;
+                            if (step.content) {
+                                contentHTML += `<div style="margin-top: 0.5rem; font-weight: normal; font-size: 0.9rem;">${step.content}</div>`;
+                            }
+                            contentHTML += `</div>`;
+                            
+                            if (index < section.steps.length - 1) {
+                                contentHTML += `<div class="flow-arrow">↓</div>`;
+                            }
+                        });
+                    }
+
+                    if (section.branches && section.branches.length > 0) {
+                        contentHTML += `<div class="flow-branch">`;
+                        section.branches.forEach(branch => {
+                            contentHTML += `
+                                <div class="branch-item branch-${branch.type}">
+                                    <div class="branch-title">
+                                        <span>${branch.type === 'success' ? '✅' : branch.type === 'warning' ? '⚠️' : '❌'}</span>
+                                        <span>${branch.title}</span>
+                                    </div>
+                                    ${branch.content.map(item => `<p>• ${item}</p>`).join('')}
+                                </div>
+                            `;
+                        });
+                        contentHTML += `</div>`;
+                    }
+
+                    if (section.substeps && section.substeps.length > 0) {
+                        section.substeps.forEach(substep => {
+                            contentHTML += `
+                                <div style="background: white; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border: 2px solid #e5e7eb;">
+                                    <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">${substep.title}</h4>
+                                    ${substep.content.map(item => `<p style="margin: 0.5rem 0; padding-left: 1rem;">• ${item}</p>`).join('')}
+                                </div>
+                            `;
+                        });
+                    }
+
+                    if (section.alert) {
+                        contentHTML += `
+                            <div class="alert-box alert-${section.alert.type}">
+                                <span class="alert-icon">${section.alert.type === 'warning' ? '⚠️' : section.alert.type === 'danger' ? '❌' : '💡'}</span>
+                                <span>${section.alert.text}</span>
+                            </div>
+                        `;
+                    }
+
+                    contentHTML += `</div>`;
+                });
+            }
+
+            modalBodyEl.innerHTML = contentHTML;
+            openModal();
+        }
+
+        function renderPassoCards() {
+            const passosGrid = document.getElementById('passosGrid');
+            if (!passosGrid) return;
+
+            passosGrid.innerHTML = '';
+            const passosKeys = Object.keys(passosPasso);
+
+            passosKeys.forEach(key => {
+                const passo = passosPasso[key];
+                if (!passo) return;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => showPassoDetails(key);
+                card.innerHTML = `
+                    <div class="card-icon">${passo.icon || '📖'}</div>
+                    <div class="card-title">${passo.title}</div>
+                    <div class="card-description">${passo.description}</div>
+                `;
+                passosGrid.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('detailsOverlay');
+            
+            if (overlay) {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeModal();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            renderPassoCards();
+        });
+    </script>
+</body>
+</html>
