@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de Seguro de Vida - ReVive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            animation: slideUp 0.5s ease-out 0.1s both;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-select, .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .radio-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .radio-option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .radio-option input[type="radio"]:checked + span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .company-search-container {
+            position: relative;
+        }
+        
+        .suggestions-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            z-index: 100;
+            display: none;
+            top: 100%;
+            left: 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s ease;
+        }
+        
+        .suggestion-item:hover {
+            background: var(--light);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-company {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .suggestion-sector {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .search-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        
+        .btn-verify {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-verify:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-back {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .result-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s ease-out;
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result-positive {
+            border-left: 6px solid var(--success);
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .result-negative {
+            border-left: 6px solid var(--warning);
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .result-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .result-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #374151;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-list {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .info-list h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .info-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .info-list li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .company-result-details {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .company-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .company-sector {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-new-search {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn-new-search:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .warning-icon {
+            font-size: 1.5rem;
+            color: #d97706;
+            flex-shrink: 0;
+        }
+        
+        .warning-text {
+            color: #92400e;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            
+            .header, .form-container, .result-container {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .radio-buttons {
+                flex-direction: column;
+            }
+            
+            .radio-option {
+                min-width: auto;
+            }
+            
+            .btn-verify {
+                padding: 0.875rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>🛡️ Verificação de Seguro de Vida Obrigatório</h1>
+            <p>Descubra se você tem direito ao seguro de vida por lei ou convenção coletiva em Santa Catarina</p>
+        </header>
+        
+        <div class="form-container" id="formContainer">
+            <a href="index.html" class="btn-back">← Voltar ao Menu Principal</a>
+            
+            <form id="verificationForm">
+                <div class="form-group">
+                    <label class="form-label">Como você quer verificar seu direito?</label>
+                    <div class="radio-buttons">
+                        <label class="radio-option">
+                            <input type="radio" name="searchType" value="profession" id="searchByProfession" checked>
+                            <span>🏢 Por Profissão/Categoria</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="searchType" value="company" id="searchByCompany">
+                            <span>🔍 Por Nome da Empresa</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Busca por Profissão -->
+                <div class="form-group" id="professionGroup">
+                    <label class="form-label" for="profession">Qual sua profissão/categoria?</label>
+                    <select class="form-select" id="profession" required>
+                        <option value="">Selecione sua profissão/categoria</option>
+                        <optgroup label="📚 Garantido por Lei Federal">
+                            <option value="estagiario">Estagiário (obrigatório ou não-obrigatório)</option>
+                            <option value="motorista">Motorista Profissional (CNH C, D ou E)</option>
+                            <option value="vigilante">Vigilante/Segurança Privada</option>
+                        </optgroup>
+                        <optgroup label="🏗️ Construção Civil e Montagem">
+                            <option value="construcao-civil">Construção Civil (pedreiro, servente, mestre de obra, etc.)</option>
+                            <option value="construcao-pesada">Construção Pesada (estradas, pontes, viadutos)</option>
+                        </optgroup>
+                        <optgroup label="⚙️ Setor Metalúrgico">
+                            <option value="metalurgico-floripa">Metalúrgico - Grande Florianópolis</option>
+                            <option value="metalurgico-jaragua">Metalúrgico - Jaraguá do Sul</option>
+                            <option value="metalurgico-joinville">Metalúrgico - Joinville</option>
+                        </optgroup>
+                        <optgroup label="🧵 Indústria Têxtil">
+                            <option value="textil-blumenau">Têxtil - Blumenau e Região</option>
+                            <option value="textil-sul">Têxtil - Sul Catarinense</option>
+                            <option value="textil-brusque">Têxtil - Brusque</option>
+                        </optgroup>
+                        <optgroup label="🛒 Comércio e Serviços">
+                            <option value="comerciario">Comerciário (vendedor, caixa, gerente)</option>
+                            <option value="bancario">Bancário</option>
+                        </optgroup>
+                        <optgroup label="💻 Tecnologia">
+                            <option value="ti">Processamento de Dados/TI</option>
+                        </optgroup>
+                        <optgroup label="⚓ Setor Portuário">
+                            <option value="portuario">Trabalhador Portuário</option>
+                            <option value="estivador">Estivador</option>
+                        </optgroup>
+                        <optgroup label="🏛️ Serviço Público">
+                            <option value="servidor-estadual">Servidor Público Estadual</option>
+                            <option value="servidor-federal">Servidor Público Federal</option>
+                            <option value="saude-publica">Trabalhador da Saúde Pública</option>
+                        </optgroup>
+                        <optgroup label="🔧 Outras Categorias">
+                            <option value="posto-combustivel">Trabalhador em Posto de Combustível</option>
+                            <option value="agronegocio">Agronegócio</option>
+                            <option value="outra">Outra profissão/categoria</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Busca por Empresa -->
+                <div class="form-group hidden" id="companySearchGroup">
+                    <label class="form-label" for="companySearch">Digite o nome da sua empresa:</label>
+                    <div class="company-search-container">
+                        <input type="text" 
+                               class="form-input" 
+                               id="companySearch" 
+                               placeholder="Ex: WEG, Hering, Mueller, Viacredi..."
+                               autocomplete="off">
+                        <div id="companySuggestions" class="suggestions-container"></div>
+                    </div>
+                    <div class="search-info">
+                        💡 Digite pelo menos 3 letras para ver sugestões
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-verify">🔍 Verificar Direito ao Seguro</button>
+            </form>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <!-- Resultado será inserido aqui via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Base de dados de empresas
+        const companiesDatabase = {
+            "WEG EQUIPAMENTOS ELETRICOS S A": "Metalúrgica/Equipamentos",
+            "WEG DRIVES & CONTROLS - AUTOMACAO LTDA": "Metalúrgica/Equipamentos",
+            "CIA. HERING": "Indústria Têxtil",
+            "TEXTIL H.J. HERING LTDA": "Indústria Têxtil",
+            "MUELLER ELETRODOMESTICOS LTDA": "Metalúrgica/Equipamentos",
+            "MUELLER PARTICIPACOES S A": "Metalúrgica/Equipamentos",
+            "VIACREDI": "Cooperativas de Crédito",
+            "VIACREDI ALTO VALE": "Cooperativas de Crédito",
+            "SCHULZ S A": "Metalúrgica/Equipamentos",
+            "KYLY INDUSTRIA TEXTIL LTDA": "Indústria Têxtil",
+            "FAKINI MALHAS LTDA": "Indústria Têxtil",
+            "BRITANIA INDUSTRIA E COMERCIO LTDA": "Metalúrgica/Equipamentos",
+            "BANCO BRADESCO S A": "Setor Financeiro",
+            "CREMER S A": "Saúde/Hospitalar",
+            "EUGENIO RAULINO KOERICH SA COMERCIO E INDUSTRIA": "Comércio/Varejo",
+            "EXPRESSO SAO MIGUEL S A": "Transportes/Logística",
+            "UNIFIQUE TELECOMUNICACOES S A": "Serviços Diversos",
+            "AILOS CORR ADM SEGS LTDA": "Cooperativas de Crédito",
+            "COOP CENTRAL DE CRED AILOS": "Cooperativas de Crédito",
+            "COOPERATIVA CENTRAL AILOS": "Cooperativas de Crédito",
+            "SICOOB CONFEDERAÇÃO": "Cooperativas de Crédito",
+            "CRESOL": "Cooperativas de Crédito",
+            "CRESOL BASER": "Cooperativas de Crédito",
+            "ELIAN INDUSTRIA TEXTIL LTDA": "Indústria Têxtil",
+            "MALHARIA INDAIAL LTDA": "Indústria Têxtil",
+            "BENEX BENEFICIAMENTO TEXTIL LTDA": "Indústria Têxtil",
+            "METALURGICA FEY LTDA": "Metalúrgica/Equipamentos",
+            "METALURGICA TRAPP LTDA": "Metalúrgica/Equipamentos",
+            "HERCULES MOTORES ELETRICOS LTDA": "Metalúrgica/Equipamentos",
+            "BLUTRAFOS BLUMENAU TRANSFORMADORES LTDA": "Metalúrgica/Equipamentos",
+            "ELECTRO ACO ALTONA S A": "Metalúrgica/Equipamentos",
+            "PROACO INDUSTRIA METALURGICA S A": "Metalúrgica/Equipamentos",
+            "EPAVI VIGILANCIA LTDA": "Segurança/Vigilância",
+            "ONSEG SERVIÇOS DE VIGILÂNCIA E SEGURANÇA LTDA": "Segurança/Vigilância",
+            "PORTOVIG SERVIÇOS DE SEGURANÇA E VIGILÂNCIA LTDA": "Segurança/Vigilância",
+            "ORBENK SERVICOS DE SEGURANCA LTDA": "Segurança/Vigilância",
+            "SEGURIDADE SERVICOS DE SEGURANCA LTDA": "Segurança/Vigilância",
+            "STV SEGURANCA, TECNOLOGIA E VIGILANCIA PATRIMONIAL LTDA": "Segurança/Vigilância",
+            "CAIS DO PORTO TRANSPORTES E LOGISTICA LT": "Transportes/Logística",
+            "NASUL CARGO LOGISTICA LTDA": "Transportes/Logística",
+            "ALB TRANSPORTES LTDA": "Transportes/Logística",
+            "TRANSPORTES GAMIRA LTDA": "Transportes/Logística",
+            "GDC ALIMENTOS S.A": "Indústria de Alimentos",
+            "PAMPLONA ALIMENTOS S A": "Indústria de Alimentos",
+            "EVA INDUSTRIA E COMERCIO DE ALIMENTOS LTDA": "Indústria de Alimentos",
+            "COPAL ALIMENTOS LTDA": "Indústria de Alimentos",
+            "BANCO BRADESCO S/A - CONSIGNADO PUBLICO": "Setor Financeiro",
+            "Banco Votorantim S.A.": "Setor Financeiro",
+            "PICPAY INSTIT DE PAGAMENTO SA": "Setor Financeiro",
+            "CONSMAR CONSTRUTORA CIVIL LTDA": "Construção/Engenharia",
+            "HLA CONSTRUCOES E ENGENHARIA LTDA": "Construção/Engenharia",
+            "SCALA ENGENHARIA E CONSTRUCAO LTDA": "Construção/Engenharia",
+            "ALLPARK EMPREENDIMENTOS, PARTICIPACOES E SERV S.A.": "Construção/Engenharia",
+            "COMPENSADOS NM LTDA": "Construção/Engenharia",
+            "CM HOSPITALAR S.A": "Saúde/Hospitalar",
+            "CITOVET LABORATORIO CLINICO LTDA": "Saúde/Hospitalar",
+            "MUNICIPIO DE JARAGUA DO SUL": "Setor Público",
+            "SERVICO SOCIAL DO COMERCIO - SESC": "Entidades/Federações",
+            "SERVIÇO SOCIAL DA INDUSTRIA- SESI": "Entidades/Federações",
+            "KOCH HIPERMERCADO S/A": "Comércio/Varejo",
+            "AUTO POSTO VERENKA 07 LTDA": "Comércio/Varejo",
+            "POSTO FORTALEZA LTDA": "Comércio/Varejo",
+            "WK WK SISTEMAS DE COMPUTACAO LTDA": "Serviços Diversos",
+            "PST ELETRONICA LTDA": "Serviços Diversos",
+            "FIEDLER AUTOMACAO INDUSTRIAL LTDA": "Serviços Diversos",
+            "GERHAÇÃO LIMPEZA E CONSERVAÇÃO LTDA": "Serviços Diversos",
+            "AMBIENTAL LIMPEZA URBANA E SANEAMENTO LTDA": "Serviços Diversos"
+        };
+
+        // Dados das profissões
+        const professionData = {
+            'estagiario': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Como estagiário, você tem direito garantido por lei federal ao seguro de acidentes pessoais.',
+                details: [
+                    'Lei 11.788/2008, artigo 9º, IV',
+                    'Cobertura 24 horas por dia',
+                    'Válido em todo território nacional',
+                    'Responsabilidade da empresa concedente',
+                    'Tanto para estágio obrigatório quanto não-obrigatório'
+                ],
+                type: 'positive'
+            },
+            'motorista': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Motoristas profissionais têm direito garantido por lei federal e jurisprudência consolidada do TRT-12.',
+                details: [
+                    'Lei Federal 13.103/2015',
+                    'TRT-12 (Santa Catarina) com jurisprudência favorável',
+                    'Valor mínimo: 10x o piso salarial da categoria',
+                    'Para CNH categorias C, D e E',
+                    'Precedente em Palhoça/SC confirmou o direito'
+                ],
+                type: 'positive'
+            },
+            'vigilante': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores de segurança privada têm direito garantido por lei federal.',
+                details: [
+                    'Lei 7.102/1983',
+                    'Decreto 89.056/1983',
+                    'Seguro de vida em grupo obrigatório',
+                    'Conforme normas coletivas da categoria'
+                ],
+                type: 'positive'
+            },
+            'construcao-civil': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores da construção civil têm uma das convenções mais consolidadas em SC.',
+                details: [
+                    'SINDUSCON Grande Florianópolis + SITICOM FLORIPA',
+                    'Convenção 2024-2025 com reajuste de 5%',
+                    'Abrange: Biguaçu, Florianópolis, Palhoça, São José',
+                    'Todas as empresas da categoria devem oferecer',
+                    'Inclui empreiteiras e subempreiteiras'
+                ],
+                type: 'positive'
+            },
+            'construcao-pesada': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores da construção pesada têm direito em todo o estado.',
+                details: [
+                    'Representados pelo SINTRAPAV',
+                    'Abrangência: Todo o estado de SC',
+                    'Categoria: Estradas, pontes, viadutos',
+                    'Convenção coletiva específica'
+                ],
+                type: 'positive'
+            },
+            'metalurgico-floripa': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Metalúrgicos de Grande Florianópolis têm forte organização sindical.',
+                details: [
+                    'Sindicato: SINTIMESC',
+                    'Convenção 2024 com reajuste de 4,33%',
+                    'Salário normativo: R$ 2.000,00',
+                    'Coberturas: Morte, invalidez, auxílio funeral',
+                    'Auxílio funeral = 1 salário contratual'
+                ],
+                type: 'positive'
+            },
+            'metalurgico-jaragua': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Metalúrgicos de Jaraguá do Sul têm convenção específica.',
+                details: [
+                    'Sindicato: SINDMET Jaraguá',
+                    'Região com forte setor metalúrgico',
+                    'Inclui grandes empresas como WEG',
+                    'Convenção coletiva atualizada anualmente'
+                ],
+                type: 'positive'
+            },
+            'metalurgico-joinville': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Metalúrgicos de Joinville têm direito por convenção regional.',
+                details: [
+                    'Sindicato Regional de Joinville',
+                    'Setor metalúrgico regional organizado',
+                    'Convenção coletiva específica da região',
+                    'Maior polo metalúrgico de SC'
+                ],
+                type: 'positive'
+            },
+            'textil-blumenau': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Setor têxtil de Blumenau tem tradição em convenções coletivas.',
+                details: [
+                    'Sindicato: SINTEX (trabalhadores)',
+                    'Abrangência: Blumenau, Timbó, Indaial, Pomerode, Massaranduba',
+                    'Convenção 2024-2025 com reajuste de 4,25%',
+                    'Forte tradição têxtil da região'
+                ],
+                type: 'positive'
+            },
+            'textil-sul': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores têxteis do Sul Catarinense têm convenção específica.',
+                details: [
+                    'Sindicato: SINDIVEST',
+                    'Região: Sul do estado',
+                    'Setor do vestuário organizado',
+                    'Convenção coletiva regional'
+                ],
+                type: 'positive'
+            },
+            'textil-brusque': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores têxteis de Brusque têm sindicato específico.',
+                details: [
+                    'Sindicato: SIFITEC',
+                    'Abrangência: Brusque, Botoverá, Guabiruba',
+                    'Região têxtil tradicional',
+                    'Convenção coletiva local'
+                ],
+                type: 'positive'
+            },
+            'comerciario': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Comerciários têm direito garantido por convenção coletiva.',
+                details: [
+                    'Sindilojas de Florianópolis e sindicatos regionais',
+                    'Convenção 2024-2025 com reajuste de 5%',
+                    'Data-base: setembro',
+                    'Categoria: Vendedores, caixas, gerentes',
+                    'SEC Floripa para trabalhadores do comércio'
+                ],
+                type: 'positive'
+            },
+            'bancario': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Bancários tradicionalmente incluem seguro de vida nas convenções.',
+                details: [
+                    'Representados nacionalmente pela FENABAN',
+                    'Abrangência: Todos os bancos',
+                    'Funcionários de bancos públicos e privados',
+                    'Convenções nacionais tradicionais'
+                ],
+                type: 'positive'
+            },
+            'ti': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Setor de TI tem convenções específicas em Santa Catarina com seguro de vida obrigatório.',
+                details: [
+                    'SINDPD/SC: Sindicato dos Empregados em Processamento de Dados/SC',
+                    'Patronais: SEPROSC e SEINFLO',
+                    'CCT 2024/2025 assinada oficialmente',
+                    'Seguro de vida COMPULSÓRIO para empresas de TI',
+                    'Valor: Equivalente a 20 vezes o salário normativo',
+                    'Abrange: Processamento de Dados, Computação e Tecnologia da Informação'
+                ],
+                type: 'positive'
+            },
+            'portuario': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Trabalhadores portuários têm direitos específicos pela Lei dos Portos.',
+                details: [
+                    'Base legal: Lei dos Portos 12.815/2013',
+                    'Portos: Itajaí, Navegantes, São Francisco do Sul, Itapoá',
+                    'Sindicatos especializados',
+                    'Categoria: Conferentes, operadores, vigias portuários'
+                ],
+                type: 'positive'
+            },
+            'estivador': {
+                hasRight: true,
+                title: 'Você TEM direito!',
+                icon: '✅',
+                text: 'Estivadores têm direitos específicos como trabalhadores avulsos.',
+                details: [
+                    'Sindicato dos Estivadores de São Francisco do Sul',
+                    'Lei dos Portos 12.815/2013',
+                    'Trabalhadores avulsos portuários',
+                    'Exclusividade na prestação de serviços'
+                ],
+                type: 'positive'
+            },
+            'servidor-estadual': {
+                hasRight: false,
+                title: 'Precisa verificar especificamente',
+                icon: '❓',
+                text: 'Para servidores estaduais, é necessário consultar se existe convenção coletiva específica com seguro de vida.',
+                details: [
+                    'SINTESPE: Sindicato dos Trabalhadores do Serviço Público Estadual',
+                    'SINDISEA: Sindicato dos Servidores da Administração Estadual',
+                    'Verificar se a convenção coletiva atual inclui seguro de vida',
+                    'Consultar diretamente o sindicato da sua categoria',
+                    'Estado pode ter seguros específicos para servidores'
+                ],
+                type: 'warning'
+            },
+            'servidor-federal': {
+                hasRight: false,
+                title: 'Precisa verificar especificamente',
+                icon: '❓',
+                text: 'Para servidores federais, é necessário consultar se existe convenção coletiva específica com seguro de vida.',
+                details: [
+                    'SINTRAFESC: Sindicato dos Trabalhadores do Serviço Público Federal/SC',
+                    'SINTUFSC: Sindicato dos Trabalhadores da UFSC',
+                    'Verificar se a convenção coletiva atual inclui seguro de vida',
+                    'Consultar diretamente o sindicato da sua categoria',
+                    'Alguns órgãos federais podem ter seguros próprios'
+                ],
+                type: 'warning'
+            },
+            'saude-publica': {
+                hasRight: false,
+                title: 'Precisa verificar especificamente',
+                icon: '❓',
+                text: 'Para trabalhadores da saúde, é necessário consultar se a convenção coletiva específica inclui seguro de vida.',
+                details: [
+                    'SindSaúde/SC: Representa trabalhadores da saúde de Florianópolis e Região',
+                    'Tem convenções para unidades privadas de saúde da Grande Florianópolis',
+                    'Convenção 2024/25/26 registrada no Ministério do Trabalho',
+                    'Necessário verificar se a CCT atual inclui seguro de vida',
+                    'Consultar diretamente o sindicato para confirmar benefícios',
+                    'Algumas empresas de saúde podem ter seguros próprios'
+                ],
+                type: 'warning'
+            },
+            'posto-combustivel': {
+                hasRight: true,
+                title: 'Você PODE ter direito!',
+                icon: '⚠️',
+                text: 'Trabalhadores em postos de combustível podem ter direito dependendo da convenção local.',
+                details: [
+                    'Valores típicos: R$ 15.000 a R$ 30.000',
+                    'Categoria: Frentistas, operadores',
+                    'Verificar convenção coletiva específica',
+                    'Consultar sindicato da categoria na região'
+                ],
+                type: 'warning'
+            },
+            'agronegocio': {
+                hasRight: true,
+                title: 'Você PODE ter direito!',
+                icon: '⚠️',
+                text: 'Trabalhadores do agronegócio podem ter direito dependendo da atividade específica.',
+                details: [
+                    'Federações: FETAESC, FAESC',
+                    'Depende da convenção específica',
+                    'Verificar sindicato rural da região',
+                    'Consultar convenção coletiva da atividade'
+                ],
+                type: 'warning'
+            },
+            'outra': {
+                hasRight: false,
+                title: 'Precisa verificar especificamente',
+                icon: '❓',
+                text: 'Para outras profissões, é necessário consultar a convenção coletiva específica da sua categoria.',
+                details: [
+                    'Santa Catarina possui mais de 91 sindicatos',
+                    'Organizado através de federações estaduais',
+                    'Consulte o sindicato da sua categoria',
+                    'Verifique se existe convenção coletiva vigente',
+                    'Convenções são renovadas anualmente'
+                ],
+                type: 'warning'
+            }
+        };
+
+        // Elementos do DOM
+        const form = document.getElementById('verificationForm');
+        const searchByProfession = document.getElementById('searchByProfession');
+        const searchByCompany = document.getElementById('searchByCompany');
+        const professionGroup = document.getElementById('professionGroup');
+        const companySearchGroup = document.getElementById('companySearchGroup');
+        const professionSelect = document.getElementById('profession');
+        const companySearch = document.getElementById('companySearch');
+        const companySuggestions = document.getElementById('companySuggestions');
+        const formContainer = document.getElementById('formContainer');
+        const resultContainer = document.getElementById('resultContainer');
+
+        let selectedCompany = null;
+
+        // Toggle entre busca por profissão e empresa
+        searchByProfession.addEventListener('change', function() {
+            if (this.checked) {
+                professionGroup.classList.remove('hidden');
+                companySearchGroup.classList.add('hidden');
+                professionSelect.required = true;
+                companySearch.required = false;
+                selectedCompany = null;
+                companySearch.value = '';
+                companySuggestions.style.display = 'none';
+            }
+        });
+
+        searchByCompany.addEventListener('change', function() {
+            if (this.checked) {
+                professionGroup.classList.add('hidden');
+                companySearchGroup.classList.remove('hidden');
+                professionSelect.required = false;
+                companySearch.required = true;
+                professionSelect.value = '';
+                selectedCompany = null;
+            }
+        });
+
+        // Busca de empresas com sugestões
+        companySearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query.length < 3) {
+                companySuggestions.style.display = 'none';
+                selectedCompany = null;
+                return;
+            }
+
+            const matches = Object.keys(companiesDatabase).filter(company => 
+                company.toLowerCase().includes(query)
+            ).slice(0, 10);
+
+            if (matches.length > 0) {
+                companySuggestions.innerHTML = matches.map(company => `
+                    <div class="suggestion-item" onclick="selectCompany('${company}', '${companiesDatabase[company]}')">
+                        <div class="suggestion-company">${company}</div>
+                        <div class="suggestion-sector">${companiesDatabase[company]}</div>
+                    </div>
+                `).join('');
+                companySuggestions.style.display = 'block';
+            } else {
+                companySuggestions.style.display = 'none';
+            }
+        });
+
+        // Fechar sugestões ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!companySearchGroup.contains(e.target)) {
+                companySuggestions.style.display = 'none';
+            }
+        });
+
+        // Função para selecionar empresa
+        function selectCompany(companyName, sectorName) {
+            companySearch.value = companyName;
+            selectedCompany = { name: companyName, sector: sectorName };
+            companySuggestions.style.display = 'none';
+        }
+
+        // Submissão do formulário
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (searchByCompany.checked) {
+                if (!selectedCompany) {
+                    alert('Por favor, selecione uma empresa da lista de sugestões.');
+                    return;
+                }
+                showCompanyResult(selectedCompany);
+            } else {
+                const profession = professionSelect.value;
+                const data = professionData[profession];
+                
+                if (!data) {
+                    alert('Por favor, selecione uma profissão válida.');
+                    return;
+                }
+                
+                showProfessionResult(data);
+            }
+        });
+
+        // Mostrar resultado da empresa
+        function showCompanyResult(company) {
+            formContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultContainer.className = 'result-container result-positive';
+
+            resultContainer.innerHTML = `
+                <div class="result-icon">✅</div>
+                <div class="result-title">Sua empresa TEM seguro de vida!</div>
+                <div class="result-text">Encontramos sua empresa em nossa base de dados de empresas que oferecem seguro de vida aos funcionários.</div>
+                
+                <div class="company-result-details">
+                    <div class="company-name">${company.name}</div>
+                    <div class="company-sector">Setor: ${company.sector}</div>
+                </div>
+
+                <div class="info-list">
+                    <h4>📋 Próximos passos:</h4>
+                    <ul>
+                        <li>Confirmar com o RH da empresa se o seguro está ativo</li>
+                        <li>Solicitar cópia da apólice ou certificado do seguro</li>
+                        <li>Verificar as coberturas (morte, invalidez permanente)</li>
+                        <li>Em caso de sinistro, reunir documentação médica</li>
+                        <li>Procurar assessoria jurídica para auxiliar no processo</li>
+                    </ul>
+                </div>
+
+                <div class="info-list">
+                    <h4>💡 Informações importantes:</h4>
+                    <ul>
+                        <li>O seguro pode ser por apólice individual ou coletiva</li>
+                        <li>Valores variam conforme a empresa e função</li>
+                        <li>Cobertura geralmente 24 horas</li>
+                        <li>Direito garantido enquanto funcionário ativo</li>
+                        <li>Algumas empresas estendem cobertura por período após demissão</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">
+                        <strong>Confirmação necessária:</strong> Esta verificação confirma que sua empresa 
+                        está na nossa base de dados, mas é importante confirmar diretamente com o RH 
+                        se o seguro está ativo e quais são as condições específicas.
+                    </div>
+                </div>
+
+                <button class="btn-new-search" onclick="newSearch()">🔄 Nova Consulta</button>
+                <a href="index.html" class="btn-back" style="margin-left: 1rem;">← Voltar ao Menu</a>
+            `;
+
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Mostrar resultado da profissão
+        function showProfessionResult(data) {
+            formContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultContainer.className = `result-container result-${data.type}`;
+
+            const detailsList = data.details.map(detail => `<li>${detail}</li>`).join('');
+
+            resultContainer.innerHTML = `
+                <div class="result-icon">${data.icon}</div>
+                <div class="result-title">${data.title}</div>
+                <div class="result-text">${data.text}</div>
+                
+                <div class="info-list">
+                    <h4>📋 Detalhes importantes:</h4>
+                    <ul>${detailsList}</ul>
+                </div>
+
+                ${data.type === 'positive' ? `
+                    <div class="info-list">
+                        <h4>📝 Próximos passos:</h4>
+                        <ul>
+                            <li>Verificar se sua empresa/categoria específica possui convenção coletiva</li>
+                            <li>Consultar o RH da empresa ou sindicato da categoria</li>
+                            <li>Em caso de acidente, reunir documentação médica</li>
+                            <li>Procurar assessoria jurídica especializada</li>
+                            <li>Convenções são renovadas anualmente - verificar vigência</li>
+                        </ul>
+                    </div>
+                ` : ''}
+
+                <div class="warning-box">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">
+                        <strong>Importante:</strong> Esta verificação é baseada em informações gerais. 
+                        Para confirmação definitiva, consulte sempre a convenção coletiva específica 
+                        da sua categoria ou procure orientação jurídica especializada.
+                    </div>
+                </div>
+
+                <button class="btn-new-search" onclick="newSearch()">🔄 Nova Consulta</button>
+                <a href="index.html" class="btn-back" style="margin-left: 1rem;">← Voltar ao Menu</a>
+            `;
+
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Nova pesquisa
+        function newSearch() {
+            formContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            form.reset();
+            selectedCompany = null;
+            
+            // Resetar para busca por profissão como padrão
+            searchByProfession.checked = true;
+            professionGroup.classList.remove('hidden');
+            companySearchGroup.classList.add('hidden');
+            professionSelect.required = true;
+            companySearch.required = false;
+            companySuggestions.style.display = 'none';
+
+            formContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fazer funções globais
+        window.selectCompany = selectCompany;
+        window.newSearch = newSearch;
+    </script>
+</body>
+</html>
