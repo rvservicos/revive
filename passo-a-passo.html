@@ -1145,7 +1145,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                     ]
                 }
             },
-                        'planilha-consultores': {
+            'planilha-consultores': {
                 icon: '👥',
                 title: 'Lista Pendências Consultores',
                 description: 'Como filtrar e gerenciar pendências',
@@ -1307,6 +1307,8 @@ Em decorrência do acidente, sofri [tipo de fratura/lesão]. Fui socorrido e con
                     ]
                 }
             }
+        };
+
         function openModal() {
             const overlay = document.getElementById('detailsOverlay');
             if (overlay) {
@@ -1473,6 +1475,19 @@ Em decorrência do acidente, sofri [tipo de fratura/lesão]. Fui socorrido e con
 
                     if (section.template) {
                         contentHTML += `<div class="template-box">${section.template}</div>`;
+                    }
+
+                    if (section.scenarios) {
+                        contentHTML += `<div class="materials-grid">`;
+                        section.scenarios.forEach(scenario => {
+                            contentHTML += `
+                                <div class="material-item">
+                                    <div class="material-title">${scenario.case}</div>
+                                    <div class="material-description">${scenario.action}</div>
+                                </div>
+                            `;
+                        });
+                        contentHTML += `</div>`;
                     }
 
                     if (section.note) {
