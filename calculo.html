@@ -1000,6 +1000,7 @@ DADOS GERAIS:
 - Segurado: ${segurado}
 - Seguradora: ${seguradora}
 - Consultor Responsável: ${consultor}
+${dataFormatada ? `• Data prevista para depósito: ${dataFormatada}` : ''}
 
 VALORES:
 - Valor da Apólice: ${formatarMoeda(valorApolice)}
@@ -1014,7 +1015,6 @@ DETALHES MÉDICOS:
 INFORMAÇÕES BANCÁRIAS:
 - Banco de Destino: ${banco}
 - Status do Pagamento: ${jaCaiu === 'sim' ? 'JÁ DEPOSITADO' : 'AGUARDANDO DEPÓSITO'}
-${dataFormatada ? `• Data prevista para depósito: ${dataFormatada}` : ''}
 
 ==================================================`;
 
