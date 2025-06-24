@@ -992,28 +992,28 @@
             const dataAtual = new Date().toLocaleDateString('pt-BR');
             const dataFormatada = dataIndenizacao ? new Date(dataIndenizacao + 'T00:00:00').toLocaleDateString('pt-BR') : '';
             
-            let texto = `RELATÓRIO DE INDENIZAÇÃO - SEGURO DE VIDA
+            let texto = `
 ==================================================
 
-📋 DADOS GERAIS:
-• Tipo de Seguro: ${tipoSeguro.toUpperCase()}
-• Segurado: ${segurado}
-• Seguradora: ${seguradora}
-• Consultor Responsável: ${consultor}
+DADOS GERAIS:
+- Tipo de Seguro: ${tipoSeguro.toUpperCase()}
+- Segurado: ${segurado}
+- Seguradora: ${seguradora}
+- Consultor Responsável: ${consultor}
 
-💰 VALORES:
-• Valor da Apólice: ${formatarMoeda(valorApolice)}
-• Valor da Indenização: ${formatarMoeda(valorIndenizacao)}
-• Honorários Advocatícios (30%): ${formatarMoeda(honorarios)}
+VALORES:
+- Valor da Apólice: ${formatarMoeda(valorApolice)}
+- Valor da Indenização: ${formatarMoeda(valorIndenizacao)}
+- Honorários Advocatícios (30%): ${formatarMoeda(honorarios)}
 
-🏥 DETALHES MÉDICOS:
-• Fraturas Identificadas: ${fraturas}
-• Porcentagem RTM: ${porcentagemRTM}
-• Memória de Cálculo da Seguradora: ${memoriaCalculo}
+DETALHES MÉDICOS:
+- Fraturas Identificadas: ${fraturas}
+- Porcentagem RTM: ${porcentagemRTM}
+- Memória de Cálculo da Seguradora: ${memoriaCalculo}
 
-💳 INFORMAÇÕES BANCÁRIAS:
-• Banco de Destino: ${banco}
-• Status do Pagamento: ${jaCaiu === 'sim' ? 'JÁ DEPOSITADO' : 'AGUARDANDO DEPÓSITO'}
+INFORMAÇÕES BANCÁRIAS:
+- Banco de Destino: ${banco}
+- Status do Pagamento: ${jaCaiu === 'sim' ? 'JÁ DEPOSITADO' : 'AGUARDANDO DEPÓSITO'}
 ${dataFormatada ? `• Data prevista para depósito: ${dataFormatada}` : ''}
 
 ==================================================`;
