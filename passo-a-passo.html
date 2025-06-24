@@ -586,15 +586,12 @@
     </div>
     
     <script>
-        // Configuração base para imagens do GitHub
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/';
-        
         const passosPasso = {
             'despesas-astrea': {
                 icon: '💰',
                 title: 'Como Lançar Despesas no Astrea',
                 description: 'Processo para inserção de despesas no sistema',
-                images: ['desp1.PNG', 'desp2.PNG', 'desp3.PNG'],
+                images: ['desp1.png', 'desp2.png', 'desp3.png'],
                 content: {
                     title: 'Como Lançar Despesas no Astrea',
                     sections: [
@@ -607,7 +604,7 @@
                                 'Auxílio-acidente ou doença',
                                 'Ação de Acidente de Trânsito'
                             ],
-                            image: 'desp1.PNG'
+                            image: 'desp1.png'
                         },
                         {
                             title: '2. Formato para Inserção',
@@ -617,7 +614,7 @@
                                 { type: 'Cartório', format: 'Cartório (Nomes dos documentos)' },
                                 { type: 'Outros', format: 'Boletim de Ocorrência (Seterb)' }
                             ],
-                            image: 'desp2.PNG'
+                            image: 'desp2.png'
                         }
                     ]
                 }
@@ -1181,7 +1178,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                 icon: '🚔',
                 title: 'Boletim de Ocorrência',
                 description: 'Como registrar e baixar boletim de ocorrência',
-                images: ['bo1.png', 'bo2.png', 'bo3.png', 'bo4.png', 'bo5.png', 'bo6.png', 'bo7.png'],
+                images: ['bo1.png', 'bo2.PNG', 'bo3.PNG', 'bo4.PNG', 'bo5.PNG', 'bo6.PNG', 'bo7.PNG'],
                 content: {
                     title: 'Passo a Passo - Boletim de Ocorrência',
                     sections: [
@@ -1207,7 +1204,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                                 'Vá na opção "imprimir"',
                                 'Coloque os dois códigos de acesso para baixar o BO'
                             ],
-                            image: 'bo2.png'
+                            image: 'bo2.PNG'
                         },
                         {
                             title: '2. Para Registrar Novo Boletim',
@@ -1218,7 +1215,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                                 'Na próxima página, desça até a opção "aceito"',
                                 'Escolha a categoria do fato, que geralmente será "acidente de trânsito"'
                             ],
-                            images: ['bo2.png', 'bo3.png']
+                            images: ['bo2.PNG', 'bo3.PNG']
                         },
                         {
                             title: '3. Preenchimento de Dados do Acidente',
@@ -1234,7 +1231,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                                 'Se tiver dificuldade, pesquise no Google até encontrar o CEP correto',
                                 'Após encontrar o endereço, coloque o número ou ponto de referência'
                             ],
-                            image: 'bo4.png'
+                            image: 'bo4.PNG'
                         },
                         {
                             title: '4. Inserção de Envolvido',
@@ -1246,7 +1243,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                                 'Pressione avançar e preencha data de nascimento e cidade de nascimento',
                                 'Estas informações podem ser encontradas no RG do cliente ou na capa de rosto'
                             ],
-                            image: 'bo5.png'
+                            image: 'bo5.PNG'
                         },
                         {
                             title: '5. Dados Pessoais Complementares',
@@ -1260,7 +1257,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                                 'Insira telefone celular do cliente conforme capa de rosto ou Astrea',
                                 'Salve o envolvido e na próxima página, coloque "próxima etapa"'
                             ],
-                            images: ['bo6.png', 'bo7.png']
+                            images: ['bo6.PNG', 'bo7.PNG']
                         },
                         {
                             title: '6. Inserção de Veículo',
@@ -1512,14 +1509,14 @@ Em decorrência do acidente, sofri [tipo de fratura/lesão]. Fui socorrido e con
                     // Handle images for the section
                     if (section.image) {
                         contentHTML += `<div class="image-container">
-                            <img src="${GITHUB_BASE_URL}${section.image}" alt="Imagem do processo" class="process-image" onerror="this.style.display='none'">
+                            <img src="${section.image}" alt="Imagem do processo" class="process-image">
                         </div>`;
                     }
 
                     if (section.images && Array.isArray(section.images)) {
                         section.images.forEach(image => {
                             contentHTML += `<div class="image-container">
-                                <img src="${GITHUB_BASE_URL}${image}" alt="Imagem do processo" class="process-image" onerror="this.style.display='none'">
+                                <img src="${image}" alt="Imagem do processo" class="process-image">
                             </div>`;
                         });
                     }
