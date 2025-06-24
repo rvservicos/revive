@@ -445,8 +445,8 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="tab-button active" onclick="showTab('calculadora')">📊 Calculadora</button>
-            <button class="tab-button" onclick="showTab('indenizacao')">📝 Texto Indenização</button>
+            <button class="tab-button active" onclick="showTab('calculadora', event)">📊 Calculadora</button>
+            <button class="tab-button" onclick="showTab('indenizacao', event)">📝 Texto Indenização</button>
         </div>
 
         <!-- ABA CALCULADORA -->
@@ -687,7 +687,7 @@
             'coluna_moderada': 30
         };
 
-        function showTab(tabName) {
+        function showTab(tabName, event) {
             // Esconder todas as abas
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -759,7 +759,7 @@
                 
                 <div class="form-group percentage-input">
                     <label>% Comprometimento (Nosso Laudo):</label>
-                    <input type="number" id="comprometimento-${contadorLesoes}" min="0" max="100" step="0.01" placeholder="75">
+                    <input type="number" id="comprometimento-${contadorLesoes}" min="0" max="100" step="0.01" placeholder="75" oninput="atualizarPercentualFinalEmTempoReal(${contadorLesoes})">
                 </div>
                 
                 <div class="form-group percentage-input">
@@ -777,23 +777,31 @@
                 lesao.remove();
             }
         }
+        
+        // Função para feedback visual em tempo real (opcional, mas boa UX)
+        function atualizarPercentualFinalEmTempoReal(id) {
+            const susepInput = document.getElementById(`susep-${id}`);
+            const comprometimentoInput = document.getElementById(`comprometimento-${id}`);
+            const finalInput = document.getElementById(`final-${id}`);
+
+            const susepValue = parseFloat(susepInput.value) || 0;
+            const comprometimentoValue = parseFloat(comprometimentoInput.value) || 0;
+            
+            const percentualFinal = (susepValue * comprometimentoValue) / 100;
+            finalInput.value = percentualFinal.toFixed(2);
+        }
 
         function atualizarPercentualSusep(id, event) {
             const select = event.target;
             const susepInput = document.getElementById(`susep-${id}`);
-            const comprometimentoInput = document.getElementById(`comprometimento-${id}`);
-            const finalInput = document.getElementById(`final-${id}`);
             
             if (select.value) {
-                const percentualSusep = susepPercentuais[select.value];
-                susepInput.value = percentualSusep;
-                
-                comprometimentoInput.oninput = function() {
-                    const comprometimento = parseFloat(this.value) || 0;
-                    const percentualFinal = (percentualSusep * comprometimento) / 100;
-                    finalInput.value = percentualFinal.toFixed(2);
-                };
+                susepInput.value = susepPercentuais[select.value] || 0;
+            } else {
+                 susepInput.value = '';
             }
+            // Chama a atualização em tempo real para o caso do comprometimento já ter um valor
+            atualizarPercentualFinalEmTempoReal(id);
         }
 
         function calcular() {
@@ -814,17 +822,23 @@
                     const id = lesao.id.split('-')[1];
                     const susepValue = parseFloat(document.getElementById(`susep-${id}`).value) || 0;
                     const comprometimentoValue = parseFloat(document.getElementById(`comprometimento-${id}`).value) || 0;
-                    const finalValue = parseFloat(document.getElementById(`final-${id}`).value) || 0;
+
+                    // --- CORREÇÃO PRINCIPAL: CALCULAR O VALOR FINAL AQUI ---
+                    const percentualFinalCalculado = (susepValue * comprometimentoValue) / 100;
+                    
+                    // Atualiza o campo de input para consistência visual
+                    document.getElementById(`final-${id}`).value = percentualFinalCalculado.toFixed(2);
                     
                     if (susepValue > 0 && comprometimentoValue > 0) {
-                        percentualTotalLaudo += finalValue;
+                        // Usa o valor recém-calculado para somar ao total
+                        percentualTotalLaudo += percentualFinalCalculado;
                         
                         lesoes.push({
                             nome: `Lesão ${id}`,
                             susep: susepValue,
                             comprometimento: comprometimentoValue,
-                            final: finalValue,
-                            valor: capitalSegurado * (finalValue / 100)
+                            final: percentualFinalCalculado,
+                            valor: capitalSegurado * (percentualFinalCalculado / 100)
                         });
                     }
                 });
@@ -837,7 +851,7 @@
                 const valorDevidoLaudo = capitalSegurado * (percentualTotalLaudo / 100);
                 const diferencaReceber = Math.max(valorDevidoLaudo - valorRecebido, 0);
 
-                // Atualizar resultados
+                // Atualizar resultados na tela
                 document.getElementById('percentualTotalLaudo').textContent = percentualTotalLaudo.toFixed(2) + '%';
                 document.getElementById('percentualPago').textContent = percentualPago.toFixed(2) + '%';
                 document.getElementById('valorDevidoLaudo').textContent = formatarMoeda(valorDevidoLaudo);
@@ -1023,7 +1037,7 @@ INFORMAÇÕES BANCÁRIAS:
                 alert('Texto copiado para a área de transferência!');
             }, function(err) {
                 console.error('Erro ao copiar texto: ', err);
-                alert('Erro ao copiar texto. Tente selecionar e copiar manually.');
+                alert('Erro ao copiar texto. Tente selecionar e copiar manualmente.');
             });
         }
 
