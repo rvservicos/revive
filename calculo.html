@@ -486,12 +486,7 @@
                     <h2>📊 Resultados</h2>
                     
                     <div class="result-item">
-                        <h3>% Total SUSEP</h3>
-                        <div class="value" id="percentualTotalSusep">0.00%</div>
-                    </div>
-
-                    <div class="result-item">
-                        <h3>% Total Nosso Laudo</h3>
+                        <h3>% Total Indenizável (Nosso Laudo)</h3>
                         <div class="value" id="percentualTotalLaudo">0.00%</div>
                     </div>
 
@@ -705,7 +700,7 @@
             
             // Mostrar aba selecionada
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
         // FUNÇÕES DA CALCULADORA
@@ -720,12 +715,12 @@
             lesaoDiv.innerHTML = `
                 <div class="lesao-header">
                     <span class="lesao-title">Lesão ${contadorLesoes}</span>
-                    <button class="remove-btn" onclick="removerLesao(${contadorLesoes})">&times;</button>
+                    <button class="remove-btn" onclick="removerLesao(${contadorLesoes})">×</button>
                 </div>
                 
                 <div class="form-group">
                     <label>Tipo de Membro/Órgão (% SUSEP):</label>
-                    <select onchange="atualizarPercentualSusep(${contadorLesoes})">
+                    <select onchange="atualizarPercentualSusep(${contadorLesoes}, event)">
                         <option value="">Selecione...</option>
                         <optgroup label="Membros Superiores">
                             <option value="braco">Braço (70%)</option>
@@ -783,7 +778,7 @@
             }
         }
 
-        function atualizarPercentualSusep(id) {
+        function atualizarPercentualSusep(id, event) {
             const select = event.target;
             const susepInput = document.getElementById(`susep-${id}`);
             const comprometimentoInput = document.getElementById(`comprometimento-${id}`);
@@ -802,59 +797,58 @@
         }
 
         function calcular() {
-            const capitalSegurado = converterMoedaParaNumero(document.getElementById('capitalSegurado').value) || 0;
-            const valorRecebido = converterMoedaParaNumero(document.getElementById('valorRecebido').value) || 0;
-            
-            if (capitalSegurado <= 0) {
-                alert('Insira um capital segurado válido');
-                return;
-            }
-
-            let percentualTotalSusep = 0;
-            let percentualTotalLaudo = 0;
-            const lesoes = [];
-
-            const lesoesElements = document.querySelectorAll('.lesao-item');
-            lesoesElements.forEach((lesao, index) => {
-                const id = lesao.id.split('-')[1];
-                const susepValue = parseFloat(document.getElementById(`susep-${id}`).value) || 0;
-                const comprometimentoValue = parseFloat(document.getElementById(`comprometimento-${id}`).value) || 0;
-                const finalValue = parseFloat(document.getElementById(`final-${id}`).value) || 0;
+            try {
+                const capitalSegurado = converterMoedaParaNumero(document.getElementById('capitalSegurado').value) || 0;
+                const valorRecebido = converterMoedaParaNumero(document.getElementById('valorRecebido').value) || 0;
                 
-                if (susepValue > 0 && comprometimentoValue > 0) {
-                    percentualTotalSusep += susepValue;
-                    percentualTotalLaudo += finalValue;
-                    
-                    lesoes.push({
-                        nome: `Lesão ${id}`,
-                        susep: susepValue,
-                        comprometimento: comprometimentoValue,
-                        final: finalValue,
-                        valor: capitalSegurado * (finalValue / 100)
-                    });
+                if (capitalSegurado <= 0) {
+                    alert('Insira um capital segurado válido');
+                    return;
                 }
-            });
 
-            // Limitar a 100%
-            percentualTotalSusep = Math.min(percentualTotalSusep, 100);
-            percentualTotalLaudo = Math.min(percentualTotalLaudo, 100);
+                let percentualTotalLaudo = 0;
+                const lesoes = [];
 
-            // Cálculos
-            const percentualPago = capitalSegurado > 0 ? (valorRecebido / capitalSegurado * 100) : 0;
-            const valorDevidoSusep = capitalSegurado * (percentualTotalSusep / 100);
-            const valorDevidoLaudo = capitalSegurado * (percentualTotalLaudo / 100);
-            const diferencaReceber = Math.max(valorDevidoLaudo - valorRecebido, 0);
+                const lesoesElements = document.querySelectorAll('.lesao-item');
+                lesoesElements.forEach((lesao) => {
+                    const id = lesao.id.split('-')[1];
+                    const susepValue = parseFloat(document.getElementById(`susep-${id}`).value) || 0;
+                    const comprometimentoValue = parseFloat(document.getElementById(`comprometimento-${id}`).value) || 0;
+                    const finalValue = parseFloat(document.getElementById(`final-${id}`).value) || 0;
+                    
+                    if (susepValue > 0 && comprometimentoValue > 0) {
+                        percentualTotalLaudo += finalValue;
+                        
+                        lesoes.push({
+                            nome: `Lesão ${id}`,
+                            susep: susepValue,
+                            comprometimento: comprometimentoValue,
+                            final: finalValue,
+                            valor: capitalSegurado * (finalValue / 100)
+                        });
+                    }
+                });
 
-            // Atualizar resultados
-            document.getElementById('percentualTotalSusep').textContent = percentualTotalSusep.toFixed(2) + '%';
-            document.getElementById('percentualTotalLaudo').textContent = percentualTotalLaudo.toFixed(2) + '%';
-            document.getElementById('percentualPago').textContent = percentualPago.toFixed(2) + '%';
-            document.getElementById('valorDevidoSusep').textContent = formatarMoeda(valorDevidoSusep);
-            document.getElementById('valorDevidoLaudo').textContent = formatarMoeda(valorDevidoLaudo);
-            document.getElementById('diferencaReceber').textContent = formatarMoeda(diferencaReceber);
+                // Limitar a 100%
+                percentualTotalLaudo = Math.min(percentualTotalLaudo, 100);
 
-            mostrarTabelaLesoes(lesoes);
-            gerarRecomendacao(diferencaReceber);
+                // Cálculos
+                const percentualPago = capitalSegurado > 0 ? (valorRecebido / capitalSegurado * 100) : 0;
+                const valorDevidoLaudo = capitalSegurado * (percentualTotalLaudo / 100);
+                const diferencaReceber = Math.max(valorDevidoLaudo - valorRecebido, 0);
+
+                // Atualizar resultados
+                document.getElementById('percentualTotalLaudo').textContent = percentualTotalLaudo.toFixed(2) + '%';
+                document.getElementById('percentualPago').textContent = percentualPago.toFixed(2) + '%';
+                document.getElementById('valorDevidoLaudo').textContent = formatarMoeda(valorDevidoLaudo);
+                document.getElementById('diferencaReceber').textContent = formatarMoeda(diferencaReceber);
+
+                mostrarTabelaLesoes(lesoes);
+                gerarRecomendacao(diferencaReceber);
+            } catch (error) {
+                console.error("Erro ao calcular:", error);
+                alert("Ocorreu um erro ao tentar calcular. Verifique os valores inseridos e tente novamente.");
+            }
         }
 
         function mostrarTabelaLesoes(lesoes) {
@@ -1029,7 +1023,7 @@ INFORMAÇÕES BANCÁRIAS:
                 alert('Texto copiado para a área de transferência!');
             }, function(err) {
                 console.error('Erro ao copiar texto: ', err);
-                alert('Erro ao copiar texto. Tente selecionar e copiar manualmente.');
+                alert('Erro ao copiar texto. Tente selecionar e copiar manually.');
             });
         }
 
