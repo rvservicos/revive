@@ -1145,7 +1145,7 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                     ]
                 }
             },
-            'planilha-consultores': {
+                        'planilha-consultores': {
                 icon: '👥',
                 title: 'Lista Pendências Consultores',
                 description: 'Como filtrar e gerenciar pendências',
@@ -1173,9 +1173,140 @@ Caso não haja manifestação ou solução adequada no prazo estabelecido, infor
                         }
                     ]
                 }
-            }
-        };
+            },
+            'boletim-ocorrencia': {
+                icon: '🚔',
+                title: 'Boletim de Ocorrência',
+                description: 'Como registrar e baixar boletim de ocorrência',
+                images: ['bo1.png', 'bo2.png', 'bo3.png', 'bo4.png', 'bo5.png', 'bo6.png', 'bo7.png'],
+                content: {
+                    title: 'Passo a Passo - Boletim de Ocorrência',
+                    sections: [
+                        {
+                            title: '1. Para Baixar Boletim Existente',
+                            content: 'Verifique de qual polícia foi o registro:'
+                        },
+                        {
+                            title: 'Polícia Rodoviária Federal (PRF)',
+                            steps: [
+                                'Acesse o site https://lpat.prf.gov.br/lpat/consultar',
+                                'Preencha o número de protocolo e o CPF do cliente envolvido no acidente',
+                                'O protocolo geralmente termina com a numeração B01',
+                                'Se estiver correto, será aberto o PDF do boletim de ocorrência',
+                                'Baixe e salve na pasta do cliente com a numeração 12'
+                            ],
+                            image: 'bo1.png'
+                        },
+                        {
+                            title: 'Polícia Militar ou Civil de Santa Catarina',
+                            steps: [
+                                'Acesse o site https://delegaciavirtual.sc.gov.br/',
+                                'Vá na opção "imprimir"',
+                                'Coloque os dois códigos de acesso para baixar o BO'
+                            ],
+                            image: 'bo2.png'
+                        },
+                        {
+                            title: '2. Para Registrar Novo Boletim',
+                            content: 'Acesse o site respectivo do estado para o qual foi o acidente, da polícia civil. O mais comum será o de Santa Catarina.',
+                            steps: [
+                                'Acesse https://delegaciavirtual.sc.gov.br/',
+                                'Vá na opção "registrar"',
+                                'Na próxima página, desça até a opção "aceito"',
+                                'Escolha a categoria do fato, que geralmente será "acidente de trânsito"'
+                            ],
+                            images: ['bo2.png', 'bo3.png']
+                        },
+                        {
+                            title: '3. Preenchimento de Dados do Acidente',
+                            steps: [
+                                'Comece o preenchimento dos dados',
+                                'Na opção de horário, pode colocar hora aproximada',
+                                'No endereço do fato, selecione "via pública" e pressione "consultar endereço"',
+                                'Na aba que abrir: se possuir CEP completo, insira-o e consulte',
+                                'Se não tiver CEP, vá em "buscar por logradouro"',
+                                'Em busca por logradouro: coloque cidade, bairro, tipo de logradouro (rua)',
+                                'Na caixa "insira o logradouro", coloque o nome da rua e consulte',
+                                'Se aparecer na lista o endereço procurado, aperte "selecionar endereço"',
+                                'Se tiver dificuldade, pesquise no Google até encontrar o CEP correto',
+                                'Após encontrar o endereço, coloque o número ou ponto de referência'
+                            ],
+                            image: 'bo4.png'
+                        },
+                        {
+                            title: '4. Inserção de Envolvido',
+                            steps: [
+                                'Após pressionar avançar, selecione "INSERIR NOVO ENVOLVIDO"',
+                                'Marque as caixas de "comunicante" e "motorista" e avance',
+                                'Preencha os dados obrigatórios do cliente: nome completo, nome da mãe, profissão, sexo, e-mail',
+                                'No e-mail, coloque: rvservicosseguros@gmail.com (será neste e-mail que virá o código para baixar o BO)',
+                                'Pressione avançar e preencha data de nascimento e cidade de nascimento',
+                                'Estas informações podem ser encontradas no RG do cliente ou na capa de rosto'
+                            ],
+                            image: 'bo5.png'
+                        },
+                        {
+                            title: '5. Dados Pessoais Complementares',
+                            steps: [
+                                'Avance e preencha CPF, RG e estado emissor do RG',
+                                'Estas informações podem ser localizadas no RG e CNH do cliente',
+                                'Não é necessário colocar os dados da CNH nos campos, apenas AVANÇAR',
+                                'Coloque o endereço do CLIENTE usando "consultar endereço"',
+                                'Pesquise pelo CEP ou por logradouro (igual ao endereço do acidente)',
+                                'Tipo de endereço: residencial, coloque número da casa e avance',
+                                'Insira telefone celular do cliente conforme capa de rosto ou Astrea',
+                                'Salve o envolvido e na próxima página, coloque "próxima etapa"'
+                            ],
+                            images: ['bo6.png', 'bo7.png']
+                        },
+                        {
+                            title: '6. Inserção de Veículo',
+                            content: 'Agora será necessário inserir um novo veículo:',
+                            scenarios: [
+                                {
+                                    case: 'Cliente é motorista',
+                                    action: 'Preencha com as informações do documento numerado 13 - DUT, colocando os dados conforme estão no documento'
+                                },
+                                {
+                                    case: 'Cliente foi atropelado ou teve envolvimento contra veículo',
+                                    action: 'Preencha apenas o detalhamento do veículo (opção "não informado") e selecione o cliente como envolvido'
+                                }
+                            ],
+                            steps: [
+                                'Pressione salvar',
+                                'Caso não haja mais nenhum veículo envolvido, avance para próxima etapa'
+                            ]
+                        },
+                        {
+                            title: '7. Relato do Ocorrido',
+                            content: 'Agora está a parte de inserir o relato sobre o ocorrido:',
+                            steps: [
+                                'Verifique a parte traseira da capa de rosto para ver se tem descrição do acidente',
+                                'Caso não haja e o cliente passou informações por WhatsApp, coloque conforme ele explicou em formato compreensível'
+                            ],
+                            template: `Exemplo de relato:
 
+"No dia em questão, eu me dirigia [para onde] quando, próximo do [local referência], [o que causou o acidente].
+
+Em decorrência do acidente, sofri [tipo de fratura/lesão]. Fui socorrido e conduzido ao hospital, onde recebi atendimento médico."`
+                        },
+                        {
+                            title: '8. Finalização',
+                            steps: [
+                                'Avance para a próxima etapa',
+                                'Desça a página até a opção da caixa de confirmação',
+                                'Finalize o registro',
+                                'Você receberá um e-mail de confirmação do registro',
+                                'De um a dois dias depois, o código para baixar o boletim será enviado no e-mail'
+                            ],
+                            alert: {
+                                type: 'info',
+                                text: 'O código para download será enviado para rvservicosseguros@gmail.com em 1-2 dias úteis.'
+                            }
+                        }
+                    ]
+                }
+            }
         function openModal() {
             const overlay = document.getElementById('detailsOverlay');
             if (overlay) {
