@@ -160,7 +160,7 @@
         
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -252,7 +252,7 @@
             background: white;
             border-radius: 24px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             max-height: 90vh;
             overflow: hidden;
             display: flex;
@@ -309,12 +309,8 @@
             flex-grow: 1;
         }
         
-        .flow-container {
-            max-width: 100%;
-        }
-        
         .flow-card {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -327,6 +323,8 @@
             color: var(--dark);
             text-align: center;
             margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary);
         }
         
         .flow-step {
@@ -335,9 +333,6 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin: 1rem 0;
-            text-align: center;
-            font-weight: 600;
-            color: var(--dark);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -363,6 +358,18 @@
             border-color: var(--primary);
         }
         
+        .step-header {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-content {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        
         .flow-arrow {
             text-align: center;
             font-size: 2rem;
@@ -376,44 +383,20 @@
             50% { transform: translateY(5px); }
         }
         
-        .flow-branch {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-        
-        .branch-item {
+        .image-container {
+            text-align: center;
+            margin: 1.5rem 0;
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .branch-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .branch-success {
-            border-left: 4px solid var(--success);
-        }
-        
-        .branch-warning {
-            border-left: 4px solid var(--warning);
-        }
-        
-        .branch-danger {
-            border-left: 4px solid var(--danger);
-        }
-        
-        .branch-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        .process-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .alert-box {
@@ -453,67 +436,87 @@
             font-size: 1.5rem;
             flex-shrink: 0;
         }
-
-        .step-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .step-list li {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            display: flex;
-            align-items: flex-start;
+        
+        .abbreviations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
+            margin: 1rem 0;
         }
-
-        .step-number {
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .abbreviation-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .abbr-code {
             font-weight: bold;
-            font-size: 0.875rem;
-            flex-shrink: 0;
+            color: var(--primary);
+            font-size: 1.1rem;
         }
-
-        .step-content {
-            flex: 1;
+        
+        .abbr-meaning {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-top: 0.25rem;
         }
-
-        .step-content strong {
-            color: var(--dark);
-            display: block;
+        
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .material-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .material-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .material-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
             margin-bottom: 0.5rem;
         }
-
-        .substep-list {
-            list-style: none;
-            padding-left: 1rem;
-            margin-top: 0.5rem;
+        
+        .material-description {
+            color: #4b5563;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
-
-        .substep-list li {
+        
+        .template-box {
             background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 0.5rem;
-            margin: 0.25rem 0;
-            font-size: 0.875rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-line;
+            line-height: 1.6;
         }
-
-        .substep-list li::before {
-            content: '•';
-            color: var(--primary);
+        
+        .cost-highlight {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
             font-weight: bold;
-            margin-right: 0.5rem;
+            text-align: center;
+            margin: 1rem 0;
         }
         
         @media (max-width: 768px) {
@@ -532,11 +535,12 @@
             .grid-container {
                 grid-template-columns: 1fr;
             }
-            .flow-branch {
-                grid-template-columns: 1fr;
-            }
             .modal-body {
                 padding: 1.5rem;
+            }
+            .abbreviations-grid,
+            .materials-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -583,236 +587,34 @@
     
     <script>
         const passosPasso = {
-            'fluxograma-solicitacao': {
-                icon: '🎯',
-                title: 'Fluxograma Solicitação de Documentos',
-                description: 'Fluxo principal de solicitação e contato com clientes',
+            'despesas-astrea': {
+                icon: '💰',
+                title: 'Como Lançar Despesas no Astrea',
+                description: 'Processo para inserção de despesas no sistema',
+                images: ['desp1.png', 'desp2.png', 'desp3.png'],
                 content: {
-                    title: '🎯 Fluxograma de Solicitação de Documentos',
+                    title: 'Como Lançar Despesas no Astrea',
                     sections: [
                         {
-                            title: 'Fluxo Principal de Solicitação',
-                            steps: [
-                                {
-                                    title: 'INÍCIO: Identificar processo na planilha',
-                                    content: 'Localizar o processo do cliente na planilha de controle'
-                                },
-                                {
-                                    title: 'Verificar processo no ASTREA',
-                                    content: 'Consultar status atual do processo no sistema ASTREA'
-                                }
+                            title: '1. Acessar Processo do Cliente',
+                            content: 'Priorizar processos na seguinte ordem:',
+                            priority: [
+                                'Seguro de vida',
+                                'Seguro terceiro', 
+                                'Auxílio-acidente ou doença',
+                                'Ação de Acidente de Trânsito'
                             ],
-                            branches: [
-                                {
-                                    type: 'success',
-                                    title: 'Já Protocolado ADM/Judicial',
-                                    content: ['Retirar pendências (colocar "O")', 'Mudar etiqueta para "OK" ou "Protocolado"']
-                                },
-                                {
-                                    type: 'warning',
-                                    title: 'Processo Continua Ativo',
-                                    content: ['Voltar para planilha', 'Começar a identificar pendências']
-                                }
-                            ]
+                            image: 'desp1.png'
                         },
                         {
-                            title: 'Processo de Contato com Cliente',
-                            steps: [
-                                {
-                                    title: '1️⃣ BotConversa',
-                                    content: 'Primeira tentativa de contato - Enviar mensagem automatizada'
-                                },
-                                {
-                                    title: '2️⃣ WhatsApp',
-                                    content: 'Se não encontrar no BotConversa - Atribuir para você e pausar automação'
-                                },
-                                {
-                                    title: '3️⃣ Ligação',
-                                    content: 'Ligar pelo menos 2 vezes - Se atender, explicar pendências'
-                                }
+                            title: '2. Formato para Inserção',
+                            content: 'Utilizar os seguintes formatos para diferentes tipos de despesas:',
+                            formats: [
+                                { type: 'Prontuário', format: 'Prontuário (Nome do Hospital)' },
+                                { type: 'Cartório', format: 'Cartório (Nomes dos documentos)' },
+                                { type: 'Outros', format: 'Boletim de Ocorrência (Seterb)' }
                             ],
-                            alert: {
-                                type: 'warning',
-                                text: 'Script de Ligação: "Olá, sou [nome], estou resolvendo as pendências do seu processo e gostaria de solicitar alguns documentos. Você teria disponibilidade para enviá-los agora? Vou mandar a lista no WhatsApp."'
-                            }
-                        },
-                        {
-                            title: 'Após Contato com Cliente',
-                            branches: [
-                                {
-                                    type: 'success',
-                                    title: 'Cliente Respondeu',
-                                    content: ['Enviar lista de documentos', 'Marcar X nos recebidos', 'Lançar no ASTREA']
-                                },
-                                {
-                                    type: 'warning',
-                                    title: 'Sem Resposta',
-                                    content: ['Colocar pendências no Slack', 'Notificar consultor', 'Acompanhar semanalmente']
-                                }
-                            ],
-                            alert: {
-                                type: 'danger',
-                                text: 'IMPORTANTE: Sempre lançar no ASTREA as pendências solicitadas, se teve sucesso ou se passou para o consultor!'
-                            }
-                        }
-                    ]
-                }
-            },
-            'reclamacao-reclame-aqui': {
-                icon: '📢',
-                title: 'Reclamação no Reclame Aqui',
-                description: 'Passo a passo para fazer reclamações formais',
-                content: {
-                    title: '📢 Reclamação no Reclame Aqui',
-                    sections: [
-                        {
-                            title: 'Acesso e Login',
-                            steps: [
-                                {
-                                    title: 'Acessar o site',
-                                    content: 'Entrar em https://www.reclameaqui.com.br/'
-                                },
-                                {
-                                    title: 'Fazer login',
-                                    content: 'Usar e-mail: sinistrovidarv@gmail.com'
-                                },
-                                {
-                                    title: 'Escolher ação',
-                                    content: 'Minhas reclamações (verificar andamento) OU Faça uma reclamação (nova)'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Processo de Reclamação',
-                            steps: [
-                                {
-                                    title: 'Buscar empresa',
-                                    content: 'Procurar pelo nome da empresa ou seguradora'
-                                },
-                                {
-                                    title: 'Preencher formulário',
-                                    content: 'Completar dados específicos da empresa/seguradora'
-                                },
-                                {
-                                    title: 'Usar modelo padrão',
-                                    content: 'Utilizar template de reclamação com informações do caso'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Finalização',
-                            steps: [
-                                {
-                                    title: 'Selecionar motivo',
-                                    content: 'Escolher categoria da reclamação nas opções'
-                                },
-                                {
-                                    title: 'Anexar evidências',
-                                    content: 'Incluir procurações e cópia da apólice de seguro'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            },
-            'planilha-seguro-vida': {
-                icon: '📊',
-                title: 'Planilha Seguro de Vida',
-                description: 'Controle de processos de seguro de vida',
-                content: {
-                    title: '📊 Planilha Seguro de Vida',
-                    sections: [
-                        {
-                            title: 'Recebimento de Novos Processos',
-                            steps: [
-                                {
-                                    title: 'Receber protocolo',
-                                    content: 'Quando o setor receber protocolo com novos processos'
-                                },
-                                {
-                                    title: 'Preencher colunas iniciais',
-                                    content: 'Unidade, consultor, cliente, data do acidente, seguradora, tipo (empresarial/individual)'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Atualização Após Despacho',
-                            steps: [
-                                {
-                                    title: 'Alterar status',
-                                    content: 'Mudar para externo, perícia ou status atual'
-                                },
-                                {
-                                    title: 'Preencher informações',
-                                    content: 'Número do sinistro, data despacho, data perícia (formato: 10/02/2025 -- 10h25)'
-                                },
-                                {
-                                    title: 'Dados de indenização',
-                                    content: 'Data da indenização e valor da indenização'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Abas Complementares',
-                            substeps: [
-                                {
-                                    title: 'Aba Junta Médica',
-                                    content: ['Cliente quer junta médica após indenização/indeferimento', 'Nova perícia com três médicos', 'Mesmo padrão da aba administrativa']
-                                },
-                                {
-                                    title: 'Aba Revisões Judiciais',
-                                    content: ['Cliente já passou pela junta ou não quer fazer', 'Colunas: Pendente e Status', 'Status: se cliente foi chamado', 'Pendente: documentos em falta', 'Alterar para "PRONTO" quando documentos completos']
-                                }
-                            ]
-                        }
-                    ]
-                }
-            },
-            'conferencia-laudo-rtm': {
-                icon: '🏥',
-                title: 'Conferência Laudo RTM',
-                description: 'Verificação e validação de laudos médicos',
-                content: {
-                    title: '🏥 Conferência do Laudo RTM',
-                    sections: [
-                        {
-                            title: 'Verificações Básicas',
-                            steps: [
-                                {
-                                    title: 'Dados pessoais',
-                                    content: 'Nome correto com documento pessoal, data de nascimento'
-                                },
-                                {
-                                    title: 'Datas importantes',
-                                    content: 'Data atendimento = data perícia, data alta médica, data acidente = prontuário/BO'
-                                },
-                                {
-                                    title: 'Informações médicas',
-                                    content: 'Fraturas batem com prontuário médico'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Conclusão do Laudo',
-                            steps: [
-                                {
-                                    title: 'Verificar porcentagem',
-                                    content: 'Porcentagem das sequelas deve constar na conclusão'
-                                },
-                                {
-                                    title: 'Verificar CID',
-                                    content: 'CID deve estar presente na parte da conclusão'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Verificação Específica',
-                            steps: [
-                                {
-                                    title: 'Seguro de vida',
-                                    content: 'Verificar se constam informações da fisioterapia'
-                                }
-                            ]
+                            image: 'desp2.png'
                         }
                     ]
                 }
@@ -822,56 +624,41 @@
                 title: 'Solicitação Junta Médica',
                 description: 'Como solicitar junta médica para revisão',
                 content: {
-                    title: '👩‍⚕️ Solicitação de Junta Médica',
+                    title: 'Passo a Passo - Como Solicitar Junta Médica',
                     sections: [
                         {
-                            title: 'Processo Geral',
+                            title: 'Processo Inicial',
                             steps: [
-                                {
-                                    title: 'Consultar planilha',
-                                    content: 'Ver instruções de como enviar documentos para seguradora'
-                                },
-                                {
-                                    title: 'Enviar carta',
-                                    content: 'Carta de solicitação de junta será enviada pela planilha'
-                                }
+                                'Consultar planilha de instruções para envio de documentos à seguradora',
+                                'Enviar carta de solicitação de junta através da planilha'
                             ]
                         },
                         {
-                            title: 'Casos Específicos (Bradesco)',
-                            steps: [
-                                {
-                                    title: 'Reclamação Reclame Aqui',
-                                    content: 'Fazer reclamação solicitando junta e discordando do valor'
-                                },
-                                {
-                                    title: 'Carta básica',
-                                    content: 'Informar discordância do valor, solicitar junta médica, acordo com honorários'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Modelo de Carta',
-                            text: `Prezados,
+                            title: 'Casos Específicos - Bradesco',
+                            content: 'Para o Bradesco, é necessário fazer reclamação no Reclame Aqui, solicitando junta e discordando do valor.',
+                            template: `Prezados,
 
 O segurado [NOME], discorda do valor da indenização de R$ [VALOR]. Pedimos uma junta médica.
 
 Estamos de acordo com o pagamento dos honorários do nosso médico e de metade dos honorários do médico desempatador.
 
 Segue os dados da nossa médica:
-- Vitória Augusta Piva Caminski
-- Rua Maria das Dores Santos mueller 289
-- vitoriacaminski1@gmail.com
-- CRM 35458
 
-Camila: moraesmedicina@gmail.com
+Vitória Augusta Piva Caminski
+Rua Maria das Dores Santos mueller 289
+vitoriacaminski1@gmail.com
+CRM 35458
+
+Camila Moraes
+CRM 33752
+moraesmedicina@gmail.com
 Rua Joinville 561, bairro Vila Nova, Blumenau.`
                         },
                         {
                             title: 'Custos e Orientações',
                             alert: {
                                 type: 'warning',
-                                text: 'VALOR: R$ 250 nossa médica + R$ 250 a R$ 300 ao desempatador. Sempre cobrar cliente pelos horários da médica e informar sobre pagamento do desempatador.'
+                                text: 'VALOR: R$ 250 nossa médica + R$ 250 a R$ 300 ao desempatador. Sempre cobrar cliente pelos valores e horários da médica, e informar sobre pagamento do desempatador.'
                             }
                         }
                     ]
@@ -882,61 +669,390 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                 title: 'Controle Materiais Ortopédicos',
                 description: 'Checklist e controle de equipamentos',
                 content: {
-                    title: '🦽 Controle de Materiais Ortopédicos',
+                    title: 'Checklist - Cada Material Ortopédico',
+                    planilha: '05 - CONTROLE DE MATERIAIS ORTOPÉDICOS',
                     sections: [
                         {
                             title: 'Processo de Controle',
                             steps: [
-                                {
-                                    title: 'Recebimento',
-                                    content: 'Dar baixa na lista quando receber material ortopédico'
-                                },
-                                {
-                                    title: 'Empréstimo',
-                                    content: 'Quando consultor levar, pegar contrato de alocação assinado pelo cliente'
-                                }
+                                'Sempre que receber um material ortopédico, dar baixa na lista',
+                                'Quando for emprestado e o consultor levar, pegar o contrato de alocação assinado pelo cliente'
                             ]
                         },
                         {
                             title: 'Tipos de Materiais',
-                            substeps: [
+                            materials: [
                                 {
-                                    title: 'CADEIRA DE BANHO',
-                                    content: ['Assento com encosto e apoios', 'Para uso no chuveiro ou banheira', 'Segurança para pessoas com mobilidade reduzida']
+                                    name: 'CADEIRA DE BANHO',
+                                    description: 'Assento com encosto e apoios, específico para uso no chuveiro ou banheira, proporcionando segurança e estabilidade durante o banho para pessoas com mobilidade reduzida.'
                                 },
                                 {
-                                    title: 'CADEIRA DE RODAS C/ EXTENSOR',
-                                    content: ['Equipada com apoio extensível para pernas/pés', 'Para manter membros inferiores elevados', 'Indicada para imobilização']
+                                    name: 'CADEIRA DE RODAS - C/ EXTENSOR',
+                                    description: 'Cadeira de rodas equipada com apoio extensível para pernas/pés, indicada para pacientes que precisam manter membros inferiores elevados ou imobilizados.'
                                 },
                                 {
-                                    title: 'MULETA CANADENSE',
-                                    content: ['Com apoio antebraquial (braçadeira)', 'Maior estabilidade que axilar', 'Ideal para uso prolongado']
+                                    name: 'CADEIRA DE RODAS - EXTENSOR',
+                                    description: 'Similar à anterior, refere-se especificamente ao acessório de extensão para pernas que pode ser acoplado à cadeira de rodas convencional.'
                                 },
                                 {
-                                    title: 'MULETA AXILAR',
-                                    content: ['Tradicional com apoio sob axila', 'Uso temporário', 'Para descarregar peso de membro inferior']
+                                    name: 'MULETA - CANADENSE',
+                                    description: 'Muleta com apoio antebraquial (braçadeira no antebraço), oferece maior estabilidade e controle que a muleta axilar, ideal para uso prolongado.'
                                 },
                                 {
-                                    title: 'ANDADOR',
-                                    content: ['Estrutura com quatro pontos de contato', 'Máxima estabilidade para marcha', 'Para pacientes com equilíbrio comprometido']
+                                    name: 'MULETA - AXILAR',
+                                    description: 'Muleta tradicional com apoio sob a axila, utilizada temporariamente para descarregar peso de um membro inferior lesionado.'
                                 },
                                 {
-                                    title: 'BOTA ORTOPÉDICA',
-                                    content: ['Calçado rígido especial', 'Imobilização pé/tornozelo', 'Proteção durante recuperação']
+                                    name: 'ANDADOR',
+                                    description: 'Estrutura de apoio com quatro pontos de contato no solo, oferece máxima estabilidade para marcha em pacientes com equilíbrio comprometido.'
                                 },
                                 {
-                                    title: 'TIPÓIA',
-                                    content: ['Suporte em tecido para braço/antebraço', 'Suspender e imobilizar membro', 'Posição de repouso para cicatrização']
+                                    name: 'BOTA ORTOPÉDICA',
+                                    description: 'Calçado rígido especial para imobilização e proteção do pé/tornozelo durante recuperação de fraturas ou lesões.'
                                 },
                                 {
-                                    title: 'TALA DE MÃO',
-                                    content: ['Dispositivo rígido ou semi-rígido', 'Imobilizar punho, dedos ou mão', 'Manter alinhamento durante recuperação']
+                                    name: 'TIPÓIA',
+                                    description: 'Suporte em tecido para suspender e imobilizar braço/antebraço, mantendo o membro em posição de repouso para cicatrização.'
                                 },
                                 {
-                                    title: 'BENGALA',
-                                    content: ['Bastão de apoio simples', 'Auxílio na marcha', 'Suporte adicional e melhora equilíbrio']
+                                    name: 'TALA DE MÃO',
+                                    description: 'Dispositivo rígido ou semi-rígido para imobilizar punho, dedos ou mão, mantendo alinhamento adequado durante recuperação.'
+                                },
+                                {
+                                    name: 'BENGALA',
+                                    description: 'Bastão de apoio simples para auxílio na marcha, oferece suporte adicional e melhora equilíbrio durante caminhada.'
                                 }
                             ]
+                        }
+                    ]
+                }
+            },
+            'lista-pendencias': {
+                icon: '📋',
+                title: 'Lista de Pendências',
+                description: 'Atualização e controle de documentos pendentes',
+                images: ['pend1.png', 'pend2.png', 'pend3.png', 'pend4.png', 'pend5.png'],
+                content: {
+                    title: 'Atualização da Lista de Pendências',
+                    sections: [
+                        {
+                            title: 'Significado das Abreviações',
+                            abbreviations: [
+                                { code: 'DP', meaning: 'Documento pessoal' },
+                                { code: 'CR', meaning: 'Comprovante de residência' },
+                                { code: 'PI', meaning: 'Procuração interna' },
+                                { code: 'PC', meaning: 'Procuração caixa/bancária' },
+                                { code: 'RE', meaning: 'Comprovante de renda' },
+                                { code: 'BO', meaning: 'Boletim de ocorrência' },
+                                { code: 'RX', meaning: 'Raio-x' },
+                                { code: 'DB', meaning: 'Dados bancários' },
+                                { code: 'CT', meaning: 'Carteira de trabalho' },
+                                { code: 'GOV', meaning: 'Senha do GOV' },
+                                { code: 'AP', meaning: 'Apólice' },
+                                { code: 'PROC MABA', meaning: 'Procuração número 48' },
+                                { code: 'RTM', meaning: 'Relatório de tratamento médico' },
+                                { code: 'GFIP', meaning: 'Extrato do FGTS da empresa do mês do acidente (ou SEFIP)' },
+                                { code: 'HO', meaning: 'Holerite/folha de pagamento dos 3 meses antes do acidente' },
+                                { code: 'FE', meaning: 'Ficha de empregado' }
+                            ]
+                        },
+                        {
+                            title: 'Símbolos de Status',
+                            symbols: [
+                                { symbol: 'O', meaning: 'Não precisa' },
+                                { symbol: 'X', meaning: 'Já tem' },
+                                { symbol: 'Inicial do documento', meaning: 'Falta' }
+                            ]
+                        },
+                        {
+                            title: 'Processo de Verificação',
+                            steps: [
+                                { step: 1, action: 'Verificar a pasta do cliente', image: 'pend1.png' },
+                                { step: 2, action: 'Conferir a validade do documento existente' },
+                                { step: 3, action: 'Verificar se não foi enviado pelo consultor na pasta "1 - documentos enviados pelo consultor"', image: 'pend2.png' },
+                                { step: 4, action: 'Verificar se não está no e-mail ou no protocolo (ainda não salvo)', image: 'pend3.png' },
+                                { step: 5, action: 'Verificar se não está no canal do Slack 6-setor-administrativo, na aba Documentos Enviados', image: 'pend4.png' },
+                                { step: 6, action: 'Marcar "X" se o documento já está disponível' },
+                                { step: 7, action: 'Marcar "O" se o documento não for necessário', image: 'pend5.png' }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'planilha-seguro-vida': {
+                icon: '📊',
+                title: 'Planilha Seguro de Vida',
+                description: 'Controle de processos de seguro de vida',
+                images: ['plan1.png', 'plan2.png', 'plan3.png', 'plan4.png', 'plan5.png'],
+                content: {
+                    title: 'Passo a Passo - Planilha Seguro de Vida',
+                    planilha: '01 - CONTROLE DE PROCESSOS - SEGURO DE VIDA',
+                    sections: [
+                        {
+                            title: 'Recebimento de Novos Processos',
+                            content: 'Sempre que o setor de seguro de vida receber um protocolo com novos processos para despachar:',
+                            steps: [
+                                'Colocar todos os nomes na planilha',
+                                'Preencher todas as colunas iniciais: Unidade, consultor, cliente, data do acidente, seguradora e se é empresarial ou individual'
+                            ],
+                            image: 'plan1.png'
+                        },
+                        {
+                            title: 'Atualização Após Despacho',
+                            content: 'As outras colunas serão preenchidas assim que o processo for despachado:',
+                            steps: [
+                                'Alterar status para externo, perícia ou o que for o status no momento',
+                                'Atualizações do processo serão inseridas na coluna ATUALIZAÇÃO do cliente',
+                                'Exemplo: se processo for despachado, irá automaticamente com a data do dia para a coluna OBSERVAÇÃO'
+                            ],
+                            image: 'plan2.png'
+                        },
+                        {
+                            title: 'Preenchimento de Dados Específicos',
+                            steps: [
+                                'Número do sinistro (quando gerado)',
+                                'Data que foi despachado na coluna despachado',
+                                'Data e horário da perícia (FORMATO: 10/02/2025 -- 10h25)',
+                                'Data da indenização na coluna data da ind',
+                                'Valor da indenização em valor da ind'
+                            ]
+                        },
+                        {
+                            title: 'Abas Complementares',
+                            image: 'plan3.png',
+                            subsections: [
+                                {
+                                    title: 'Aba Junta Médica',
+                                    content: 'Após indenização ou indeferimento, se cliente quiser junta médica (nova perícia com três médicos para tentar aumentar valor), será inserido na aba de junta.',
+                                    images: ['plan4.png', 'plan5.png']
+                                },
+                                {
+                                    title: 'Aba Revisões Judiciais',
+                                    content: 'Se cliente já passou pela junta ou não quer fazer junta (apenas revisão), será inserido na aba de revisão.',
+                                    columns: ['Pendente: quais documentos estão pendentes', 'Status: se cliente já foi chamado ou não'],
+                                    note: 'Quando todos os documentos estiverem recebidos e salvos na pasta do cliente, alterar para PRONTO para fazer protocolo.'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            'reclamacao-reclame-aqui': {
+                icon: '📢',
+                title: 'Reclamação no Reclame Aqui',
+                description: 'Passo a passo para fazer reclamações formais',
+                images: ['rec1.png', 'rec2.png', 'rec3.png'],
+                content: {
+                    title: 'Passo a Passo - Reclamação',
+                    sections: [
+                        {
+                            title: 'Acesso ao Sistema',
+                            steps: [
+                                'Acessar https://www.reclameaqui.com.br/',
+                                'Fazer login pelo e-mail: sinistrovidarv@gmail.com',
+                                'Escolher: "Minhas reclamações" (verificar andamento) OU "Faça uma reclamação" (nova)'
+                            ],
+                            image: 'rec1.png'
+                        },
+                        {
+                            title: 'Processo de Reclamação',
+                            steps: [
+                                'Buscar o nome da empresa ou seguradora',
+                                'Preencher o formulário de dados (diferente para cada empresa/seguradora)'
+                            ],
+                            image: 'rec2.png'
+                        },
+                        {
+                            title: 'Modelo de Reclamação',
+                            template: `**Protocolo/Sinistro nº:** [INSERIR NÚMERO]
+**Apólice nº:** [INSERIR NÚMERO DA APÓLICE]
+
+**OBJETO DA RECLAMAÇÃO**
+
+Venho, por meio desta, formalizar reclamação referente ao sinistro acima identificado, em razão de [DESCREVER BREVEMENTE O PROBLEMA].
+
+**RELATO DOS FATOS**
+
+Em [DATA DO ACIDENTE], ocorreu acidente [DESCREVER TIPO DE ACIDENTE] envolvendo [NOME DA VÍTIMA], devidamente segurado(a) pela apólice em referência.
+
+O sinistro foi comunicado à seguradora em [DATA DA COMUNICAÇÃO], protocolo nº [NÚMERO], tendo sido iniciado o processo de análise e regulação.
+
+**Problemas identificados:**
+
+[ESCOLHER E ADAPTAR CONFORME O CASO]
+
+**1. DEMORA INJUSTIFICADA NA ANÁLISE**
+- Prazo legal de 30 dias para análise ultrapassado
+- Ausência de comunicação sobre o andamento
+- [OUTROS DETALHES ESPECÍFICOS]
+
+**2. NEGATIVA INDEVIDA DE COBERTURA**
+- Cobertura prevista na apólice não reconhecida
+- Interpretação restritiva das cláusulas contratuais
+- [FUNDAMENTAÇÃO ESPECÍFICA]
+
+**3. VALOR DE INDENIZAÇÃO INADEQUADO**
+- Laudo pericial subestimado
+- Não consideração de todos os danos
+- Depreciação excessiva aplicada
+- [DETALHES DOS VALORES]
+
+**4. FALTA DE INFORMAÇÕES/TRANSPARÊNCIA**
+- Ausência de retorno sobre solicitações
+- Documentação solicitada sem justificativa técnica
+- [OUTRAS QUESTÕES]
+
+**5. ATENDIMENTO INADEQUADO**
+- Falta de cortesia no atendimento
+- Informações contraditórias fornecidas
+- [OUTROS PROBLEMAS DE ATENDIMENTO]
+
+**FUNDAMENTOS LEGAIS**
+
+A conduta da seguradora contraria:
+
+- **Código de Defesa do Consumidor** (Lei 8.078/90), especialmente:
+  - Art. 6º - Direitos básicos do consumidor
+  - Art. 39, IX - Prática abusiva de recusar cumprimento às obrigações
+  - Art. 51, IV - Cláusulas abusivas
+
+- **Código Civil Brasileiro:**
+  - Art. 422 - Princípio da boa-fé objetiva
+  - Art. 757 e seguintes - Contrato de seguro
+
+- **Resolução CNSP nº 432/2021** - Regulamentação de sinistros
+- **Circular SUSEP nº 621/2021** - Procedimentos de regulação
+
+**PREJUÍZOS SOFRIDOS**
+
+Em decorrência da conduta inadequada da seguradora, o(a) segurado(a) vem sofrendo os seguintes prejuízos:
+
+- **Materiais:** [DESCREVER PREJUÍZOS FINANCEIROS]
+- **Morais:** Ansiedade, estresse e constrangimento pela situação
+- **Emergenciais:** [SE HOUVER URGÊNCIA MÉDICA OU REPAROS]
+
+**PEDIDOS**
+
+Diante do exposto, REQUEIRO:
+
+**1. PROVIDÊNCIAS IMEDIATAS**
+- Reanálise do sinistro em caráter de urgência
+- Comunicação formal sobre o andamento em até 48 horas
+- [OUTROS PEDIDOS URGENTES]
+
+**2. REGULARIZAÇÃO DO SINISTRO**
+- Pagamento integral da indenização devida
+- Correção dos valores conforme apólice contratada
+- [ESPECIFICAR VALORES SE CONHECIDOS]
+
+**PRAZO PARA RESPOSTA**
+
+Estabeleço o prazo de **15 (quinze) dias úteis** para resposta formal e solução definitiva da questão.
+
+**CONSEQUÊNCIAS DO NÃO ATENDIMENTO**
+
+Caso não haja manifestação ou solução adequada no prazo estabelecido, informo que serão adotadas as seguintes medidas:
+
+- Registro de reclamação junto à SUSEP
+- Acionamento dos órgãos de defesa do consumidor (PROCON)
+- Ingresso com ação judicial competente
+
+**DOCUMENTOS ANEXOS**
+
+- Cópia da apólice de seguro
+- Procuração judicial e número 48
+
+**Aguardo manifestação dentro do prazo estipulado.**`
+                        },
+                        {
+                            title: 'Finalização',
+                            steps: [
+                                'Selecionar o motivo da reclamação nas opções',
+                                'Anexar nas evidências as procurações e a cópia da apólice de seguro, caso houver'
+                            ],
+                            image: 'rec3.png'
+                        }
+                    ]
+                }
+            },
+            'conferencia-laudo-rtm': {
+                icon: '🏥',
+                title: 'Conferência Laudo RTM',
+                description: 'Verificação e validação de laudos médicos',
+                images: ['rtm1.png', 'rtm2.png'],
+                content: {
+                    title: 'Passo a Passo - Conferência do Laudo RTM',
+                    sections: [
+                        {
+                            title: 'Verificações Básicas',
+                            content: 'Os laudos sempre chegam por e-mail. Verificar:',
+                            steps: [
+                                'Nome do cliente está correto com o documento pessoal',
+                                'Data de atendimento bate com a data que o cliente fez a perícia',
+                                'Data de alta médica está correta',
+                                'Data de nascimento bate com o documento pessoal',
+                                'Data do acidente bate com a data do prontuário ou com o BO',
+                                'Fraturas do cliente batem com o prontuário médico'
+                            ],
+                            image: 'rtm1.png'
+                        },
+                        {
+                            title: 'Conclusão do Laudo',
+                            content: 'Verificar se consta:',
+                            steps: [
+                                'Porcentagem das sequelas na parte da conclusão',
+                                'CID na parte da conclusão'
+                            ],
+                            image: 'rtm2.png'
+                        },
+                        {
+                            title: 'Verificação Específica',
+                            content: 'Caso tenha seguro de vida, verificar se tem as informações da fisioterapia.'
+                        }
+                    ]
+                }
+            },
+            'planilha-solicitacoes': {
+                icon: '📨',
+                title: 'Planilha de Solicitações',
+                description: 'Como alimentar a planilha de solicitações automaticamente',
+                images: ['sol1.png', 'sol2.png', 'sol3.png', 'sol4.png'],
+                content: {
+                    title: 'Como Alimentar a Planilha de Solicitações',
+                    sections: [
+                        {
+                            title: '1. Preenchimento para Envio Automático',
+                            content: 'Na aba SOLICITAR:',
+                            steps: [
+                                'Inserir data do acidente na coluna respectiva',
+                                'Inserir nome do cliente',
+                                'Selecionar nome do hospital da lista (se não estiver na lista, precisa solicitar manualmente)',
+                                'Inserir data do acidente',
+                                'Marcar "solicitar"'
+                            ],
+                            image: 'sol1.png'
+                        },
+                        {
+                            title: '2. Execução do Script',
+                            content: 'Quando constar "solicitar":',
+                            steps: [
+                                'Executar o script pela aba "Prontuário"',
+                                'O script fará checagem dos clientes e hospitais',
+                                'Será encaminhado automaticamente um e-mail para o hospital cadastrado no script',
+                                'Em caso de erro, será colocado na observação'
+                            ],
+                            note: 'É necessário documento pessoal e procuração número 48 ou número 6 para o sucesso do envio.',
+                            image: 'sol2.png'
+                        },
+                        {
+                            title: '3. Inserção dos Dados',
+                            steps: [
+                                'Após o status mudar para Solicitado, transferir para a aba Solicitações, com a data da solicitação e o prazo',
+                                'Após colocar todos na aba solicitações, ir à aba de prontuários e gerar as mensagens para o ASTREA',
+                                'Após a mensagem ser gerada, copiar a mesma e colocar no histórico do processo principal do cliente'
+                            ],
+                            priority: 'Começando pelo seguro de vida, seguro terceiro, auxílio-acidente e acidente de trânsito.',
+                            images: ['sol3.png', 'sol4.png']
                         }
                     ]
                 }
@@ -945,99 +1061,27 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                 icon: '📅',
                 title: 'Planilha Agendamentos RTM',
                 description: 'Como alimentar agendamentos de perícias',
+                images: ['age1.png', 'age2.png', 'age3.png', 'age4.png', 'age5.png'],
                 content: {
-                    title: '📅 Planilha de Agendamentos RTM',
+                    title: 'Passo a Passo - Como Alimentar a Planilha de Agendamentos RTM',
                     sections: [
                         {
                             title: 'Acesso ao Sistema',
                             steps: [
-                                {
-                                    title: 'Abrir Slack',
-                                    content: 'Procurar o setor administrativo no Slack'
-                                },
-                                {
-                                    title: 'Navegar para perícias',
-                                    content: 'Nas abas superiores, procurar aba "perícias RTM"'
-                                },
-                                {
-                                    title: 'Acessar lista',
-                                    content: 'Clicar na aba para acessar lista de perícias agendadas'
-                                }
-                            ]
+                                'No Slack, procurar o setor administrativo',
+                                'Nas abas superiores, procurar a aba de perícias RTM',
+                                'Clicar na aba para acessar a lista de perícias agendadas'
+                            ],
+                            images: ['age1.png', 'age2.png']
                         },
                         {
                             title: 'Adicionar Novo Agendamento',
                             steps: [
-                                {
-                                    title: 'Localizar botão',
-                                    content: 'Na parte inferior direita, opção "adicionar item"'
-                                },
-                                {
-                                    title: 'Preencher dados',
-                                    content: 'Nova aba abrirá para inserir dados do cliente e informações da perícia RTM'
-                                },
-                                {
-                                    title: 'Finalizar',
-                                    content: 'Após preenchimento, apenas fechar a aba'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            },
-            'planilha-consultores': {
-                icon: '👥',
-                title: 'Lista Pendências Consultores',
-                description: 'Como filtrar e gerenciar pendências',
-                content: {
-                    title: '👥 Lista de Pendências dos Consultores',
-                    sections: [
-                        {
-                            title: 'Sobre a Planilha',
-                            steps: [
-                                {
-                                    title: 'Nome da planilha',
-                                    content: '03 - PENDENCIAS CONSULTORES'
-                                },
-                                {
-                                    title: 'Organização',
-                                    content: 'Separada por unidades'
-                                },
-                                {
-                                    title: 'Origem',
-                                    content: 'Reflexo direto da planilha administrativa com exibição diferente'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Como Filtrar',
-                            steps: [
-                                {
-                                    title: 'Selecionar coluna',
-                                    content: 'Clicar na coluna de dados para filtrar'
-                                },
-                                {
-                                    title: 'Configurar filtro',
-                                    content: 'Entrar em "filtrar por condição" e selecionar "o texto contém"'
-                                },
-                                {
-                                    title: 'Aplicar filtro',
-                                    content: 'Preencher nome do consultor no campo e dar OK'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'Filtros Adicionais',
-                            steps: [
-                                {
-                                    title: 'Por processo',
-                                    content: 'Em vez do nome do consultor, colocar inicial do processo'
-                                },
-                                {
-                                    title: 'Exemplos',
-                                    content: 'vida, AA, entre outros tipos de processo'
-                                }
-                            ]
+                                'Na parte inferior direita, clicar na opção "adicionar item"',
+                                'Preencher os dados do cliente e outras informações referentes à perícia do RTM',
+                                'Após o preenchimento, apenas fechar a aba'
+                            ],
+                            images: ['age3.png', 'age4.png', 'age5.png']
                         }
                     ]
                 }
@@ -1046,107 +1090,85 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                 icon: '📝',
                 title: 'Cadastro de Processos',
                 description: 'Organização completa de novos processos',
+                images: ['cad1.png', 'cad2.png', 'cad3.png', 'cad4.png', 'cad5.png', 'cad6.png', 'cad7.png', 'cad8.png', 'cad9.png', 'cad10.png'],
                 content: {
-                    title: '📝 Organização de Processos - Cadastro',
+                    title: 'Organização de Processos: Passo a Passo',
                     sections: [
                         {
-                            title: '1. Preparação Inicial',
+                            title: '1. Cadastro - Preparação Inicial',
                             steps: [
-                                {
-                                    title: 'Baixar processo',
-                                    content: 'Baixar do e-mail (conferir quantidade de anexos - não pode ter menos de oito)'
-                                },
-                                {
-                                    title: 'Criar pasta',
-                                    content: 'No drive, pasta "0 - novos clientes zapsign"'
-                                },
-                                {
-                                    title: 'Extrair dados',
-                                    content: 'Da capa de rosto e inserir na planilha através do script "3 - DADOS DOS NOVOS PARA ASTREA"'
-                                }
-                            ]
+                                'Baixar o processo do e-mail (conferir a quantidade anexos, não pode haver menos de oito)',
+                                'Criar pasta no drive, na pasta "0 - novos clientes zapsign"'
+                            ],
+                            images: ['cad1.png', 'cad2.png']
                         },
                         {
-                            title: '2. Preenchimento de Cadastro',
+                            title: '2. Preenchimento de Cadastro ASTREA',
                             steps: [
-                                {
-                                    title: 'Nome do cliente',
-                                    content: 'Inserir apenas com iniciais em maiúsculas'
-                                },
-                                {
-                                    title: 'Dados automáticos',
-                                    content: 'Contato preenchido automaticamente'
-                                },
-                                {
-                                    title: 'Dados manuais',
-                                    content: 'Exceções: telefone adicional e data de nascimento'
-                                },
-                                {
-                                    title: 'Conferir dados',
-                                    content: 'Verificar se todas informações estão corretas'
-                                }
-                            ]
+                                'Inserir apenas o nome do cliente com iniciais em maiúsculas',
+                                'Os dados de contato são preenchidos automaticamente',
+                                'Exceções: telefone adicional e data de nascimento (inserir manualmente)',
+                                'Conferir se os dados estão corretos'
+                            ],
+                            images: ['cad3.png', 'cad4.png', 'cad5.png']
                         },
                         {
                             title: '3. Nomeação e Categorização',
                             steps: [
-                                {
-                                    title: 'Ir em processos',
-                                    content: 'Depois de cadastrado o contato, ir em processos e adicionar'
-                                },
-                                {
-                                    title: 'Nome da pasta',
-                                    content: 'Nome do cliente - data do acidente'
-                                },
-                                {
-                                    title: 'Definir campos',
-                                    content: 'Autor: Nome do cliente | Réu: Nome do processo | Título: Nome cliente X Nome processo'
-                                },
-                                {
-                                    title: 'Observação',
-                                    content: 'Lesão do cliente e tipo de acidente'
-                                },
-                                {
-                                    title: 'Caso óbito',
-                                    content: 'Nome do cliente x Nome do falecido x processo'
-                                }
+                                'Depois de cadastrado o contato, ir em processos e adicionar',
+                                'Nome da pasta: Nome do cliente - data do acidente',
+                                'Autor: Nome do cliente',
+                                'Réu: Nome do processo',
+                                'Título: Nome cliente X Nome processo / ou Em caso de óbito: Nome do cliente x Nome do falecido x processo',
+                                'Observação: Lesão do cliente e tipo de acidente'
                             ]
                         },
                         {
                             title: '4. Etiquetas',
-                            steps: [
-                                {
-                                    title: 'Etiquetas padrão',
-                                    content: 'Nome do consultor, unidade, interno, nome do processo'
-                                }
+                            content: 'Etiquetas padrão: Nome do consultor, unidade, interno, nome do processo',
+                            special_tags: [
+                                '"Grupo Renato Ventura" para processos previdenciários',
+                                '"Doutora Renata" para processos feitos pela Dra. Renata',
+                                '"Doutora Alyne" para processos trabalhistas'
                             ],
-                            substeps: [
-                                {
-                                    title: 'Etiquetas Excepcionais',
-                                    content: [
-                                        '"Grupo Renato Ventura" - para processos previdenciários',
-                                        '"Doutora Renata" - para processos feitos pela Dra. Renata',
-                                        '"Doutora Alyne" - para processos trabalhistas'
-                                    ]
-                                }
-                            ],
-                            alert: {
-                                type: 'info',
-                                text: 'As etiquetas excepcionais devem ser aplicadas conforme o tipo de processo e profissional responsável. Sempre verificar qual etiqueta especial aplicar antes de finalizar o cadastro.'
-                            }
+                            images: ['cad6.png', 'cad7.png', 'cad8.png']
                         },
                         {
                             title: '5. Finalização',
                             steps: [
-                                {
-                                    title: 'Inserir observações',
-                                    content: 'Observações pertinentes da capa de rosto no histórico do processo'
-                                },
-                                {
-                                    title: 'Mover pasta',
-                                    content: 'De "0 - NOVOS CLIENTES ZAPSIGN" para "02 - CLIENTES"'
-                                }
-                            ]
+                                'Inserir observações pertinentes da capa de rosto no histórico do processo',
+                                'Mover a pasta de "0 - NOVOS CLIENTES ZAPSIGN" para "02 - CLIENTES"'
+                            ],
+                            images: ['cad9.png', 'cad10.png']
+                        }
+                    ]
+                }
+            },
+            'planilha-consultores': {
+                icon: '👥',
+                title: 'Lista Pendências Consultores',
+                description: 'Como filtrar e gerenciar pendências',
+                images: ['cons1.png', 'cons2.png', 'cons3.png'],
+                content: {
+                    title: 'Passo a Passo - Lista de Pendência dos Consultores',
+                    planilha: '03 - PENDENCIAS CONSULTORES',
+                    sections: [
+                        {
+                            title: 'Sobre a Planilha',
+                            content: 'Ela é separada por unidades e é um reflexo direto da planilha de pendências administrativa, apenas com uma exibição diferente e mais fácil de visualizar.'
+                        },
+                        {
+                            title: 'Como Filtrar',
+                            steps: [
+                                'Ao filtrar, selecionar a coluna de dados',
+                                'Entrar na opção "filtrar por condição" e selecionar "o texto contém"',
+                                'Preencher o nome do consultor no campo de texto e dar OK para filtrar a planilha pelo nome do consultor'
+                            ],
+                            images: ['cons1.png', 'cons2.png', 'cons3.png']
+                        },
+                        {
+                            title: 'Filtros Adicionais',
+                            content: 'Da mesma forma, caso queira filtrar por processo, em vez do nome do consultor, colocar a inicial do processo, como vida, AA, entre outros.'
                         }
                     ]
                 }
@@ -1187,6 +1209,7 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                     ${passo.icon || '📖'} ${passo.content.title}
                 </h2>
                 <p style="opacity: 0.9;">${passo.description}</p>
+                ${passo.content.planilha ? `<p style="opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem;">📊 ${passo.content.planilha}</p>` : ''}
             `;
 
             let contentHTML = '';
@@ -1196,17 +1219,22 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                     contentHTML += `<div class="flow-card">`;
                     contentHTML += `<h3 class="flow-title">${section.title}</h3>`;
 
-                    if (section.text) {
-                        contentHTML += `<pre style="background: white; padding: 1rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif;">${section.text}</pre>`;
+                    if (section.content) {
+                        contentHTML += `<div class="step-content" style="margin-bottom: 1rem;">${section.content}</div>`;
                     }
 
                     if (section.steps && section.steps.length > 0) {
                         section.steps.forEach((step, index) => {
-                            contentHTML += `<div class="flow-step"><span>${step.title}</span>`;
-                            if (step.content) {
-                                contentHTML += `<div style="margin-top: 0.5rem; font-weight: normal; font-size: 0.9rem;">${step.content}</div>`;
+                            if (typeof step === 'string') {
+                                contentHTML += `<div class="flow-step">
+                                    <div class="step-header">${index + 1}. ${step}</div>
+                                </div>`;
+                            } else {
+                                contentHTML += `<div class="flow-step">
+                                    <div class="step-header">${step.step ? `${step.step}. ` : ''}${step.action || step.title || step}</div>
+                                    ${step.content ? `<div class="step-content">${step.content}</div>` : ''}
+                                </div>`;
                             }
-                            contentHTML += `</div>`;
                             
                             if (index < section.steps.length - 1) {
                                 contentHTML += `<div class="flow-arrow">↓</div>`;
@@ -1214,31 +1242,112 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                         });
                     }
 
-                    if (section.branches && section.branches.length > 0) {
-                        contentHTML += `<div class="flow-branch">`;
-                        section.branches.forEach(branch => {
+                    if (section.priority) {
+                        if (Array.isArray(section.priority)) {
+                            contentHTML += `<div class="alert-box alert-info">
+                                <span class="alert-icon">📋</span>
+                                <div>
+                                    <strong>Ordem de Prioridade:</strong>
+                                    <ol style="margin-top: 0.5rem; margin-left: 1rem;">
+                                        ${section.priority.map(item => `<li>${item}</li>`).join('')}
+                                    </ol>
+                                </div>
+                            </div>`;
+                        } else {
+                            contentHTML += `<div class="alert-box alert-info">
+                                <span class="alert-icon">📋</span>
+                                <span><strong>Prioridade:</strong> ${section.priority}</span>
+                            </div>`;
+                        }
+                    }
+
+                    if (section.formats) {
+                        contentHTML += `<div class="materials-grid">`;
+                        section.formats.forEach(format => {
                             contentHTML += `
-                                <div class="branch-item branch-${branch.type}">
-                                    <div class="branch-title">
-                                        <span>${branch.type === 'success' ? '✅' : branch.type === 'warning' ? '⚠️' : '❌'}</span>
-                                        <span>${branch.title}</span>
-                                    </div>
-                                    ${branch.content.map(item => `<p>• ${item}</p>`).join('')}
+                                <div class="material-item">
+                                    <div class="material-title">${format.type}</div>
+                                    <div class="material-description">"${format.format}"</div>
                                 </div>
                             `;
                         });
                         contentHTML += `</div>`;
                     }
 
-                    if (section.substeps && section.substeps.length > 0) {
-                        section.substeps.forEach(substep => {
+                    if (section.abbreviations) {
+                        contentHTML += `<div class="abbreviations-grid">`;
+                        section.abbreviations.forEach(abbr => {
                             contentHTML += `
-                                <div style="background: white; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border: 2px solid #e5e7eb;">
-                                    <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">${substep.title}</h4>
-                                    ${substep.content.map(item => `<p style="margin: 0.5rem 0; padding-left: 1rem;">• ${item}</p>`).join('')}
+                                <div class="abbreviation-item">
+                                    <div class="abbr-code">${abbr.code}</div>
+                                    <div class="abbr-meaning">${abbr.meaning}</div>
                                 </div>
                             `;
                         });
+                        contentHTML += `</div>`;
+                    }
+
+                    if (section.symbols) {
+                        contentHTML += `<div class="abbreviations-grid">`;
+                        section.symbols.forEach(symbol => {
+                            contentHTML += `
+                                <div class="abbreviation-item">
+                                    <div class="abbr-code">${symbol.symbol}</div>
+                                    <div class="abbr-meaning">${symbol.meaning}</div>
+                                </div>
+                            `;
+                        });
+                        contentHTML += `</div>`;
+                    }
+
+                    if (section.materials) {
+                        contentHTML += `<div class="materials-grid">`;
+                        section.materials.forEach(material => {
+                            contentHTML += `
+                                <div class="material-item">
+                                    <div class="material-title">${material.name}</div>
+                                    <div class="material-description">${material.description}</div>
+                                </div>
+                            `;
+                        });
+                        contentHTML += `</div>`;
+                    }
+
+                    if (section.subsections) {
+                        section.subsections.forEach(subsection => {
+                            contentHTML += `
+                                <div style="background: white; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border: 2px solid #e5e7eb;">
+                                    <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">${subsection.title}</h4>
+                                    <div style="margin-bottom: 1rem;">${subsection.content}</div>
+                                    ${subsection.columns ? subsection.columns.map(col => `<p style="margin: 0.5rem 0; padding-left: 1rem;">• ${col}</p>`).join('') : ''}
+                                    ${subsection.note ? `<div class="alert-box alert-warning"><span class="alert-icon">⚠️</span><span>${subsection.note}</span></div>` : ''}
+                                    ${subsection.images ? subsection.images.map(img => `<div class="image-container"><img src="${img}" alt="Imagem do processo" class="process-image"></div>`).join('') : ''}
+                                </div>
+                            `;
+                        });
+                    }
+
+                    if (section.special_tags) {
+                        contentHTML += `<div class="alert-box alert-info">
+                            <span class="alert-icon">🏷️</span>
+                            <div>
+                                <strong>Etiquetas Excepcionais:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                                    ${section.special_tags.map(tag => `<li>${tag}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>`;
+                    }
+
+                    if (section.template) {
+                        contentHTML += `<div class="template-box">${section.template}</div>`;
+                    }
+
+                    if (section.note) {
+                        contentHTML += `<div class="alert-box alert-warning">
+                            <span class="alert-icon">⚠️</span>
+                            <span>${section.note}</span>
+                        </div>`;
                     }
 
                     if (section.alert) {
@@ -1250,8 +1359,30 @@ Rua Joinville 561, bairro Vila Nova, Blumenau.`
                         `;
                     }
 
+                    // Handle images for the section
+                    if (section.image) {
+                        contentHTML += `<div class="image-container">
+                            <img src="${section.image}" alt="Imagem do processo" class="process-image">
+                        </div>`;
+                    }
+
+                    if (section.images && Array.isArray(section.images)) {
+                        section.images.forEach(image => {
+                            contentHTML += `<div class="image-container">
+                                <img src="${image}" alt="Imagem do processo" class="process-image">
+                            </div>`;
+                        });
+                    }
+
                     contentHTML += `</div>`;
                 });
+            }
+
+            // Add cost highlight for junta medica
+            if (passoKey === 'junta-medica') {
+                contentHTML += `<div class="cost-highlight">
+                    💰 VALOR: R$ 250 nossa médica + R$ 250 a R$ 300 ao desempatador
+                </div>`;
             }
 
             modalBodyEl.innerHTML = contentHTML;
