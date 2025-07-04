@@ -608,6 +608,71 @@
         .process-info-content.active {
             display: block;
         }
+
+        /* --- INÍCIO DOS ESTILOS DO DROPDOWN (NOVO) --- */
+        .dropdown {
+            position: relative;
+            flex: 1; /* Para ocupar espaço como os outros tabs */
+        }
+        .dropdown-toggle {
+            /* Estilos para se parecer com um .nav-tab */
+            width: 100%;
+            height: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .dropdown:hover .dropdown-toggle {
+            /* Efeito hover igual aos outros tabs */
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .dropdown-toggle .caret {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 240px;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            border-radius: 12px;
+            padding: 8px 0;
+            margin-top: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-item {
+            color: var(--dark);
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            white-space: nowrap;
+        }
+        .dropdown-item:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+        /* --- FIM DOS ESTILOS DO DROPDOWN --- */
         
         @media (max-width: 992px) {
             .nav-tab span:not(.nav-tab-icon) {
@@ -615,6 +680,9 @@
             }
              .nav-tab {
                 padding: 0.75rem 0.5rem;
+            }
+            .dropdown-toggle {
+                padding: 0.75rem 0.5rem; /* Ajuste para o botão do dropdown também */
             }
         }
 
@@ -640,7 +708,8 @@
                 flex-wrap: wrap;
             }
 
-            .nav-tab span:not(.nav-tab-icon) {
+            .nav-tab span:not(.nav-tab-icon),
+            .dropdown-toggle span:not(.nav-tab-icon) { /* Esconde o texto do dropdown também */
                  display: none;
             }
              .nav-tab-icon {
@@ -711,35 +780,43 @@
                     <span class="nav-tab-icon">🌟</span>
                     <span>Ranking Vendas</span>
                 </a>
-                
-                <a href="passo-a-passo.html" class="nav-tab special-link">
-                    <span class="nav-tab-icon">📖</span>
-                    <span>Passo a Passo</span>
-                </a>
-                
                 <a href="https://claude.ai/public/artifacts/bf30853b-5964-4575-89b7-41a8719ee6f6" class="nav-tab special-link">
                     <span class="nav-tab-icon">✏️</span>
                     <span>Gerador de Mensagem</span>
                 </a>
-
                 <a href="analise.html" class="nav-tab special-link">
                     <span class="nav-tab-icon">🔍</span>
                     <span>Análise de Direitos</span>
                 </a>
-
                 <a href="verificacao-seguro.html" class="nav-tab special-link">
                     <span class="nav-tab-icon">🛡️</span>
                     <span>Verificar Seguro de Vida</span>
                 </a>
 
-                <a href="calculo.html" class="nav-tab special-link">
-                    <span class="nav-tab-icon">🧮</span>
-                    <span>Cálculo de Indenização</span>
-                </a>
-                <a href="feedback.html" class="nav-tab special-link">
-                    <span class="nav-tab-icon">📊</span>
-                    <span>Feedback ADM</span>
-                </a>
+                <!-- INÍCIO DO SUBMENU ADM (MODIFICADO) -->
+                <div class="dropdown nav-tab">
+                    <button class="dropdown-toggle">
+                        <span class="nav-tab-icon">⚙️</span>
+                        <span>ADM</span>
+                        <span class="caret">▾</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="passo-a-passo.html" class="dropdown-item">
+                            <span class="nav-tab-icon">📖</span>
+                            <span>Passo a Passo</span>
+                        </a>
+                        <a href="calculo.html" class="dropdown-item">
+                            <span class="nav-tab-icon">🧮</span>
+                            <span>Cálculo de Indenização</span>
+                        </a>
+                        <a href="feedback.html" class="dropdown-item">
+                            <span class="nav-tab-icon">📊</span>
+                            <span>Feedback ADM</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- FIM DO SUBMENU ADM -->
+
             </div>
         </nav>
         
@@ -782,6 +859,7 @@
     </div>
 
     <script>
+        // SEU CÓDIGO JAVASCRIPT PERMANECE IDÊNTICO, POIS A LÓGICA DE ABAS E MODAIS NÃO FOI AFETADA
         const AppState = { currentTab: 'processos', searchTerm: '', modalOpen: false, currentProcessInfoTab: 'info' };
         
         // --- INÍCIO DA BASE DE DADOS COMPLETA ---
