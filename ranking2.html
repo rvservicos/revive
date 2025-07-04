@@ -6,251 +6,88 @@
     <title>Dashboard ReVive - Vendas e Cultura</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- ESTILOS GERAIS E DO DASHBOARD (EXISTENTES) --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* --- ESTILOS GERAIS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%); min-height: 100vh; color: #333; overflow-x: hidden; }
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); border: 1px solid rgba(147, 51, 234, 0.1); position: relative; overflow: hidden; }
+        .header::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #8b5cf6, #6b46c1, #a78bfa); }
+        .header h1 { color: #6b46c1; font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .header h1 i { background: linear-gradient(135deg, #8b5cf6, #6b46c1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: #8b5cf6; font-size: 1.1rem; opacity: 0.8; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
-            min-height: 100vh;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
-            border: 1px solid rgba(147, 51, 234, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #8b5cf6, #6b46c1, #a78bfa);
-        }
-
-        .header h1 {
-            color: #6b46c1;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .header h1 i {
-            background: linear-gradient(135deg, #8b5cf6, #6b46c1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header .subtitle {
-            color: #8b5cf6;
-            font-size: 1.1rem;
-            opacity: 0.8;
-        }
-
-        .panel {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
-            border: 1px solid rgba(147, 51, 234, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
+        /* --- ESTILOS DO DASHBOARD --- */
+        .connection-status { margin: 15px auto; padding: 10px 15px; border-radius: 10px; font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 10px; max-width: 300px; }
+        .status-connected { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+        .status-loading { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
+        .stat-card h3 { color: #6b46c1; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: #8b5cf6; }
+        .stat-label { color: #a78bfa; font-size: 0.9rem; }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .panel { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); }
+        .panel h2 { color: #6b46c1; font-size: 1.5rem; margin-bottom: 20px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #f3f4f6; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f3f4f6; }
+        .ranking-item:last-child { border-bottom: none; }
+        .consultant-info { display: flex; align-items: center; gap: 15px; }
+        .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+        .consultant-name { color: #374151; font-weight: 500; }
+        .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+        .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 20px; border-radius: 15px; text-align: center; }
+        .process-card h4 { color: #6b46c1; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
+        .process-number { font-size: 2rem; font-weight: 700; color: #8b5cf6; }
+        .process-meta { font-size: 0.8rem; color: #6b7280; margin-top: 5px; }
+        .recent-sales { grid-column: 1 / -1; }
+        .sales-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 15px; text-align: left; font-weight: 600; }
+        .sales-table td { padding: 15px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+        .sales-table tr:nth-child(even) { background-color: #f9fafb; }
+        .process-badge, .date-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-block; }
+        .process-badge { background: #e8ecff; color: #6b46c1; }
+        .date-badge { background: #f3f4f6; color: #6b7280; }
+        .month-selector { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 15px; }
+        .month-selector label { font-weight: 600; color: #6b46c1; }
+        .month-selector select { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; }
         
-        /* ... (restante do seu CSS do dashboard) ... */
+        /* --- CARROSSEL DE PÁGINAS --- */
+        .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
+        .carousel-page.active { display: block; }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- INÍCIO: ESTILOS DO CARROSSEL DE PÁGINAS --- */
-        .carousel-page {
-            display: none;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-in-out forwards;
-        }
+        /* --- PÁGINA DE CULTURA (MISSÃO, VISÃO, VALORES) --- */
+        .culture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        .culture-card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); border-top: 5px solid #a78bfa; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .culture-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15); }
+        .culture-card .icon { font-size: 3rem; background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .culture-card h2 { font-size: 1.8rem; color: #6b46c1; margin-bottom: 15px; }
+        .culture-card p { font-size: 1.1rem; color: #555; line-height: 1.6; }
+        #values-card { grid-column: 1 / -1; }
+        .values-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 25px; }
+        .value-item { background: #f8f9ff; padding: 20px; border-radius: 15px; border: 1px solid #e8ecff; }
+        .value-item .icon { font-size: 1.8rem; margin-bottom: 10px; }
+        .value-item h4 { font-size: 1rem; color: #6b46c1; font-weight: 600; }
 
-        .carousel-page.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
+        /* --- PÁGINA DE CRONOGRAMA --- */
+        .timeline { position: relative; max-width: 800px; margin: 50px auto; padding: 20px 0; }
+        .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #a78bfa, #8b5cf6); border-radius: 3px; transform: translateX(-50%); }
+        .timeline-item { padding: 10px 40px; position: relative; width: 50%; }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
+        .timeline-item .content { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); position: relative; }
+        .timeline-item .date { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 8px 15px; border-radius: 20px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
+        .timeline-item h3 { font-size: 1.4rem; color: #6b46c1; margin-bottom: 8px; }
+        .timeline-item p { font-size: 1rem; color: #555; }
+        .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border: 4px solid #8b5cf6; border-radius: 50%; top: 25px; z-index: 1; }
+        .timeline-item:nth-child(odd)::after { right: -10px; }
+        .timeline-item:nth-child(even)::after { left: -10px; }
 
-        /* --- ESTILOS PARA A PÁGINA DE MISSÃO, VISÃO E VALORES --- */
-        .culture-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        .culture-card {
-            background: white;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
-            border-top: 5px solid #a78bfa;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .culture-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15);
-        }
-        .culture-card .icon {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-        .culture-card h2 {
-            font-size: 1.8rem;
-            color: #6b46c1;
-            margin-bottom: 15px;
-        }
-        .culture-card p {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.6;
-        }
-        #values-card {
-            grid-column: 1 / -1;
-        }
-        .values-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-        .value-item {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #e8ecff;
-        }
-        .value-item .icon {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        .value-item h4 {
-            font-size: 1rem;
-            color: #6b46c1;
-            font-weight: 600;
-        }
-
-        /* --- ESTILOS PARA A PÁGINA DE CRONOGRAMA --- */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px 0;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, #a78bfa, #8b5cf6);
-            border-radius: 3px;
-            transform: translateX(-50%);
-        }
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            width: 50%;
-        }
-        .timeline-item:nth-child(odd) {
-            left: 0;
-            text-align: right;
-        }
-        .timeline-item:nth-child(even) {
-            left: 50%;
-            text-align: left;
-        }
-        .timeline-item .content {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
-            position: relative;
-        }
-        .timeline-item .date {
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .timeline-item h3 {
-            font-size: 1.4rem;
-            color: #6b46c1;
-            margin-bottom: 8px;
-        }
-        .timeline-item p {
-            font-size: 1rem;
-            color: #555;
-        }
-        /* Círculo na linha do tempo */
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border: 4px solid #8b5cf6;
-            border-radius: 50%;
-            top: 25px;
-            z-index: 1;
-        }
-        .timeline-item:nth-child(odd)::after {
-            right: -10px;
-        }
-        .timeline-item:nth-child(even)::after {
-            left: -10px;
-        }
-
-        /* --- ESTILOS DA ANIMAÇÃO DE NOVA VENDA (EXISTENTE) --- */
-        #sale-notification-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(29, 13, 51, 0.7);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: none;
-            justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s ease; overflow: hidden;
-        }
+        /* --- ANIMAÇÃO DE NOVA VENDA --- */
+        #sale-notification-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(29, 13, 51, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s ease; overflow: hidden; }
         #sale-notification-overlay.show { display: flex; opacity: 1; }
-        .notification-content {
-            background: white; padding: 40px 50px; border-radius: 25px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7);
-            opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            max-width: 90%; width: 700px; border-top: 8px solid #a78bfa;
-        }
+        .notification-content { background: white; padding: 40px 50px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 700px; border-top: 8px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
         .notification-content h2 { font-size: 2.8rem; font-weight: 800; color: #6b46c1; margin-bottom: 15px; }
@@ -259,21 +96,17 @@
         .notification-content .process-info { font-size: 1rem; color: #777; margin-top: 10px; background: #f8f9ff; padding: 8px 15px; border-radius: 10px; display: inline-block; border: 1px solid #e8ecff; }
         .rocket { position: absolute; font-size: 2rem; color: #8b5cf6; opacity: 0; bottom: -50px; animation: launch 3s ease-in forwards; }
         @keyframes launch { 0% { transform: translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(-45deg); opacity: 0; } }
-        .rocket:nth-child(2) { left: 10%; animation-delay: 0.5s; font-size: 1.5rem; }
-        .rocket:nth-child(3) { left: 80%; animation-delay: 0.2s; color: #a78bfa; }
-        .rocket:nth-child(4) { left: 90%; animation-delay: 1s; font-size: 2.5rem; }
-        .rocket:nth-child(5) { left: 20%; animation-delay: 1.2s; color: #ffc107; }
-        .rocket:nth-child(6) { left: 60%; animation-delay: 0.8s; font-size: 1.8rem; }
-
-        /* Media queries para responsividade */
+        .rocket:nth-child(2) { left: 10%; animation-delay: 0.5s; }
+        .rocket:nth-child(3) { left: 80%; animation-delay: 0.2s; }
+        
+        /* --- RESPONSIVIDADE --- */
         @media (max-width: 768px) {
-            .culture-grid { grid-template-columns: 1fr; }
+            .main-content, .culture-grid { grid-template-columns: 1fr; }
             .timeline::before { left: 15px; }
             .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
             .timeline-item:nth-child(odd)::after, .timeline-item:nth-child(even)::after { left: 5px; }
         }
-
     </style>
 </head>
 <body>
@@ -281,68 +114,44 @@
 
         <!-- ===== PÁGINA 1: DASHBOARD DE VENDAS ===== -->
         <div id="dashboard-view" class="carousel-page active">
-            <div class="dashboard">
-                <div class="header">
-                    <h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1>
-                    <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
-                </div>
-                <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;">
-                    <i class="fas fa-sync fa-spin"></i>
-                    <span id="statusText">Verificando conexão...</span>
-                </div>
-                <div class="month-selector" id="monthSelectorContainer">
-                    <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
-                    <select id="monthFilter" onchange="updateDashboard()"></select>
-                </div>
-                <!-- ... Resto do HTML do seu dashboard (stats-grid, main-content, etc.) ... -->
+            <div class="header">
+                <h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1>
+                <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
             </div>
+            <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;">
+                <i class="fas fa-sync fa-spin"></i>
+                <span id="statusText">Verificando conexão...</span>
+            </div>
+            <div class="month-selector">
+                <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
+                <select id="monthFilter" onchange="updateDashboard()"></select>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
+            </div>
+            <div class="main-content">
+                <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
+                <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
+            </div>
+            <div class="panel recent-sales"><h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2><table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table></div>
         </div>
 
         <!-- ===== PÁGINA 2: MISSÃO, VISÃO E VALORES ===== -->
         <div id="mission-view" class="carousel-page">
-            <div class="header">
-                <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
-                <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
-            </div>
+            <div class="header"><h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1><p class="subtitle">Os pilares que nos guiam todos os dias.</p></div>
             <div class="culture-grid">
-                <div class="culture-card">
-                    <div class="icon"><i class="fas fa-bullseye"></i></div>
-                    <h2>Missão</h2>
-                    <p>Simplificar o acesso a direitos para quem enfrenta a dor.</p>
-                </div>
-                <div class="culture-card">
-                    <div class="icon"><i class="fas fa-eye"></i></div>
-                    <h2>Visão</h2>
-                    <p>Conduzir ao êxito mais de 100 mil processos até 2030.</p>
-                </div>
-                <div id="values-card" class="culture-card">
-                    <div class="icon"><i class="fas fa-star"></i></div>
-                    <h2>Nossos Valores</h2>
+                <div class="culture-card"><div class="icon"><i class="fas fa-bullseye"></i></div><h2>Missão</h2><p>Simplificar o acesso a direitos para quem enfrenta a dor.</p></div>
+                <div class="culture-card"><div class="icon"><i class="fas fa-eye"></i></div><h2>Visão</h2><p>Conduzir ao êxito mais de 100 mil processos até 2030.</p></div>
+                <div id="values-card" class="culture-card"><div class="icon"><i class="fas fa-star"></i></div><h2>Nossos Valores</h2>
                     <div class="values-list">
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-balance-scale"></i></div>
-                            <h4>Ética Profissional</h4>
-                        </div>
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-trophy"></i></div>
-                            <h4>Meritocracia</h4>
-                        </div>
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-lightbulb"></i></div>
-                            <h4>Inovação</h4>
-                        </div>
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-heart"></i></div>
-                            <h4>Empatia</h4>
-                        </div>
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-bolt"></i></div>
-                            <h4>Proatividade</h4>
-                        </div>
-                        <div class="value-item">
-                            <div class="icon"><i class="fas fa-search"></i></div>
-                            <h4>Atenção aos Detalhes</h4>
-                        </div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-balance-scale"></i></div><h4>Ética Profissional</h4></div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-trophy"></i></div><h4>Meritocracia</h4></div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-lightbulb"></i></div><h4>Inovação</h4></div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-heart"></i></div><h4>Empatia</h4></div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-bolt"></i></div><h4>Proatividade</h4></div>
+                        <div class="value-item"><div class="icon"><i class="fas fa-search"></i></div><h4>Atenção aos Detalhes</h4></div>
                     </div>
                 </div>
             </div>
@@ -350,58 +159,51 @@
 
         <!-- ===== PÁGINA 3: CRONOGRAMA DA EMPRESA ===== -->
         <div id="schedule-view" class="carousel-page">
-            <div class="header">
-                <h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1>
-                <p class="subtitle">Fique por dentro dos nossos próximos eventos!</p>
-            </div>
+            <div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div>
             <div class="timeline">
-                <div class="timeline-item">
-                    <div class="content">
-                        <span class="date">08 de Agosto de 2025</span>
-                        <h3>Evento ReVive</h3>
-                        <p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="content">
-                        <span class="date">23 de Agosto de 2025</span>
-                        <h3>Feijoada ReVive</h3>
-                        <p>Um momento de descontração e integração para toda a equipe com uma deliciosa feijoada.</p>
-                    </div>
-                </div>
-                <!-- Adicione mais eventos aqui no mesmo formato -->
+                <div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div>
+                <div class="timeline-item"><div class="content"><span class="date">23 de Agosto de 2025</span><h3>Feijoada ReVive</h3><p>Um momento de descontração e integração para toda a equipe com uma deliciosa feijoada.</p></div></div>
             </div>
         </div>
-
     </div>
 
-    <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA (fora do carrossel) ===== -->
+    <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA ===== -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
-            <div class="icon"><i class="fas fa-trophy"></i></div>
-            <h2>Nova Venda!</h2>
-            <p id="sale-notification-text"></p>
-            <div class="process-info" id="sale-notification-process"></div>
-            <div class="rockets">
-                <i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i>
-                <i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i>
-            </div>
+            <div class="icon"><i class="fas fa-trophy"></i></div><h2>Nova Venda!</h2><p id="sale-notification-text"></p><div class="process-info" id="sale-notification-process"></div>
+            <div class="rockets"><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i></div>
         </div>
     </div>
 
-    <!-- Biblioteca para o efeito de confete -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <script>
-        // --- INÍCIO: VARIÁVEIS DE CONTROLE ---
+        // --- VARIÁVEIS DE CONTROLE ---
         let salesData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
-        let autoUpdateInterval = null;
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
+        const DRA_RENATA_STRING = "DRA RENATA";
+        let currentMonthCounts = {};
 
-        // --- FUNÇÕES DA ANIMAÇÃO DE NOVA VENDA ---
+        const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
+        const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
+        const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
+
+        // --- LÓGICA DO CARROSSEL DE PÁGINAS ---
+        function setupCarousel() {
+            const pages = document.querySelectorAll('.carousel-page');
+            let currentPageIndex = 0;
+            if (pages.length === 0) return;
+
+            setInterval(() => {
+                pages[currentPageIndex].classList.remove('active');
+                currentPageIndex = (currentPageIndex + 1) % pages.length;
+                pages[currentPageIndex].classList.add('active');
+            }, 30000); // Rotação a cada 30 segundos
+        }
+
+        // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA ---
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
             isAnimationPlaying = true;
@@ -414,11 +216,10 @@
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
 
-            // **ALTERADO AQUI: Tempo de duração para 20 segundos**
             setTimeout(() => {
                 overlay.classList.remove('show');
                 isAnimationPlaying = false;
-            }, 20000); // 20 segundos
+            }, 20000); // Duração de 20 segundos
         }
 
         function checkForNewSales(newSales, oldSales) {
@@ -426,11 +227,11 @@
                 firstLoad = false;
                 return;
             }
-            if (isAnimationPlaying || newSales.length <= oldSales.length) {
-                return;
-            }
+            if (isAnimationPlaying || newSales.length <= oldSales.length) return;
+
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
+
             if (newlyAddedSales.length > 0) {
                 const latestSale = newlyAddedSales.reduce((latest, current) =>
                     (current.originalIndex > latest.originalIndex) ? current : latest
@@ -438,25 +239,26 @@
                 triggerSaleAnimation(latestSale);
             }
         }
-        
-        // --- LÓGICA DE BUSCA DE DADOS (sem alterações) ---
+
+        // --- LÓGICA DE BUSCA E PROCESSAMENTO DE DADOS ---
         async function fetchSheetData() {
-            // Esta função continua funcionando em segundo plano para manter o dashboard atualizado
             updateConnectionStatus('loading', 'Conectando...');
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${FIXED_SHEET_GID}&_=${new Date().getTime()}`;
                 const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
-                if (!response.ok) throw new Error('Falha na conexão direta.');
+                if (!response.ok) throw new Error(`Falha na conexão: ${response.statusText}`);
                 const csvData = await response.text();
-                
+
                 if (csvData && csvData.trim()) {
                     const newSalesData = await processCsvData(csvData);
                     checkForNewSales(newSalesData, salesData);
                     salesData = newSalesData;
                     
-                    populateMonthFilter(salesData);
+                    if(firstLoad) { // Popula o filtro só na primeira carga ou se ele estiver vazio
+                        populateMonthFilter(salesData);
+                    }
                     updateDashboard();
-                    updateConnectionStatus('connected', `Conectado`);
+                    updateConnectionStatus('connected', 'Conectado');
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados:", error);
@@ -466,21 +268,17 @@
 
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length <= 1) return [];
             const tempData = [];
             for (let i = 1; i < lines.length; i++) {
                 const columns = parseCSVLine(lines[i]);
                 if (columns.length >= 5) {
-                    const record = {
+                    tempData.push({
                         processo: (columns[0] || '').trim(),
                         cliente: (columns[1] || '').trim(),
                         data: (columns[3] || '').trim(),
                         consultor: (columns[4] || '').trim(),
                         originalIndex: i
-                    };
-                    if (record.processo || record.cliente || record.data || record.consultor) {
-                        tempData.push(record);
-                    }
+                    });
                 }
             }
             return tempData;
@@ -488,53 +286,152 @@
 
         function parseCSVLine(line) {
             const result = []; let current = ''; let inQuotes = false;
-            for (let i = 0; i < line.length; i++) { let char = line[i]; if (char === '"') { if (i + 1 < line.length && line[i+1] === '"') { if (inQuotes) current += '"'; i++; } else { inQuotes = !inQuotes; } } else if (char === ',' && !inQuotes) { result.push(current); current = ''; } else { current += char; } }
-            result.push(current); return result.map(item => item.trim());
-        }
-
-        // --- FUNÇÕES DE ATUALIZAÇÃO DO DASHBOARD (sem alterações) ---
-        function updateConnectionStatus(status, message) {
-            const statusElement = document.getElementById('connectionStatus');
-            if (!statusElement) return;
-            statusElement.className = 'connection-status';
-            statusElement.classList.add(`status-${status}`);
-            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
-            statusElement.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
-        }
-        function populateMonthFilter(data) { /* sua função existente */ }
-        function updateDashboard() { /* sua função existente */ }
-        // (Para manter o código conciso, as funções internas do dashboard não foram coladas,
-        // mas o seu código original delas funcionará perfeitamente aqui)
-
-        // --- INÍCIO: LÓGICA DO CARROSSEL DE PÁGINAS ---
-        document.addEventListener('DOMContentLoaded', function() {
-            const pages = document.querySelectorAll('.carousel-page');
-            let currentPageIndex = 0;
-
-            // Função para alternar as páginas
-            function rotatePages() {
-                // Remove a classe 'active' da página atual
-                if (pages[currentPageIndex]) {
-                    pages[currentPageIndex].classList.remove('active');
-                }
-
-                // Calcula o índice da próxima página
-                currentPageIndex = (currentPageIndex + 1) % pages.length;
-                
-                // Adiciona a classe 'active' à nova página
-                if (pages[currentPageIndex]) {
-                    pages[currentPageIndex].classList.add('active');
-                }
+            for (let i = 0; i < line.length; i++) {
+                let char = line[i];
+                if (char === '"' && (i === 0 || line[i-1] !== '"')) { inQuotes = !inQuotes; }
+                else if (char === ',' && !inQuotes) { result.push(current.replace(/""/g, '"')); current = ''; }
+                else { current += char; }
             }
+            result.push(current.replace(/""/g, '"'));
+            return result.map(item => item.trim());
+        }
+
+        // --- FUNÇÕES DE ATUALIZAÇÃO DO DASHBOARD (COMPLETAS) ---
+        function updateConnectionStatus(status, message) {
+            const el = document.getElementById('connectionStatus');
+            if (!el) return;
+            el.className = 'connection-status';
+            el.classList.add(`status-${status}`);
+            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
+            el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
+        }
+        
+        function populateMonthFilter(dataToScan) {
+            const monthSet = new Set();
+            (dataToScan || []).forEach(sale => {
+                if (sale.data) {
+                    const parts = sale.data.split('/');
+                    if (parts.length === 3) {
+                        const [day, month, year] = parts.map(p => parseInt(p, 10));
+                        if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) {
+                            monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
+                        }
+                    }
+                }
+            });
+            const allMonths = Array.from(monthSet).sort((a, b) => new Date(b.split('/')[1], b.split('/')[0] - 1) - new Date(a.split('/')[1], a.split('/')[0] - 1));
+            const monthSelect = document.getElementById('monthFilter');
+            const currentVal = monthSelect.value;
+            monthSelect.innerHTML = '';
+            allMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+            if (allMonths.includes(currentVal)) monthSelect.value = currentVal;
+        }
+
+        function getMonthSales() {
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) return [];
+            const [filterMonth, filterYear] = selectedMonthYear.split('/');
+            return salesData.filter(sale => {
+                if (!sale.data) return false;
+                const [saleDay, saleMonth, saleYear] = sale.data.split('/');
+                return saleMonth === filterMonth && saleYear === filterYear;
+            });
+        }
+
+        function updateDashboard() {
+            const monthSales = getMonthSales();
+            updateProcessStats(monthSales); // Must be called before main stats to set currentMonthCounts
+            updateMainStats(monthSales);
+            updateConsultantRanking(monthSales);
+            updateMonthSales(monthSales);
+        }
+
+        function updateMainStats(monthSalesData) {
+            const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
+            document.getElementById('totalMonth').textContent = totalProcessos;
+
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            const [monthStr, yearStr] = selectedMonthYear.split('/');
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+
+            const maxDay = monthSalesData.reduce((max, sale) => Math.max(max, parseInt(sale.data.split('/')[0], 10)), 0);
+            const dailyAvg = totalProcessos > 0 && maxDay > 0 ? (totalProcessos / maxDay) : 0;
+            document.getElementById('dailyAverage').textContent = dailyAvg.toFixed(1);
+        }
+
+        function updateConsultantRanking(monthSales) {
+            const stats = {};
+            monthSales.forEach(sale => {
+                if (!sale.consultor) return;
+                const key = sale.consultor.trim().toLowerCase().split(' ')[0];
+                if (!stats[key]) {
+                    stats[key] = { name: sale.consultor.trim().split(' ')[0], sales: 0 };
+                }
+                const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
+                stats[key].sales += numProcessos;
+            });
+
+            const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
+            document.getElementById('topConsultant').textContent = ranking.length > 0 ? ranking[0].name : '-';
             
-            // Inicia a rotação de páginas a cada 30 segundos
-            setInterval(rotatePages, 30000); // 30 segundos
+            let html = '';
+            ranking.slice(0, 10).forEach((c, i) => {
+                html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${i + 1}</div><div class="consultant-name">${c.name}</div></div><div class="sales-count">${c.sales}</div></div>`;
+            });
+            document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;">Nenhum processo para o mês.</p>';
+        }
+
+        function updateProcessStats(monthSales) {
+            const metas = { 'PREVIDENCIÁRIOS': 400, 'SEGURO TERCEIRO': 30, 'SEGURO DE VIDA': 90 };
+            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
+            const clientesST = new Set();
             
-            // Inicia a busca de dados do dashboard
+            monthSales.forEach(sale => {
+                (sale.processo || '').split(',').forEach(procRaw => {
+                    const proc = procRaw.trim().toUpperCase();
+                    if (!proc || proc === DRA_RENATA_STRING) return;
+                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
+                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
+                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
+                    else counts.outros++;
+                });
+            });
+
+            counts.seguroTerceiro = clientesST.size;
+            currentMonthCounts = counts;
+
+            const updateCard = (type, count, meta) => {
+                document.getElementById(`${type}Count`).textContent = count;
+                const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+                document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
+                document.getElementById(`${type}Percent`).textContent = percent;
+            };
+            updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+            updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+            updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
+            document.getElementById('outrosCount').textContent = counts.outros;
+        }
+
+        function updateMonthSales(monthSales) {
+            const sortedSales = [...monthSales].sort((a, b) => new Date(b.data.split('/').reverse().join('-')) - new Date(a.data.split('/').reverse().join('-')) || b.originalIndex - a.originalIndex);
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
+        }
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCarousel();
             fetchSheetData();
-            
-            // Configura a atualização automática dos dados a cada 30 segundos
-            autoUpdateInterval = setInterval(fetchSheetData, 30000);
+            setInterval(fetchSheetData, 30000);
         });
     </script>
 </body>
