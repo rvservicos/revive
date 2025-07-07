@@ -258,8 +258,8 @@
             padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
-            align-self: center; /* Alinha o botão verticalmente */
-            margin-top: 20px; /* Espaço para alinhar com os inputs */
+            align-self: center;
+            margin-top: 20px;
         }
         .add-detail-btn {
             background: #007bff;
@@ -271,7 +271,6 @@
             font-size: 0.9em;
             margin-top: 10px;
         }
-        /* --- Fim dos novos estilos --- */
 
         .generate-btn {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
@@ -342,9 +341,7 @@
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
+            .header h1 { font-size: 2em; }
             .content { padding: 20px; }
             .form-grid { grid-template-columns: 1fr; }
             .sector-buttons { grid-template-columns: 1fr; }
@@ -469,29 +466,188 @@
                     </div>
                 </div>
 
-                <!-- Nova Seção de Detalhes de Documentos -->
                 <div class="document-details-section">
                     <h3>Detalhes de Documentos Salvos (Opcional)</h3>
-                    <div id="document-details-container">
-                        <!-- Entradas dinâmicas serão inseridas aqui -->
-                    </div>
+                    <div id="document-details-container"></div>
                     <button class="add-detail-btn" onclick="addDocumentDetail()">➕ Adicionar Cliente/Documento</button>
                 </div>
             </div>
 
-            <!-- Setor RTM (Sem alterações) -->
+            <!-- Setor RTM (Restaurado) -->
             <div class="form-section" id="rtm-section">
-                <!-- ... Conteúdo do RTM ... -->
+                <div class="sector-header">🩺 Núcleo de RTM</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="resetSection('rtm')">🔄 Zerar Todos</button>
+                    <button class="quick-btn" onclick="fillExample('rtm')">📝 Exemplo</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>📅 Perícias agendadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('periciasAgendadas', -1)">-</button>
+                            <input type="number" id="periciasAgendadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('periciasAgendadas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>👨‍⚕️ Perícias realizadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('periciasRealizadas', -1)">-</button>
+                            <input type="number" id="periciasRealizadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('periciasRealizadas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📋 Laudos salvos</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('laudosSalvos', -1)">-</button>
+                            <input type="number" id="laudosSalvos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('laudosSalvos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🔄 Laudos corrigidos</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('laudosCorrigidos', -1)">-</button>
+                            <input type="number" id="laudosCorrigidos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('laudosCorrigidos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 Clientes contatados RTM</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('clientesRTM', -1)">-</button>
+                            <input type="number" id="clientesRTM" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('clientesRTM', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Taxas cobradas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('taxasCobradas', -1)">-</button>
+                            <input type="number" id="taxasCobradas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('taxasCobradas', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Setor Prontuário (Sem alterações) -->
+            <!-- Setor Prontuário (Restaurado) -->
             <div class="form-section" id="prontuario-section">
-                <!-- ... Conteúdo do Prontuário ... -->
+                <div class="sector-header">🏥 Núcleo de Prontuário</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="resetSection('prontuario')">🔄 Zerar Todos</button>
+                    <button class="quick-btn" onclick="fillExample('prontuario')">📝 Exemplo</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>📋 Prontuários solicitados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('prontuariosSolicitados', -1)">-</button>
+                            <input type="number" id="prontuariosSolicitados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('prontuariosSolicitados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📥 Prontuários recebidos</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('prontuariosRecebidos', -1)">-</button>
+                            <input type="number" id="prontuariosRecebidos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('prontuariosRecebidos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>💾 Prontuários salvos</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('prontuariosSalvos', -1)">-</button>
+                            <input type="number" id="prontuariosSalvos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('prontuariosSalvos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🔬 Exames de Raio-X</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('examesRaioX', -1)">-</button>
+                            <input type="number" id="examesRaioX" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('examesRaioX', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🏥 Hospitais contatados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('hospitaisContatados', -1)">-</button>
+                            <input type="number" id="hospitaisContatados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('hospitaisContatados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 Clientes orientados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('clientesOrientados', -1)">-</button>
+                            <input type="number" id="clientesOrientados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('clientesOrientados', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Setor Seguro (Sem alterações) -->
+            <!-- Setor Seguro (Restaurado) -->
             <div class="form-section" id="seguro-section">
-                <!-- ... Conteúdo do Seguro ... -->
+                <div class="sector-header">🛡️ Núcleo de Seguro de Vida</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="resetSection('seguro')">🔄 Zerar Todos</button>
+                    <button class="quick-btn" onclick="fillExample('seguro')">📝 Exemplo</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>💰 Pagamentos realizados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('pagamentosRealizados', -1)">-</button>
+                            <input type="number" id="pagamentosRealizados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('pagamentosRealizados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📋 Processos despachados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('processosDespachados', -1)">-</button>
+                            <input type="number" id="processosDespachados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('processosDespachados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🏛️ Acompanhamentos externos</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('acompanhamentosExternos', -1)">-</button>
+                            <input type="number" id="acompanhamentosExternos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('acompanhamentosExternos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>⚖️ Juntas solicitadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('juntasSolicitadas', -1)">-</button>
+                            <input type="number" id="juntasSolicitadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('juntasSolicitadas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📊 Revisões protocoladas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('revisoesProtocoladas', -1)">-</button>
+                            <input type="number" id="revisoesProtocoladas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('revisoesProtocoladas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>✅ Aprovações acompanhadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('aprovacoesAcompanhadas', -1)">-</button>
+                            <input type="number" id="aprovacoesAcompanhadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('aprovacoesAcompanhadas', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button class="generate-btn" id="generateBtn" onclick="generateFeedback()" disabled>🚀 Gerar Feedback</button>
@@ -529,7 +685,6 @@
             input.value = newValue;
         }
 
-        // Função para adicionar um novo campo de detalhe de documento
         function addDocumentDetail() {
             const container = document.getElementById('document-details-container');
             const newEntry = document.createElement('div');
@@ -560,7 +715,6 @@
                 document.getElementById(id).value = 0;
             });
 
-            // Limpa também os detalhes de documentos se for a seção de pendências
             if (section === 'pendencias') {
                 document.getElementById('document-details-container').innerHTML = '';
             }
@@ -569,22 +723,18 @@
         function fillExample(section) {
             const examples = {
                 'pendencias': {
-                    'clientesWhatsapp': 15,
-                    'pendenciasResolvidas': 8,
-                    'pendenciasSolicitadas': 12,
-                    'documentosSalvos': 25,
-                    'emailsEnviados': 10,
-                    'documentosRecebidos': 20,
-                    'pastasCriadas': 5,
-                    'recibosLancados': 7,
-                    'processosCadastrados': 3,
-                    'pendenciasCobradas': 9
+                    'clientesWhatsapp': 15, 'pendenciasResolvidas': 8, 'pendenciasSolicitadas': 12, 'documentosSalvos': 25, 'emailsEnviados': 10,
+                    'documentosRecebidos': 20, 'pastasCriadas': 5, 'recibosLancados': 7, 'processosCadastrados': 3, 'pendenciasCobradas': 9
                 },
-                // ... outros exemplos ...
+                'rtm': { 'periciasAgendadas': 6, 'periciasRealizadas': 8, 'laudosSalvos': 12, 'laudosCorrigidos': 5, 'clientesRTM': 25, 'taxasCobradas': 15 },
+                'prontuario': { 'prontuariosSolicitados': 35, 'prontuariosRecebidos': 18, 'prontuariosSalvos': 12, 'examesRaioX': 8, 'hospitaisContatados': 6, 'clientesOrientados': 10 },
+                'seguro': { 'pagamentosRealizados': 5, 'processosDespachados': 8, 'acompanhamentosExternos': 15, 'juntasSolicitadas': 3, 'revisoesProtocoladas': 6, 'aprovacoesAcompanhadas': 4 }
             };
             
             Object.keys(examples[section]).forEach(id => {
-                document.getElementById(id).value = examples[section][id];
+                if(document.getElementById(id)) {
+                    document.getElementById(id).value = examples[section][id];
+                }
             });
         }
 
@@ -596,15 +746,10 @@
 
             let feedback = '';
             
-            if (currentSector === 'pendencias') {
-                feedback = generatePendenciasFeedback();
-            } else if (currentSector === 'rtm') {
-                feedback = generateRTMFeedback();
-            } else if (currentSector === 'prontuario') {
-                feedback = generateProntuarioFeedback();
-            } else if (currentSector === 'seguro') {
-                feedback = generateSeguroFeedback();
-            }
+            if (currentSector === 'pendencias') { feedback = generatePendenciasFeedback(); } 
+            else if (currentSector === 'rtm') { feedback = generateRTMFeedback(); } 
+            else if (currentSector === 'prontuario') { feedback = generateProntuarioFeedback(); } 
+            else if (currentSector === 'seguro') { feedback = generateSeguroFeedback(); }
 
             document.getElementById('resultText').value = feedback;
             document.getElementById('resultSection').style.display = 'block';
@@ -626,7 +771,6 @@
             };
             
             let feedback = '';
-            
             if (data.clientesWhatsapp > 0) feedback += `Respondi ${data.clientesWhatsapp} clientes no WhatsApp\n`;
             if (data.pendenciasResolvidas > 0) feedback += `Resolvi ${data.pendenciasResolvidas} pendências\n`;
             if (data.pendenciasSolicitadas > 0) feedback += `Solicitei ${data.pendenciasSolicitadas} pendências\n`;
@@ -638,7 +782,6 @@
             if (data.recibosLancados > 0) feedback += `Lancei ${data.recibosLancados} recibos\n`;
             if (data.processosCadastrados > 0) feedback += `Cadastrei ${data.processosCadastrados} processos\n`;
             
-            // Adicionar detalhes de documentos salvos
             const detailEntries = document.querySelectorAll('.document-detail-entry');
             let detailsText = '';
             detailEntries.forEach(entry => {
@@ -653,40 +796,80 @@
             });
 
             feedback += detailsText;
-            
             return feedback.trim() || 'Nenhuma atividade registrada hoje.';
         }
-        
-        // As outras funções generate (RTM, Prontuario, Seguro) permanecem as mesmas.
-        // A função copyToClipboard também permanece a mesma.
-        // A função do eventListener de keydown também permanece a mesma.
-        
+
         function generateRTMFeedback() {
-            //código original
+            const data = {
+                periciasAgendadas: parseInt(document.getElementById('periciasAgendadas').value) || 0,
+                periciasRealizadas: parseInt(document.getElementById('periciasRealizadas').value) || 0,
+                laudosSalvos: parseInt(document.getElementById('laudosSalvos').value) || 0,
+                laudosCorrigidos: parseInt(document.getElementById('laudosCorrigidos').value) || 0,
+                clientesRTM: parseInt(document.getElementById('clientesRTM').value) || 0,
+                taxasCobradas: parseInt(document.getElementById('taxasCobradas').value) || 0
+            };
+            let feedback = '';
+            if (data.periciasAgendadas > 0) feedback += `Agendei ${data.periciasAgendadas} perícias\n`;
+            if (data.periciasRealizadas > 0) feedback += `Acompanhei ${data.periciasRealizadas} perícias realizadas\n`;
+            if (data.laudosSalvos > 0) feedback += `Salvei ${data.laudosSalvos} laudos\n`;
+            if (data.laudosCorrigidos > 0) feedback += `Corrigi ${data.laudosCorrigidos} laudos\n`;
+            if (data.clientesRTM > 0) feedback += `Entrei em contato com ${data.clientesRTM} clientes para RTM\n`;
+            if (data.taxasCobradas > 0) feedback += `Cobrei taxa de ${data.taxasCobradas} clientes\n`;
+            return feedback.trim() || 'Nenhuma atividade registrada hoje.';
         }
+
         function generateProntuarioFeedback() {
-             //código original
+            const data = {
+                prontuariosSolicitados: parseInt(document.getElementById('prontuariosSolicitados').value) || 0,
+                prontuariosRecebidos: parseInt(document.getElementById('prontuariosRecebidos').value) || 0,
+                prontuariosSalvos: parseInt(document.getElementById('prontuariosSalvos').value) || 0,
+                examesRaioX: parseInt(document.getElementById('examesRaioX').value) || 0,
+                hospitaisContatados: parseInt(document.getElementById('hospitaisContatados').value) || 0,
+                clientesOrientados: parseInt(document.getElementById('clientesOrientados').value) || 0
+            };
+            let feedback = '';
+            if (data.prontuariosSolicitados > 0) feedback += `Solicitei ${data.prontuariosSolicitados} prontuários\n`;
+            if (data.prontuariosRecebidos > 0) feedback += `Recebi ${data.prontuariosRecebidos} prontuários\n`;
+            if (data.prontuariosSalvos > 0) feedback += `Salvei ${data.prontuariosSalvos} prontuários\n`;
+            if (data.examesRaioX > 0) feedback += `Processei ${data.examesRaioX} exames de raio-x\n`;
+            if (data.hospitaisContatados > 0) feedback += `Entrei em contato com ${data.hospitaisContatados} hospitais\n`;
+            if (data.clientesOrientados > 0) feedback += `Orientei ${data.clientesOrientados} clientes\n`;
+            return feedback.trim() || 'Nenhuma atividade registrada hoje.';
         }
+
         function generateSeguroFeedback() {
-             //código original
+            const data = {
+                pagamentosRealizados: parseInt(document.getElementById('pagamentosRealizados').value) || 0,
+                processosDespachados: parseInt(document.getElementById('processosDespachados').value) || 0,
+                acompanhamentosExternos: parseInt(document.getElementById('acompanhamentosExternos').value) || 0,
+                juntasSolicitadas: parseInt(document.getElementById('juntasSolicitadas').value) || 0,
+                revisoesProtocoladas: parseInt(document.getElementById('revisoesProtocoladas').value) || 0,
+                aprovacoesAcompanhadas: parseInt(document.getElementById('aprovacoesAcompanhadas').value) || 0
+            };
+            let feedback = '';
+            if (data.pagamentosRealizados > 0) feedback += `Realizei ${data.pagamentosRealizados} pagamentos\n`;
+            if (data.processosDespachados > 0) feedback += `Despachei ${data.processosDespachados} processos\n`;
+            if (data.acompanhamentosExternos > 0) feedback += `Acompanhei ${data.acompanhamentosExternos} processos externos\n`;
+            if (data.juntasSolicitadas > 0) feedback += `Solicitei ${data.juntasSolicitadas} juntas\n`;
+            if (data.revisoesProtocoladas > 0) feedback += `Protocolei ${data.revisoesProtocoladas} revisões\n`;
+            if (data.aprovacoesAcompanhadas > 0) feedback += `Acompanhei ${data.aprovacoesAcompanhadas} aprovações\n`;
+            return feedback.trim() || 'Nenhuma atividade registrada hoje.';
         }
+
         function copyToClipboard() {
              const textarea = document.getElementById('resultText');
             textarea.select();
             textarea.setSelectionRange(0, 99999);
-            
             try {
                 document.execCommand('copy');
                 const button = document.querySelector('.copy-btn');
                 const originalText = button.textContent;
                 button.textContent = '✅ Copiado!';
                 button.style.background = '#218838';
-                
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.style.background = '#28a745';
                 }, 2000);
-                
             } catch (err) {
                 console.error('Erro ao copiar: ', err);
                 alert('Erro ao copiar. Tente selecionar o texto manualmente.');
@@ -695,6 +878,7 @@
         
          document.addEventListener('keydown', function(event) {
             if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault(); // Impede o comportamento padrão do Enter na textarea
                 generateFeedback();
             }
         });
