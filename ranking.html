@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Vendas - Tempo Real</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Adicionando a biblioteca de gráficos Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -160,6 +162,69 @@
             font-size: 0.9rem;
         }
 
+        /* --- ESTILOS DO CARROSSEL --- */
+        .carousel-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .carousel-nav-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .carousel-nav {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #6b46c1;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-nav:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+            transform: scale(1.1);
+        }
+
+        #carousel-page-indicator {
+            font-weight: 600;
+            color: #6b46c1;
+            font-size: 1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .carousel-slides-wrapper {
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+
+        /* --- FIM DOS ESTILOS DO CARROSSEL --- */
+
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -175,6 +240,12 @@
             border: 1px solid rgba(147, 51, 234, 0.1);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #chart-container-panel {
+            height: 500px; /* Altura fixa para o container do gráfico */
         }
 
         .panel::before {
@@ -415,11 +486,13 @@
             font-size: 0.9rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
+        }
+
+        @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
             }
@@ -440,6 +513,10 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            #chart-container-panel {
+                height: 350px;
+            }
         }
     </style>
 </head>
@@ -449,7 +526,7 @@
     </div>
     
     <div class="dashboard">
-        <div class="header">
+        <header class="header">
             <h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1>
             <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
             
@@ -457,10 +534,10 @@
                 <i class="fas fa-sync fa-spin"></i>
                 <span id="statusText">Verificando conexão...</span>
             </div>
-        </div>
+        </header>
 
         <div class="month-selector">
-            <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
+            <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês (para visão geral):</label>
             <select id="monthFilter" onchange="updateDashboard()">
             </select>
         </div>
@@ -483,71 +560,93 @@
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="panel">
-                <h2><i class="fas fa-trophy"></i> Ranking de Consultores (Processos)</h2>
-                <div id="consultantRanking">
-                    <div style="text-align: center; color: #6b7280; padding: 40px;">
-                        <i class="fas fa-spinner fa-spin fa-2x"></i>
-                        <p style="margin-top: 15px;">Carregando dados...</p>
-                    </div>
-                </div>
+        <!-- INÍCIO DO CARROSSEL -->
+        <div class="carousel-container">
+            <div class="carousel-nav-container">
+                <button class="carousel-nav" id="prev-slide" aria-label="Slide anterior"><i class="fas fa-chevron-left"></i></button>
+                <span id="carousel-page-indicator">1 / 2</span>
+                <button class="carousel-nav" id="next-slide" aria-label="Próximo slide"><i class="fas fa-chevron-right"></i></button>
             </div>
-
-            <div class="panel">
-                <h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%)</h2>
-                <div class="process-stats">
-                    <div class="process-card">
-                        <h4>Previdenciários</h4>
-                        <div class="process-number" id="previdenciariosCount">-</div>
-                        <div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div>
+            <div class="carousel-slides-wrapper">
+                <div class="carousel-slides">
+                    <!-- SLIDE 1: Visão Geral do Mês -->
+                    <div class="carousel-slide" id="slide-1">
+                        <div class="main-content">
+                            <div class="panel">
+                                <h2><i class="fas fa-trophy"></i> Ranking de Consultores (Processos)</h2>
+                                <div id="consultantRanking">
+                                    <div style="text-align: center; color: #6b7280; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                                        <p style="margin-top: 15px;">Carregando dados...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <h2><i class="fas fa-chart-pie"></i> Tipos de Processo (Margem de erro de 10%)</h2>
+                                <div class="process-stats">
+                                    <div class="process-card">
+                                        <h4>Previdenciários</h4>
+                                        <div class="process-number" id="previdenciariosCount">-</div>
+                                        <div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div>
+                                    </div>
+                                    <div class="process-card">
+                                        <h4>Seguro Terceiro</h4>
+                                        <div class="process-number" id="seguroTerceiroCount">-</div>
+                                        <div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div>
+                                    </div>
+                                    <div class="process-card">
+                                        <h4>Seguro de Vida</h4>
+                                        <div class="process-number" id="seguroVidaCount">-</div>
+                                        <div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div>
+                                    </div>
+                                    <div class="process-card">
+                                        <h4>Outros</h4>
+                                        <div class="process-number" id="outrosCount">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel recent-sales">
+                            <h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Cliente</th>
+                                        <th>Processo (Original da Planilha)</th>
+                                        <th>Consultor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentSalesTable">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">
+                                            <i class="fas fa-spinner fa-spin"></i> Carregando vendas...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="process-card">
-                        <h4>Seguro Terceiro</h4>
-                        <div class="process-number" id="seguroTerceiroCount">-</div>
-                        <div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div>
-                    </div>
-                    <div class="process-card">
-                        <h4>Seguro de Vida</h4>
-                        <div class="process-number" id="seguroVidaCount">-</div>
-                        <div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div>
-                    </div>
-                    <div class="process-card">
-                        <h4>Outros</h4>
-                        <div class="process-number" id="outrosCount">-</div>
+                    
+                    <!-- SLIDE 2: Gráfico de Processos por Dia -->
+                    <div class="carousel-slide" id="slide-2">
+                        <div class="panel" id="chart-container-panel">
+                             <h2><i class="fas fa-calendar-day"></i> Gráfico de Processos por Dia (desde Maio)</h2>
+                             <canvas id="dailyProcessChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="panel recent-sales">
-            <h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
-            <table class="sales-table">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Cliente</th>
-                        <th>Processo (Original da Planilha)</th>
-                        <th>Consultor</th>
-                    </tr>
-                </thead>
-                <tbody id="recentSalesTable">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">
-                            <i class="fas fa-spinner fa-spin"></i> Carregando vendas...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- FIM DO CARROSSEL -->
         
-        <div class="footer">
+        <footer class="footer">
             Dashboard de Vendas em Tempo Real • Atualizado em: <span id="lastUpdateTime">-</span>
-        </div>
+        </footer>
     </div>
 
     <script>
-        // Variáveis globais
+        // --- VARIÁVEIS GLOBAIS ---
         let salesData = []; 
         let lastUpdate = null;
         let autoUpdateInterval = null;
@@ -558,7 +657,7 @@
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709"; 
 
-        const DRA_RENATA_STRING = "DRA RENATA"; // Constante para o nome a ser ignorado
+        const DRA_RENATA_STRING = "DRA RENATA"; 
 
         let currentMonthCounts = {
             previdenciarios: 0,
@@ -579,9 +678,37 @@
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO']
             .map(type => type.toUpperCase().trim());
 
-        function addLog(message, type = 'info') {
-            console[type === 'error' ? 'error' : 'log'](`[${new Date().toLocaleTimeString('pt-BR')}] ${message}`);
+        // Variável para o gráfico
+        let dailyChartInstance = null;
+
+        // --- LÓGICA DO CARROSSEL ---
+        let currentSlide = 0;
+        const slides = document.querySelector('.carousel-slides');
+        const totalSlides = document.querySelectorAll('.carousel-slide').length;
+        const pageIndicator = document.getElementById('carousel-page-indicator');
+
+        function showSlide(index) {
+            if (index >= totalSlides) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = index;
+            }
+            const offset = -currentSlide * 100;
+            slides.style.transform = `translateX(${offset}%)`;
+            pageIndicator.textContent = `${currentSlide + 1} / ${totalSlides}`;
         }
+        
+        document.getElementById('next-slide').addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+
+        document.getElementById('prev-slide').addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+
+        // --- FUNÇÕES DE UTILIDADE E CONEXÃO ---
 
         function updateConnectionStatus(status, message) {
             const statusElement = document.getElementById('connectionStatus');
@@ -698,6 +825,8 @@
             return result.map(item => item.trim());
         }
 
+        // --- LÓGICA DO DASHBOARD ---
+
         function populateMonthFilter(dataToScan) {
             const monthSet = new Set();
             (dataToScan || []).forEach(sale => { 
@@ -738,62 +867,62 @@
             }
         }
         
-        const sampleSalesDataForTesting = [
-            { processo: 'VIDA,  AUXILIO-DOENÇA,  LOAS', cliente: 'Mario kopelkke', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 1 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego armando mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 2 },
-            { processo: 'VIDA,  AÇÃO DE ACIDENTE DE TRÂNSITO', cliente: 'Valber Cardoso dos Santos', data: '02/06/2025', consultor: 'Kristin', originalIndex: 3 }, 
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Abnorlan daglison Costa dias', data: '02/06/2025', consultor: 'Jackeline Lima da Silva', originalIndex: 4 },
-            { processo: 'AUXILIO-DOENÇA', cliente: 'Willian Andrade Silva', data: '02/06/2025', consultor: 'Debora', originalIndex: 5 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Cristiane Waltrick Zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 6 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Vinicius zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 7 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Marcos da Silva Rios', data: '02/06/2025', consultor: 'Yudi Alan', originalIndex: 8 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Silso baldo', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 9 },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Stanley Hartmann', data: '02/06/2025', consultor: 'Luiz do Seguro', originalIndex: 10 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Matheus Ferreira Silva', data: '02/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 11 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Charlonm maurino da rocha', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 12 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jose iuris Jesus santos', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 13 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sandra Esser', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 14 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Samuel magno do carmo', data: '03/06/2025', consultor: 'Jackeline Lima', originalIndex: 15 },
-            { processo: 'VIDA, TERCEIRO DANO CORPORAL', cliente: 'Ricardo Fischer', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 16 }, 
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Vanderleia Correa', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 17 },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Renan Maciel de souza', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 18 }, 
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Sidney Ghidolin de Jesus', data: '03/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 19 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rosemeri do Amaral Ramos', data: '03/06/2025', consultor: 'Yudi Alan', originalIndex: 20 },
-            { processo: 'VIDA', cliente: 'Carlos Kaique Ezequiel Santos Fonseca', data: '03/06/2025', consultor: 'LUCAS', originalIndex: 21 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'Volnei zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 22 },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Henri Roepke', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 23 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Matheus Paim da Costa', data: '03/06/2025', consultor: 'Kristin', originalIndex: 24 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Joao victor zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 25 },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'André Ricardo rodrigues', data: '03/06/2025', consultor: 'Thiago Pereira gomes', originalIndex: 26 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Bruno João Neto', data: '03/06/2025', consultor: 'Gustavo', originalIndex: 27 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'JONATAN FELIPE PEREIRA DE SOUZA', data: '03/06/2025', consultor: 'CRISTIANO', originalIndex: 28 },
-            { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Antonio Dias de Sousa Neto', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 29 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Renato luiz Filagrana', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 30 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Rafael Anacleto', data: '03/06/2025', consultor: 'Edilene', originalIndex: 31 },
-            { processo: 'VIDA', cliente: 'Cristian Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 32 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Cristiano Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 33 },
-            { processo: 'AUXILIO-ACIDENTE,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Marcelo Francisco', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 34 }, 
-            { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Vanessa kleien', data: '04/06/2025', consultor: 'Edilene', originalIndex: 35 },
-            { processo: 'PENSÃO POR MORTE', cliente: 'Maria Tereza de Souza', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 36 },
-            { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Fábio dos Santos', data: '04/06/2025', consultor: 'Olska', originalIndex: 37 },
-            { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Rafael Clóvis pastorello', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 38 }, 
-            { processo: 'APOSENTADORIA POR INVALIDEZ,  LOAS', cliente: 'Luciano de Jesus Pereira', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 39 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Jéssica Caroline Torres da silva', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 40 },
-            { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Pereira Farias', data: '04/06/2025', consultor: 'Kristin', originalIndex: 41 },
-            { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 42 },
-            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 43 }, 
-            { processo: 'TERCEIRO DANO CORPORAL, VIDA', cliente: 'Outro Cliente ST com Vida', data: '01/06/2025', consultor: 'Consultor ST2', originalIndex: 44 },
-            { processo: 'DPVAT', cliente: 'Cliente DPVAT', data: '05/06/2025', consultor: 'Consultor DPVAT', originalIndex: 45 },
-            { processo: 'VIDA', cliente: 'Cliente Maio SV', data: '15/05/2025', consultor: 'Consultor Maio', originalIndex: 46 },
-            { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2', originalIndex: 47 },
-            { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Maio ST', data: '12/05/2025', consultor: 'Consultor Maio ST', originalIndex: 48 },
-            { processo: 'Dra Renata', cliente: 'Cliente Dra Renata Teste', data: '01/06/2025', consultor: 'Consultor Teste', originalIndex: 49 },
-            { processo: 'VIDA, Dra Renata', cliente: 'Cliente Vida e Dra Renata', data: '02/06/2025', consultor: 'Consultor Teste 2', originalIndex: 50 },
-            { processo: 'Dra Renata, AUXILIO-ACIDENTE, VIDA', cliente: 'Cliente Misto Dra Renata', data: '03/06/2025', consultor: 'Consultor Teste 3', originalIndex: 51 }
-        ];
-
         function loadSampleData() {
-            salesData = JSON.parse(JSON.stringify(sampleSalesDataForTesting)); 
+            // A sua função de dados de exemplo permanece a mesma
+            salesData = [
+                { processo: 'VIDA,  AUXILIO-DOENÇA,  LOAS', cliente: 'Mario kopelkke', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 1 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego armando mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 2 },
+                { processo: 'VIDA,  AÇÃO DE ACIDENTE DE TRÂNSITO', cliente: 'Valber Cardoso dos Santos', data: '02/06/2025', consultor: 'Kristin', originalIndex: 3 }, 
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Abnorlan daglison Costa dias', data: '02/06/2025', consultor: 'Jackeline Lima da Silva', originalIndex: 4 },
+                { processo: 'AUXILIO-DOENÇA', cliente: 'Willian Andrade Silva', data: '02/06/2025', consultor: 'Debora', originalIndex: 5 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Cristiane Waltrick Zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 6 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Vinicius zenfe Pitrak', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 7 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Marcos da Silva Rios', data: '02/06/2025', consultor: 'Yudi Alan', originalIndex: 8 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Silso baldo', data: '02/06/2025', consultor: 'Augusto Teply', originalIndex: 9 },
+                { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Stanley Hartmann', data: '02/06/2025', consultor: 'Luiz do Seguro', originalIndex: 10 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Matheus Ferreira Silva', data: '02/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 11 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Charlonm maurino da rocha', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 12 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Jose iuris Jesus santos', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 13 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Sandra Esser', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 14 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Samuel magno do carmo', data: '03/06/2025', consultor: 'Jackeline Lima', originalIndex: 15 },
+                { processo: 'VIDA, TERCEIRO DANO CORPORAL', cliente: 'Ricardo Fischer', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 16 }, 
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Vanderleia Correa', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 17 },
+                { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Renan Maciel de souza', data: '03/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 18 }, 
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Sidney Ghidolin de Jesus', data: '03/06/2025', consultor: 'Carlos Antonio Rosa', originalIndex: 19 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Rosemeri do Amaral Ramos', data: '03/06/2025', consultor: 'Yudi Alan', originalIndex: 20 },
+                { processo: 'VIDA', cliente: 'Carlos Kaique Ezequiel Santos Fonseca', data: '03/06/2025', consultor: 'LUCAS', originalIndex: 21 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'Volnei zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 22 },
+                { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Henri Roepke', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 23 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Matheus Paim da Costa', data: '03/06/2025', consultor: 'Kristin', originalIndex: 24 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Joao victor zepherino', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 25 },
+                { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA', cliente: 'André Ricardo rodrigues', data: '03/06/2025', consultor: 'Thiago Pereira gomes', originalIndex: 26 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Bruno João Neto', data: '03/06/2025', consultor: 'Gustavo', originalIndex: 27 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'JONATAN FELIPE PEREIRA DE SOUZA', data: '03/06/2025', consultor: 'CRISTIANO', originalIndex: 28 },
+                { processo: 'VIDA,   AUXILIO-ACIDENTE', cliente: 'Antonio Dias de Sousa Neto', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 29 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Renato luiz Filagrana', data: '03/06/2025', consultor: 'Flavio Almiron', originalIndex: 30 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Rafael Anacleto', data: '03/06/2025', consultor: 'Edilene', originalIndex: 31 },
+                { processo: 'VIDA', cliente: 'Cristian Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 32 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Cristiano Hornburg', data: '03/06/2025', consultor: 'Luiz do Seguro', originalIndex: 33 },
+                { processo: 'AUXILIO-ACIDENTE,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Marcelo Francisco', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 34 }, 
+                { processo: 'APOSENTADORIA POR INVALIDEZ', cliente: 'Vanessa kleien', data: '04/06/2025', consultor: 'Edilene', originalIndex: 35 },
+                { processo: 'PENSÃO POR MORTE', cliente: 'Maria Tereza de Souza', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 36 },
+                { processo: 'VIDA,  AUXILIO-ACIDENTE', cliente: 'Fábio dos Santos', data: '04/06/2025', consultor: 'Olska', originalIndex: 37 },
+                { processo: 'AUXILIO-ACIDENTE,  AUXILIO-DOENÇA,  OUTRO(ESPECIFICAR NA OBSERVAÇAO)', cliente: 'Rafael Clóvis pastorello', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 38 }, 
+                { processo: 'APOSENTADORIA POR INVALIDEZ,  LOAS', cliente: 'Luciano de Jesus Pereira', data: '04/06/2025', consultor: 'Augusto Teply', originalIndex: 39 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Jéssica Caroline Torres da silva', data: '04/06/2025', consultor: 'Thiago Pereira Gomes', originalIndex: 40 },
+                { processo: 'AUXILIO-ACIDENTE', cliente: 'Leonardo Pereira Farias', data: '04/06/2025', consultor: 'Kristin', originalIndex: 41 },
+                { processo: 'TERCEIRO DANO CORPORAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 42 },
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Teste ST', data: '01/06/2025', consultor: 'Consultor ST', originalIndex: 43 }, 
+                { processo: 'TERCEIRO DANO CORPORAL, VIDA', cliente: 'Outro Cliente ST com Vida', data: '01/06/2025', consultor: 'Consultor ST2', originalIndex: 44 },
+                { processo: 'DPVAT', cliente: 'Cliente DPVAT', data: '05/06/2025', consultor: 'Consultor DPVAT', originalIndex: 45 },
+                { processo: 'VIDA', cliente: 'Cliente Maio SV', data: '15/05/2025', consultor: 'Consultor Maio', originalIndex: 46 },
+                { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2', originalIndex: 47 },
+                { processo: 'TERCEIRO DANO MATERIAL', cliente: 'Cliente Maio ST', data: '12/05/2025', consultor: 'Consultor Maio ST', originalIndex: 48 },
+                { processo: 'Dra Renata', cliente: 'Cliente Dra Renata Teste', data: '01/06/2025', consultor: 'Consultor Teste', originalIndex: 49 },
+                { processo: 'VIDA, Dra Renata', cliente: 'Cliente Vida e Dra Renata', data: '02/06/2025', consultor: 'Consultor Teste 2', originalIndex: 50 },
+                { processo: 'Dra Renata, AUXILIO-ACIDENTE, VIDA', cliente: 'Cliente Misto Dra Renata', data: '03/06/2025', consultor: 'Consultor Teste 3', originalIndex: 51 }
+            ];
+            
             populateMonthFilter(salesData); 
             
             const monthSelect = document.getElementById('monthFilter');
@@ -820,6 +949,14 @@
                 return saleMonth === filterMonth && saleYear === filterYear;
             });
         }
+        
+        function countValidProcessesInRow(sale) {
+             const processosString = (sale.processo || '').toUpperCase();
+             return processosString.split(',')
+                    .map(p => p.trim())
+                    .filter(p => p && p !== DRA_RENATA_STRING)
+                    .length;
+        }
 
         function updateDashboard() {
             const monthSelect = document.getElementById('monthFilter');
@@ -828,6 +965,7 @@
                     populateMonthFilter(salesData); 
                 }
                 if (monthSelect.options.length === 0) {
+                    // Limpa a UI se não houver dados
                     document.getElementById('totalMonth').textContent = '-';
                     document.getElementById('monthLabel').textContent = 'Nenhum dado';
                     document.getElementById('topConsultant').textContent = '-';
@@ -840,6 +978,7 @@
                     });
                     document.getElementById('outrosCount').textContent = '-';
                     document.getElementById('recentSalesTable').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">Nenhum dado para exibir.</td></tr>`;
+                    updateDailyProcessChart(); // Tenta renderizar o gráfico mesmo sem dados do mês
                     return;
                 }
             }
@@ -847,9 +986,10 @@
             const monthSales = getMonthSales(); 
             
             updateProcessStats(monthSales); 
-            updateConsultantRanking(monthSales); // Esta função agora também atualiza o "Melhor Consultor"
+            updateConsultantRanking(monthSales); 
             updateMainStats(monthSales);  
             updateMonthSales(monthSales); 
+            updateDailyProcessChart(); // Atualiza o gráfico com todos os dados
             
             const updateIndicator = document.getElementById('updateIndicator');
             if(updateIndicator) {
@@ -862,6 +1002,8 @@
                 }, 2000);
             }
         }
+        
+        // --- FUNÇÕES DE ATUALIZAÇÃO DA UI ---
 
         function updateMainStats(monthSalesData) { 
             const selectedMonthYear = document.getElementById('monthFilter').value;
@@ -912,77 +1054,53 @@
             
             document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1);
         }
-
-        // ===================================================================================
-        // FUNÇÃO CORRIGIDA - INÍCIO
-        // ===================================================================================
-        /**
-         * Normaliza o nome de um consultor para criar uma chave de agrupamento consistente.
-         * Ex: "Thiago Pereira Gomes" -> "thiago"
-         * Ex: "Flávio" -> "flavio"
-         * @param {string} fullName - O nome completo do consultor.
-         * @returns {string} - O primeiro nome, em minúsculas e sem acentos.
-         */
+        
         function getNormalizedConsultantKey(fullName) {
             if (!fullName || typeof fullName !== 'string') return 'desconhecido';
             return fullName
                 .trim()
-                .normalize("NFD") // Separa acentos dos caracteres (ex: 'á' -> 'a' + ´)
-                .replace(/[\u0300-\u036f]/g, "") // Remove os acentos
-                .toLowerCase() // Converte para minúsculas
-                .split(' ')[0]; // Pega apenas o primeiro nome
+                .normalize("NFD") 
+                .replace(/[\u0300-\u036f]/g, "") 
+                .toLowerCase() 
+                .split(' ')[0]; 
         }
 
         function updateConsultantRanking(monthSales) {
-            const consultantStats = {}; // Objeto para agrupar processos por consultor normalizado
+            const consultantStats = {}; 
 
             monthSales.forEach(sale => {
                 const rawConsultantName = sale.consultor;
                 if (!rawConsultantName || !rawConsultantName.trim()) {
-                    return; // Pula a linha se o nome do consultor estiver vazio
+                    return; 
                 }
 
-                // Cria uma chave única e consistente para o consultor (ex: "thiago", "flavio")
                 const normalizedKey = getNormalizedConsultantKey(rawConsultantName);
                 
-                // Se for a primeira vez que vemos este consultor, inicializa seus dados
                 if (!consultantStats[normalizedKey]) {
-                    // Pega o primeiro nome para exibição e capitaliza a primeira letra para ficar bonito
                     const displayName = rawConsultantName.trim().split(' ')[0];
                     const capitalizedDisplayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
                     
                     consultantStats[normalizedKey] = {
-                        name: capitalizedDisplayName, // Nome que será exibido no ranking
-                        sales: 0 // Contagem inicial de processos
+                        name: capitalizedDisplayName,
+                        sales: 0 
                     };
                 }
-
-                // Conta quantos processos válidos existem nesta linha da planilha
-                const processosString = (sale.processo || '').toUpperCase();
-                const numProcessos = processosString.split(',')
-                    .map(p => p.trim())
-                    .filter(p => p && p !== DRA_RENATA_STRING) // Filtra strings vazias e "DRA RENATA"
-                    .length;
                 
-                // Adiciona o número de processos ao total do consultor
-                consultantStats[normalizedKey].sales += numProcessos;
+                consultantStats[normalizedKey].sales += countValidProcessesInRow(sale);
             });
             
-            // Converte o objeto de estatísticas em um array para poder ordenar
             const ranking = Object.values(consultantStats)
-                .sort((a, b) => b.sales - a.sales); // Ordena do maior para o menor
+                .sort((a, b) => b.sales - a.sales);
             
-            // Atualiza o card "Melhor Consultor"
             let topConsultantName = '-';
-            if (ranking.length > 0) {
-                topConsultantName = ranking[0].name; // Pega o nome do primeiro do ranking
+            if (ranking.length > 0 && ranking[0].sales > 0) {
+                topConsultantName = ranking[0].name;
             }
             document.getElementById('topConsultant').textContent = topConsultantName;
 
-            // Gera o HTML para a lista do ranking (Top 10)
             let html = '';
-            if (ranking.length > 0) {
-                ranking.slice(0, 10).forEach((consultant, index) => { // Mostra até os 10 primeiros
+            if (ranking.length > 0 && ranking[0].sales > 0) {
+                ranking.slice(0, 10).forEach((consultant, index) => {
                     html += `
                     <div class="ranking-item">
                         <div class="consultant-info">
@@ -997,10 +1115,6 @@
             }
             document.getElementById('consultantRanking').innerHTML = html;
         }
-        // ===================================================================================
-        // FUNÇÃO CORRIGIDA - FIM
-        // ===================================================================================
-
 
         function updateProcessStats(monthSales) {
             const metas = {
@@ -1022,15 +1136,10 @@
                                           .filter(p => p); 
 
                 listaProcessos.forEach(proc => {
-                    // IGNORAR "DRA RENATA" COMPLETAMENTE para contagem de tipos.
-                    // Se "DRA RENATA" estiver presente na lista de processos da linha,
-                    // ela é pulada, e os outros processos válidos na mesma linha
-                    // são contados e categorizados normalmente.
                     if (proc === DRA_RENATA_STRING) {
-                        return; // Pula para o próximo processo na lista (não conta este item "DRA RENATA")
+                        return; 
                     }
 
-                    // A partir daqui, 'proc' NÃO é "DRA RENATA"
                     let classificadoPrincipal = false;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) {
                         prevCount++;
@@ -1081,7 +1190,6 @@
             document.getElementById('outrosCount').textContent = outrosIndividuais;
         }
 
-
         function updateMonthSales(monthSales) {
             const sortedSales = [...monthSales].sort((a, b) => {
                 if (!a.data || !b.data) return 0;
@@ -1131,14 +1239,129 @@
                 document.getElementById('lastUpdateTime').textContent = timeString;
             }
         }
+        
+        // --- FUNÇÕES DO NOVO GRÁFICO ---
 
+        function updateDailyProcessChart() {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            // Mês 5 é Maio (índice 4 em JS Date, mas 5 no seu pedido)
+            const startDate = new Date(currentYear, 4, 1); 
+
+            // Filtrar dados a partir da data de início
+            const filteredData = salesData.filter(sale => {
+                if (!sale.data) return false;
+                const parts = sale.data.split('/');
+                if (parts.length !== 3) return false;
+                const saleDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                return !isNaN(saleDate.getTime()) && saleDate >= startDate && saleDate <= today;
+            });
+
+            // Agrupar processos por dia
+            const dailyCounts = new Map();
+            filteredData.forEach(sale => {
+                const dateKey = sale.data; // "dd/mm/yyyy"
+                const processCount = countValidProcessesInRow(sale);
+                if (processCount > 0) {
+                    dailyCounts.set(dateKey, (dailyCounts.get(dateKey) || 0) + processCount);
+                }
+            });
+            
+            // Gerar todas as datas do intervalo para o eixo X
+            const labels = [];
+            const dataPoints = [];
+            let currentDate = new Date(startDate);
+            
+            while(currentDate <= today) {
+                const dateString = currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                labels.push(dateString);
+
+                const fullDateKey = currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                dataPoints.push(dailyCounts.get(fullDateKey) || 0);
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Renderizar o gráfico
+            const ctx = document.getElementById('dailyProcessChart').getContext('2d');
+            
+            if (dailyChartInstance) {
+                dailyChartInstance.destroy(); // Destruir gráfico antigo para evitar sobreposição
+            }
+            
+            dailyChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Processos por Dia',
+                        data: dataPoints,
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.3, // Curva suave
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: '#f3f4f6'
+                            }
+                        },
+                        x: {
+                           ticks: {
+                                color: '#6b7280',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // O título do painel já é a legenda
+                        },
+                        tooltip: {
+                            backgroundColor: '#6b46c1',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Processos: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
             const updateIndicator = document.getElementById('updateIndicator');
             if (updateIndicator) updateIndicator.style.display = 'flex';
             
             fetchSheetData(); 
-            // loadSampleData(); 
+            // loadSampleData(); // Descomente para testes offline
             
+            showSlide(currentSlide); // Inicializa o carrossel
+
             autoUpdateInterval = setInterval(() => {
                 if (isAutoUpdateActive) { 
                     if (updateIndicator) {
