@@ -359,6 +359,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>🗣️ Pendências cobradas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('pendenciasCobradas', -1)">-</button>
+                            <input type="number" id="pendenciasCobradas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('pendenciasCobradas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>💾 Documentos salvos</label>
                         <div class="number-input">
                             <button class="btn-counter minus" onclick="changeValue('documentosSalvos', -1)">-</button>
@@ -367,11 +375,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>👥 Clientes atendidos</label>
+                        <label>📥 Recebimento de documentos</label>
                         <div class="number-input">
-                            <button class="btn-counter minus" onclick="changeValue('clientesAtendidos', -1)">-</button>
-                            <input type="number" id="clientesAtendidos" min="0" value="0">
-                            <button class="btn-counter" onclick="changeValue('clientesAtendidos', 1)">+</button>
+                            <button class="btn-counter minus" onclick="changeValue('documentosRecebidos', -1)">-</button>
+                            <input type="number" id="documentosRecebidos" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('documentosRecebidos', 1)">+</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -380,6 +388,38 @@
                             <button class="btn-counter minus" onclick="changeValue('emailsRespondidos', -1)">-</button>
                             <input type="number" id="emailsRespondidos" min="0" value="0">
                             <button class="btn-counter" onclick="changeValue('emailsRespondidos', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📤 E-mails enviados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('emailsEnviados', -1)">-</button>
+                            <input type="number" id="emailsEnviados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('emailsEnviados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📁 Pastas criadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('pastasCriadas', -1)">-</button>
+                            <input type="number" id="pastasCriadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('pastasCriadas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🧾 Recibos lançados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('recibosLancados', -1)">-</button>
+                            <input type="number" id="recibosLancados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('recibosLancados', 1)">+</button>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>⚖️ Processos cadastrados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('processosCadastrados', -1)">-</button>
+                            <input type="number" id="processosCadastrados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('processosCadastrados', 1)">+</button>
                         </div>
                     </div>
                 </div>
@@ -611,7 +651,7 @@
 
         function resetSection(section) {
             const sections = {
-                'pendencias': ['clientesWhatsapp', 'pendenciasResolvidas', 'pendenciasSolicitadas', 'documentosSalvos', 'clientesAtendidos', 'emailsRespondidos'],
+                'pendencias': ['clientesWhatsapp', 'pendenciasResolvidas', 'pendenciasSolicitadas', 'documentosSalvos', 'emailsRespondidos', 'emailsEnviados', 'documentosRecebidos', 'pastasCriadas', 'recibosLancados', 'processosCadastrados', 'pendenciasCobradas'],
                 'rtm': ['periciasAgendadas', 'periciasRealizadas', 'laudosSalvos', 'laudosCorrigidos', 'clientesRTM', 'taxasCobradas'],
                 'prontuario': ['prontuariosSolicitados', 'prontuariosRecebidos', 'prontuariosSalvos', 'examesRaioX', 'hospitaisContatados', 'clientesOrientados'],
                 'seguro': ['pagamentosRealizados', 'processosDespachados', 'acompanhamentosExternos', 'juntasSolicitadas', 'revisoesProtocoladas', 'aprovacoesAcompanhadas']
@@ -629,8 +669,13 @@
                     'pendenciasResolvidas': 8,
                     'pendenciasSolicitadas': 12,
                     'documentosSalvos': 25,
-                    'clientesAtendidos': 18,
-                    'emailsRespondidos': 6
+                    'emailsRespondidos': 6,
+                    'emailsEnviados': 10,
+                    'documentosRecebidos': 20,
+                    'pastasCriadas': 5,
+                    'recibosLancados': 7,
+                    'processosCadastrados': 3,
+                    'pendenciasCobradas': 9
                 },
                 'rtm': {
                     'periciasAgendadas': 6,
@@ -692,8 +737,13 @@
                 pendenciasResolvidas: parseInt(document.getElementById('pendenciasResolvidas').value) || 0,
                 pendenciasSolicitadas: parseInt(document.getElementById('pendenciasSolicitadas').value) || 0,
                 documentosSalvos: parseInt(document.getElementById('documentosSalvos').value) || 0,
-                clientesAtendidos: parseInt(document.getElementById('clientesAtendidos').value) || 0,
-                emailsRespondidos: parseInt(document.getElementById('emailsRespondidos').value) || 0
+                emailsRespondidos: parseInt(document.getElementById('emailsRespondidos').value) || 0,
+                emailsEnviados: parseInt(document.getElementById('emailsEnviados').value) || 0,
+                documentosRecebidos: parseInt(document.getElementById('documentosRecebidos').value) || 0,
+                pastasCriadas: parseInt(document.getElementById('pastasCriadas').value) || 0,
+                recibosLancados: parseInt(document.getElementById('recibosLancados').value) || 0,
+                processosCadastrados: parseInt(document.getElementById('processosCadastrados').value) || 0,
+                pendenciasCobradas: parseInt(document.getElementById('pendenciasCobradas').value) || 0
             };
             
             let feedback = '';
@@ -701,9 +751,14 @@
             if (data.clientesWhatsapp > 0) feedback += `Respondi ${data.clientesWhatsapp} clientes no WhatsApp\n`;
             if (data.pendenciasResolvidas > 0) feedback += `Resolvi ${data.pendenciasResolvidas} pendências\n`;
             if (data.pendenciasSolicitadas > 0) feedback += `Solicitei ${data.pendenciasSolicitadas} pendências\n`;
+            if (data.pendenciasCobradas > 0) feedback += `Cobrei ${data.pendenciasCobradas} pendências\n`;
             if (data.documentosSalvos > 0) feedback += `Salvei ${data.documentosSalvos} documentos\n`;
-            if (data.clientesAtendidos > 0) feedback += `Atendi ${data.clientesAtendidos} clientes\n`;
+            if (data.documentosRecebidos > 0) feedback += `Recebi ${data.documentosRecebidos} documentos\n`;
             if (data.emailsRespondidos > 0) feedback += `Respondi ${data.emailsRespondidos} e-mails\n`;
+            if (data.emailsEnviados > 0) feedback += `Enviei ${data.emailsEnviados} e-mails\n`;
+            if (data.pastasCriadas > 0) feedback += `Criei ${data.pastasCriadas} pastas\n`;
+            if (data.recibosLancados > 0) feedback += `Lancei ${data.recibosLancados} recibos\n`;
+            if (data.processosCadastrados > 0) feedback += `Cadastrei ${data.processosCadastrados} processos\n`;
             
             return feedback || 'Nenhuma atividade registrada hoje.';
         }
