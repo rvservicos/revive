@@ -565,7 +565,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>🔬 Exames de Raio-X</label>
+                        <label>🔬 Exames de Raio-X Solicitados</label>
                         <div class="number-input">
                             <button class="btn-counter minus" onclick="changeValue('examesRaioX', -1)">-</button>
                             <input type="number" id="examesRaioX" min="0" value="0">
@@ -581,7 +581,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>📞 Clientes orientados</label>
+                        <label>📞 Clientes respondidos</label>
                         <div class="number-input">
                             <button class="btn-counter minus" onclick="changeValue('clientesOrientados', -1)">-</button>
                             <input type="number" id="clientesOrientados" min="0" value="0">
@@ -831,9 +831,9 @@
             if (data.prontuariosSolicitados > 0) feedback += `Solicitei ${data.prontuariosSolicitados} prontuários\n`;
             if (data.prontuariosRecebidos > 0) feedback += `Recebi ${data.prontuariosRecebidos} prontuários\n`;
             if (data.prontuariosSalvos > 0) feedback += `Salvei ${data.prontuariosSalvos} prontuários\n`;
-            if (data.examesRaioX > 0) feedback += `Processei ${data.examesRaioX} exames de raio-x\n`;
+            if (data.examesRaioX > 0) feedback += `Solicitei ${data.examesRaioX} exames de raio-x\n`;
             if (data.hospitaisContatados > 0) feedback += `Entrei em contato com ${data.hospitaisContatados} hospitais\n`;
-            if (data.clientesOrientados > 0) feedback += `Orientei ${data.clientesOrientados} clientes\n`;
+            if (data.clientesOrientados > 0) feedback += `Respondi ${data.clientesOrientados} clientes\n`;
             return feedback.trim() || 'Nenhuma atividade registrada hoje.';
         }
 
