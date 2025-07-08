@@ -31,10 +31,10 @@
         .carousel-nav { background: white; border: 1px solid #d1d5db; color: #6b46c1; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.3s ease; }
         .carousel-nav:hover { background: #8b5cf6; color: white; border-color: #8b5cf6; transform: scale(1.1); }
         #carousel-page-indicator { font-weight: 600; color: #6b46c1; font-size: 1rem; min-width: 80px; text-align: center; }
-        .carousel-slides-wrapper { overflow: hidden; border-radius: 20px; }
+        .carousel-slides-wrapper { overflow: hidden; }
         .carousel-slides { display: flex; transition: transform 0.7s ease-in-out; }
         .carousel-slide { flex: 0 0 100%; width: 100%; }
-        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .main-content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .panel { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); border: 1px solid rgba(147, 51, 234, 0.1); position: relative; overflow: hidden; display: flex; flex-direction: column; }
         #chart-container-panel, #mission-panel, #schedule-panel { min-height: 500px; }
         .panel::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
@@ -63,8 +63,8 @@
         .process-card h4 { color: #6b46c1; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
         .process-number { font-size: 2rem; font-weight: 700; color: #8b5cf6; }
         .process-meta { font-size: 0.8rem; color: #6b7280; margin-top: 5px; }
-        .recent-sales { margin-top: 30px; }
-        .sales-table { width: 100%; border-collapse: collapse; margin-top: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .recent-sales-panel { margin-top: 30px; }
+        .sales-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 15px; text-align: left; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
         .sales-table th:first-child { border-radius: 10px 0 0 0; }
         .sales-table th:last-child { border-radius: 0 10px 0 0; }
@@ -79,7 +79,7 @@
         .month-selector { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 15px; }
         .month-selector label { font-weight: 600; color: #6b46c1; }
         .month-selector select { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #374151; font-size: 0.9rem; }
-        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } #chart-container-panel, #mission-panel, #schedule-panel { min-height: 450px; } }
+        @media (max-width: 1024px) { .main-content-grid { grid-template-columns: 1fr; } #chart-container-panel, #mission-panel, #schedule-panel { min-height: 450px; } }
         @media (max-width: 768px) { .header h1 { font-size: 2rem; } .stats-grid { grid-template-columns: 1fr; } .update-indicator { top: 10px; right: 10px; left: 10px; text-align: center; justify-content: center; } .month-selector { flex-direction: column; align-items: flex-start; } #chart-container-panel, #mission-panel, #schedule-panel { min-height: 400px; } }
     </style>
 </head>
@@ -104,7 +104,7 @@
             <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária (Processos)</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
         </div>
 
-        <!-- INÍCIO DO CARROSSEL AUTOMÁTICO -->
+        <!-- CARROSSEL DE PÁGINA INTEIRA -->
         <div class="carousel-container">
             <div class="carousel-nav-container">
                 <button class="carousel-nav" id="prev-slide" aria-label="Slide anterior"><i class="fas fa-chevron-left"></i></button>
@@ -113,9 +113,9 @@
             </div>
             <div class="carousel-slides-wrapper">
                 <div class="carousel-slides">
-                    <!-- SLIDE 1: Visão Geral do Mês -->
+                    <!-- SLIDE 1: Visão Geral Completa -->
                     <div class="carousel-slide" id="slide-1">
-                        <div class="main-content">
+                        <div class="main-content-grid">
                             <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
                             <div class="panel">
                                 <h2><i class="fas fa-chart-pie"></i> Tipos de Processo</h2>
@@ -127,14 +127,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="panel recent-sales-panel">
+                            <h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
+                            <table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table>
+                        </div>
                     </div>
                     
-                    <!-- SLIDE 2: Gráfico de Processos por Dia -->
+                    <!-- SLIDE 2: Gráfico de Processos -->
                     <div class="carousel-slide" id="slide-2">
                         <div class="panel" id="chart-container-panel"><h2><i class="fas fa-chart-line"></i> Processos por Período (desde Maio)</h2><canvas id="dailyProcessChart"></canvas></div>
                     </div>
                     
-                    <!-- SLIDE 3: Cronograma de Eventos -->
+                    <!-- SLIDE 3: Cronograma -->
                     <div class="carousel-slide" id="slide-3">
                         <div class="panel" id="schedule-panel">
                             <h2><i class="fas fa-calendar-alt"></i> Cronograma de Eventos</h2>
@@ -148,7 +152,7 @@
                         </div>
                     </div>
 
-                    <!-- SLIDE 4: Missão, Visão e Valores -->
+                    <!-- SLIDE 4: Cultura -->
                     <div class="carousel-slide" id="slide-4">
                         <div class="panel" id="mission-panel">
                             <h2><i class="fas fa-flag-checkered"></i> Nossa Cultura</h2>
@@ -162,72 +166,110 @@
                 </div>
             </div>
         </div>
-        <!-- FIM DO CARROSSEL -->
-        
-        <div class="panel recent-sales">
-            <h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
-            <table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo (Original da Planilha)</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table>
-        </div>
         
         <footer class="footer">Dashboard de Vendas em Tempo Real • Atualizado em: <span id="lastUpdateTime">-</span></footer>
     </div>
 
     <script>
         // --- VARIÁVEIS GLOBAIS ---
-        let salesData=[],lastUpdate=null,autoUpdateInterval=null,connectionAttempts=0,dailyChartInstance=null;
-        const isAutoUpdateActive=!0,maxRetries=3,FIXED_SHEET_ID="1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms",FIXED_SHEET_GID="1536647709",DRA_RENATA_STRING="DRA RENATA";
-        let currentMonthCounts={previdenciarios:0,seguroTerceiro:0,seguroVida:0,outros:0};
-        const PREVIDENCIARIO_TYPES=["CONCESSÃO MATERNIDADE","AUXILIO-ACIDENTE","APOSENTADORIA POR TEMPO DE SERVIÇO","LOAS","AUXILIO-DOENÇA","APOSENTADORIA POR IDADE","APOSENTADORIA POR INVALIDEZ","PENSÃO POR MORTE"].map(e=>e.toUpperCase().trim());
-        const SEGURO_TERCEIRO_TYPES=["TERCEIRO DANO CORPORAL","TERCEIRO DANO MATERIAL"].map(e=>e.toUpperCase().trim()),SEGURO_VIDA_TYPES=["VIDA","VIDA APLICATIVO"].map(e=>e.toUpperCase().trim());
+        let salesData = [], lastUpdate = null, autoUpdateInterval = null, connectionAttempts = 0, dailyChartInstance = null;
+        const isAutoUpdateActive = true, maxRetries = 3, FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms", FIXED_SHEET_GID = "1536647709", DRA_RENATA_STRING = "DRA RENATA";
+        let currentMonthCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
+        const PREVIDENCIARIO_TYPES = ["CONCESSÃO MATERNIDADE", "AUXILIO-ACIDENTE", "APOSENTADORIA POR TEMPO DE SERVIÇO", "LOAS", "AUXILIO-DOENÇA", "APOSENTADORIA POR IDADE", "APOSENTADORIA POR INVALIDEZ", "PENSÃO POR MORTE"].map(e => e.toUpperCase().trim());
+        const SEGURO_TERCEIRO_TYPES = ["TERCEIRO DANO CORPORAL", "TERCEIRO DANO MATERIAL"].map(e => e.toUpperCase().trim()), SEGURO_VIDA_TYPES = ["VIDA", "VIDA APLICATIVO"].map(e => e.toUpperCase().trim());
 
         // --- LÓGICA DO CARROSSEL AUTOMÁTICO ---
-        let currentSlide=0,carouselInterval=null;
-        const slides=document.querySelector(".carousel-slides"),totalSlides=document.querySelectorAll(".carousel-slide").length,pageIndicator=document.getElementById("carousel-page-indicator"),slideDuration=1e4;
-        function showSlide(e){currentSlide=(e+totalSlides)%totalSlides;const t=-currentSlide*100;slides.style.transform=`translateX(${t}%)`,pageIndicator.textContent=`${currentSlide+1} / ${totalSlides}`}
-        function startCarouselTimer(){clearInterval(carouselInterval),carouselInterval=setInterval(()=>{showSlide(currentSlide+1)},slideDuration)}
-        document.getElementById("next-slide").addEventListener("click",()=>{showSlide(currentSlide+1),startCarouselTimer()}),document.getElementById("prev-slide").addEventListener("click",()=>{showSlide(currentSlide-1),startCarouselTimer()});
+        let currentSlide = 0, carouselInterval = null;
+        const slides = document.querySelector(".carousel-slides"), totalSlides = document.querySelectorAll(".carousel-slide").length, pageIndicator = document.getElementById("carousel-page-indicator"), slideDuration = 10000;
+        function showSlide(e) { currentSlide = (e + totalSlides) % totalSlides; const t = -currentSlide * 100; slides.style.transform = `translateX(${t}%)`, pageIndicator.textContent = `${currentSlide + 1} / ${totalSlides}` }
+        function startCarouselTimer() { clearInterval(carouselInterval), carouselInterval = setInterval(() => { showSlide(currentSlide + 1) }, slideDuration) }
+        document.getElementById("next-slide").addEventListener("click", () => { showSlide(currentSlide + 1), startCarouselTimer() }), document.getElementById("prev-slide").addEventListener("click", () => { showSlide(currentSlide - 1), startCarouselTimer() });
 
-        // --- FUNÇÕES DE CONEXÃO E PROCESSAMENTO DE DADOS (Minimizadas) ---
-        function updateConnectionStatus(e,t){const s=document.getElementById("connectionStatus");s&&(s.className="connection-status",s.classList.add(`status-${e}`),s.innerHTML=`<i class="${{connected:"fas fa-check-circle",error:"fas fa-exclamation-circle",loading:"fas fa-sync fa-spin"}[e]}"></i> <span id="statusText">${t}</span>`)}async function fetchViaCsvDirect(){const e=`https://docs.google.com/spreadsheets/d/1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms/export?format=csv&gid=1536647709`,t=await fetch(e,{method:"GET",mode:"cors"});if(!t.ok)throw new Error(`HTTP ${t.status}: ${t.statusText}`);return await t.text()}async function fetchViaProxy(){const e="https://docs.google.com/spreadsheets/d/1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms/export?format=csv&gid=1536647709",t=`https://api.allorigins.win/get?url=${encodeURIComponent(e)}`,s=await fetch(t),o=await s.json();if(!o.contents)throw new Error("Dados vazios retornados pelo proxy allorigins.win");return o.contents}async function fetchSheetData(){updateConnectionStatus("loading","Conectando...");for(let e of[{name:"CSV Direto",func:fetchViaCsvDirect},{name:"CORS Proxy (allorigins.win)",func:fetchViaProxy}])try{const t=await e.func();if(t&&t.trim()){return await processCsvData(t),populateMonthFilter(salesData),updateDashboard(),updateConnectionStatus("connected",`Conectado via ${e.name}`),connectionAttempts=0,!0}}catch(t){console.error(`Erro no método ${e.name}:`,t)}connectionAttempts++,connectionAttempts>=3?(updateConnectionStatus("error","Falha - Usando dados de exemplo"),loadSampleData()):(updateConnectionStatus("error",`Tentativa ${connectionAttempts}/3 falhou`),setTimeout(fetchSheetData,1e4));return!1}async function processCsvData(e){const t=e.split("\n").filter(e=>e.trim());if(t.length<=1)return void(salesData=[]);const s=[];for(let e=1;e<t.length;e++){const o=parseCSVLine(t[e]);o.length>=5&&s.push({processo:(o[0]||"").trim(),cliente:(o[1]||"").trim(),link:(o[2]||"").trim(),data:(o[3]||"").trim(),consultor:(o[4]||"").trim(),originalIndex:e})}salesData=s,lastUpdate=new Date,updateLastUpdateTime()}
-        function parseCSVLine(e){const t=[];let s="",o=!1;for(let n=0;n<e.length;n++){let r=e[n];'"'===r?n+1<e.length&&'"'===e[n+1]?o&&(s+='"'):o=!o:'"'===r?o=!o:","===r&&!o?(t.push(s),s=""):s+=r}return t.push(s),t.map(e=>e.trim())}
+        // --- FUNÇÕES DE CONEXÃO E PROCESSAMENTO DE DADOS ---
+        function updateConnectionStatus(status, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (!statusElement) return;
+            statusElement.className = 'connection-status'; statusElement.classList.add(`status-${status}`);
+            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
+            statusElement.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
+        }
+        async function fetchViaCsvDirect() { const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${FIXED_SHEET_GID}`; const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' }); if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`); return await response.text(); }
+        async function fetchViaProxy() { const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${FIXED_SHEET_GID}`; const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(csvUrl)}`; const response = await fetch(proxyUrl); const data = await response.json(); if (!data.contents) throw new Error('Dados vazios retornados pelo proxy allorigins.win'); return data.contents; }
+        async function fetchSheetData() {
+            updateConnectionStatus("loading", "Conectando...");
+            const methods = [{ name: "CSV Direto", func: fetchViaCsvDirect }, { name: "CORS Proxy (allorigins.win)", func: fetchViaProxy }];
+            for (let method of methods) {
+                try {
+                    const csvData = await method.func();
+                    if (csvData && csvData.trim()) {
+                        await processCsvData(csvData); populateMonthFilter(salesData); updateDashboard();
+                        updateConnectionStatus("connected", `Conectado via ${method.name}`); connectionAttempts = 0; return true;
+                    }
+                } catch (error) { console.error(`Erro no método ${method.name}:`, error); }
+            }
+            connectionAttempts++;
+            if (connectionAttempts >= maxRetries) {
+                updateConnectionStatus("error", "Falha - Usando dados de exemplo"); loadSampleData();
+            } else { updateConnectionStatus("error", `Tentativa ${connectionAttempts}/${maxRetries} falhou`); setTimeout(fetchSheetData, 10000); }
+            return false;
+        }
+        async function processCsvData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim()); if (lines.length <= 1) { salesData = []; return; }
+            const tempData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 5) {
+                    const record = { processo: (columns[0] || '').trim(), cliente: (columns[1] || '').trim(), link: (columns[2] || '').trim(), data: (columns[3] || '').trim(), consultor: (columns[4] || '').trim(), originalIndex: i };
+                    if (record.processo || record.cliente || record.data || record.consultor) { tempData.push(record); }
+                }
+            }
+            salesData = tempData; lastUpdate = new Date(); updateLastUpdateTime();
+        }
+        function parseCSVLine(line) { const result = []; let current = ''; let inQuotes = false; for (let i = 0; i < line.length; i++) { let char = line[i]; if (char === '"') { if (i + 1 < line.length && line[i + 1] === '"') { if (inQuotes) current += '"'; i++; } else { inQuotes = !inQuotes; } } else if (char === ',' && !inQuotes) { result.push(current); current = ''; } else { current += char; } } result.push(current); return result.map(item => item.trim()); }
 
         // --- LÓGICA DO DASHBOARD ---
-        function populateMonthFilter(e){const t=new Set;(e||[]).forEach(e=>{if(e.data){const s=e.data.split("/");3===s.length&&!isNaN(parseInt(s[0],10))&&!isNaN(parseInt(s[1],10))&&!isNaN(parseInt(s[2],10))&&parseInt(s[1],10)>=1&&parseInt(s[1],10)<=12&&parseInt(s[2],10)>1900&&parseInt(s[2],10)<2100&&t.add(`${String(parseInt(s[1],10)).padStart(2,"0")}/${s[2]}`)}});const s=Array.from(t).sort((e,t)=>{const[s,o]=e.split("/"),[n,r]=t.split("/");return new Date(r,n-1)-new Date(o,s-1)}),o=document.getElementById("monthFilter"),n=o.value;o.innerHTML="",s.forEach(e=>{const t=document.createElement("option");t.value=e,t.textContent=e,o.appendChild(t)}),s.includes(n)?o.value=n:s.length>0&&(o.value=s[0])}
-        function loadSampleData(){salesData=[{processo:"VIDA,  AUXILIO-DOENÇA,  LOAS",cliente:"Mario kopelkke",data:"02/06/2025",consultor:"Augusto Teply"},{processo:"AUXILIO-ACIDENTE",cliente:"Diego armando mantelli",data:"02/06/2025",consultor:"Thiago Pereira Gomes"},{processo:"VIDA",cliente:"Cliente Maio SV",data:"15/05/2025",consultor:"Consultor Maio"},{processo:"AUXILIO-DOENÇA",cliente:"Cliente Maio Prev",data:"10/05/2025",consultor:"Consultor Maio 2"},{processo:"TERCEIRO DANO MATERIAL",cliente:"Cliente Maio ST",data:"12/05/2025",consultor:"Consultor Maio ST"},{processo:"Dra Renata",cliente:"Cliente Dra Renata Teste",data:"01/06/2025",consultor:"Consultor Teste"}],populateMonthFilter(salesData);const e=document.getElementById("monthFilter");Array.from(e.options).some(e=>"06/2025"===e.value)?e.value="06/2025":e.options.length>0&&(e.value=e.options[0].value),updateDashboard(),lastUpdate=new Date,updateLastUpdateTime()}
-        function getMonthSales(){const e=document.getElementById("monthFilter").value;if(!e)return[];const[t,s]=e.split("/");return salesData.filter(e=>{if(!e.data)return!1;const[o,n,r]=e.data.split("/");return n===t&&r===s})}
-        function countValidProcessesInRow(e){return(e.processo||"").toUpperCase().split(",").map(e=>e.trim()).filter(e=>e&&"DRA RENATA"!==e).length}
-        function updateDashboard(){if(0===salesData.length&&0===document.getElementById("monthFilter").options.length)return document.getElementById("consultantRanking").innerHTML='<div style="text-align: center; color: #6b7280; padding: 40px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 15px;">Carregando dados...</p></div>',void(document.getElementById("recentSalesTable").innerHTML='<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>');const e=getMonthSales();updateProcessStats(e),updateConsultantRanking(e),updateMainStats(e),updateMonthSales(e),updateDailyProcessChart();const t=document.getElementById("updateIndicator");t&&(t.innerHTML='<i class="fas fa-check-circle"></i> Dados atualizados!',setTimeout(()=>{t.style.opacity="0",setTimeout(()=>{t.style.display="none"},500)},2e3))}
-        function updateMainStats(e){const t=document.getElementById("monthFilter").value;if(!t)return document.getElementById("totalMonth").textContent="-",document.getElementById("monthLabel").textContent="Nenhum mês",void(document.getElementById("dailyAverage").textContent="-");const[s,o]=t.split("/"),n=parseInt(s),r=parseInt(o),a=currentMonthCounts.previdenciarios+currentMonthCounts.seguroTerceiro+currentMonthCounts.seguroVida+currentMonthCounts.outros;document.getElementById("totalMonth").textContent=a;const i=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];document.getElementById("monthLabel").textContent=`${i[n-1]} ${r}`;let l=0;e.length>0&&e.forEach(e=>{if(e.data){const t=e.data.split("/");if(3===t.length){const e=parseInt(t[0],10),s=parseInt(t[1],10),o=parseInt(t[2],10);s===n&&o===r&&e>l&&(l=e)}}});const c=l>0?l:1;let d=0;a>0&&l>0&&(d=a/c),document.getElementById("dailyAverage").textContent=d.toFixed(1)}
-        function getNormalizedConsultantKey(e){return e&&"string"==typeof e?e.trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().split(" ")[0]:"desconhecido"}
-        function updateConsultantRanking(e){const t={};e.forEach(e=>{const s=e.consultor;if(s&&s.trim()){const o=getNormalizedConsultantKey(s);if(!t[o]){const e=s.trim().split(" ")[0];t[o]={name:e.charAt(0).toUpperCase()+e.slice(1).toLowerCase(),sales:0}}t[o].sales+=countValidProcessesInRow(e)}});const s=Object.values(t).sort((e,t)=>t.sales-e.sales);let o="-";s.length>0&&s[0].sales>0&&(o=s[0].name),document.getElementById("topConsultant").textContent=o;let n="";s.length>0&&s.some(e=>e.sales>0)?s.slice(0,10).forEach((e,t)=>{e.sales>0&&(n+=`<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${t+1}</div><div class="consultant-name">${e.name}</div></div><div class="sales-count">${e.sales}</div></div>`)}):n='<div style="text-align: center; color: #6b7280; padding: 20px;">Nenhum processo para o mês.</div>',document.getElementById("consultantRanking").innerHTML=n}
-        function updateProcessStats(e){const t={PREVIDENCIÁRIOS:400,"SEGURO TERCEIRO":30,"SEGURO DE VIDA":90};let s=0,o=0,n=0;const r=new Set;e.forEach(e=>{const t=e.cliente,a=(e.processo||"").toUpperCase().split(",").map(e=>e.trim()).filter(e=>e);a.forEach(e=>{if("DRA RENATA"!==e){let a=!1;PREVIDENCIARIO_TYPES.includes(e)&&(s++,a=!0),SEGURO_VIDA_TYPES.includes(e)&&(o++,a=!0),SEGURO_TERCEIRO_TYPES.includes(e)&&(t&&r.add(t),a=!0),a||!e||n++}})});const a=r.size;currentMonthCounts={previdenciarios:s,seguroTerceiro:a,seguroVida:o,outros:n};const i=t.PREVIDENCIÁRIOS,l=i>0?Math.min(100,Math.round(s/i*100)):0;document.getElementById("previdenciariosCount").textContent=s,document.getElementById("previdenciariosGoal").textContent=`${s}/${i}`,document.getElementById("previdenciariosPercent").textContent=l;const c=t["SEGURO TERCEIRO"],d=c>0?Math.min(100,Math.round(a/c*100)):0;document.getElementById("seguroTerceiroCount").textContent=a,document.getElementById("seguroTerceiroGoal").textContent=`${a}/${c}`,document.getElementById("seguroTerceiroPercent").textContent=d;const u=t["SEGURO DE VIDA"],m=u>0?Math.min(100,Math.round(o/u*100)):0;document.getElementById("seguroVidaCount").textContent=o,document.getElementById("seguroVidaGoal").textContent=`${o}/${u}`,document.getElementById("seguroVidaPercent").textContent=m,document.getElementById("outrosCount").textContent=n}
-        function updateMonthSales(e){const t=[...e].sort((e,t)=>{if(!e.data||!t.data)return 0;const s=e=>{const t=e.split("/");return 3===t.length?new Date(parseInt(t[2]),parseInt(t[1])-1,parseInt(t[0])):null},o=s(e.data),n=s(t.data);return!o||!n||isNaN(o.getTime())||isNaN(n.getTime())?0:n.getTime()!==o.getTime()?n.getTime()-o.getTime():(t.originalIndex||0)-(e.originalIndex||0)});let s="";t.length>0?t.forEach(e=>{s+=`<tr><td><span class="date-badge">${e.data||"-"}</span></td><td>${e.cliente||"-"}</td><td><span class="process-badge">${e.processo||"-"}</span></td><td>${e.consultor||"-"}</td></tr>`}):s='<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">Nenhuma venda para o mês.</td></tr>',document.getElementById("recentSalesTable").innerHTML=s}
-        function updateLastUpdateTime(){lastUpdate&&document.getElementById("lastUpdateTime").textContent=lastUpdate.toLocaleTimeString("pt-BR")}
+        function populateMonthFilter(dataToScan) { const monthSet = new Set(); (dataToScan || []).forEach(sale => { if (sale.data) { const parts = sale.data.split('/'); if (parts.length === 3) { const day = parseInt(parts[0], 10); const month = parseInt(parts[1], 10); const year = parseInt(parts[2], 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) { monthSet.add(`${String(month).padStart(2, '0')}/${year}`); } } } }); const allAvailableMonths = Array.from(monthSet).sort((a, b) => { const [aMonth, aYear] = a.split('/'); const [bMonth, bYear] = b.split('/'); return new Date(bYear, bMonth - 1) - new Date(aYear, aMonth - 1); }); const monthSelect = document.getElementById('monthFilter'); const currentSelectedMonth = monthSelect.value; monthSelect.innerHTML = ''; allAvailableMonths.forEach(month => { const option = document.createElement('option'); option.value = month; option.textContent = month; monthSelect.appendChild(option); }); if (allAvailableMonths.includes(currentSelectedMonth)) { monthSelect.value = currentSelectedMonth; } else if (allAvailableMonths.length > 0) { monthSelect.value = allAvailableMonths[0]; } }
+        function loadSampleData() { salesData = [{ processo: 'VIDA,  AUXILIO-DOENÇA', cliente: 'Mario Kopelkke', data: '02/06/2025', consultor: 'Augusto Teply' }, { processo: 'AUXILIO-ACIDENTE', cliente: 'Diego Armando Mantelli', data: '02/06/2025', consultor: 'Thiago Pereira Gomes' }, { processo: 'VIDA', cliente: 'Cliente Maio SV', data: '15/05/2025', consultor: 'Consultor Maio' }, { processo: 'AUXILIO-DOENÇA', cliente: 'Cliente Maio Prev', data: '10/05/2025', consultor: 'Consultor Maio 2' }]; populateMonthFilter(salesData); const monthSelect = document.getElementById('monthFilter'); if (Array.from(monthSelect.options).some(opt => opt.value === '06/2025')) { monthSelect.value = '06/2025'; } else if (monthSelect.options.length > 0) { monthSelect.value = monthSelect.options[0].value; } updateDashboard(); lastUpdate = new Date(); updateLastUpdateTime(); }
+        function getMonthSales() { const selectedMonthYear = document.getElementById('monthFilter').value; if (!selectedMonthYear) return []; const [filterMonth, filterYear] = selectedMonthYear.split('/'); return salesData.filter(sale => { if (!sale.data) return false; const [saleDay, saleMonth, saleYear] = sale.data.split('/'); return saleMonth === filterMonth && saleYear === filterYear; }); }
+        function countValidProcessesInRow(sale) { return (sale.processo || '').toUpperCase().split(',').map(p => p.trim()).filter(p => p && p !== DRA_RENATA_STRING).length; }
+        function updateDashboard() { if (salesData.length === 0 && document.getElementById('monthFilter').options.length === 0) { document.getElementById('consultantRanking').innerHTML = `<div style="text-align: center; color: #6b7280; padding: 40px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 15px;">Carregando...</p></div>`; document.getElementById('recentSalesTable').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>`; return; } const monthSales = getMonthSales(); updateProcessStats(monthSales); updateConsultantRanking(monthSales); updateMainStats(monthSales); updateMonthSales(monthSales); updateDailyProcessChart(); const updateIndicator = document.getElementById('updateIndicator'); if (updateIndicator) { updateIndicator.innerHTML = `<i class="fas fa-check-circle"></i> Dados atualizados!`; setTimeout(() => { updateIndicator.style.opacity = '0'; setTimeout(() => { updateIndicator.style.display = 'none'; }, 500); }, 2000); } }
+        function updateMainStats(monthSalesData) { const selectedMonthYear = document.getElementById('monthFilter').value; if (!selectedMonthYear) { document.getElementById('totalMonth').textContent = '-'; document.getElementById('monthLabel').textContent = 'Nenhum mês'; document.getElementById('dailyAverage').textContent = '-'; return; } const [monthStr, yearStr] = selectedMonthYear.split('/'); const selectedMonth = parseInt(monthStr); const selectedYear = parseInt(yearStr); const totalProcessosNoMes = currentMonthCounts.previdenciarios + currentMonthCounts.seguroTerceiro + currentMonthCounts.seguroVida + currentMonthCounts.outros; document.getElementById('totalMonth').textContent = totalProcessosNoMes; const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']; document.getElementById('monthLabel').textContent = `${monthNames[selectedMonth - 1]} ${selectedYear}`; let maxDayInMonthWithData = 0; if (monthSalesData.length > 0) { monthSalesData.forEach(sale => { if (sale.data) { const parts = sale.data.split('/'); if (parts.length === 3) { const saleDay = parseInt(parts[0], 10), saleMonth = parseInt(parts[1], 10), saleYear = parseInt(parts[2], 10); if (saleMonth === selectedMonth && saleYear === selectedYear) { if (saleDay > maxDayInMonthWithData) { maxDayInMonthWithData = saleDay; } } } } }); } const daysToConsider = maxDayInMonthWithData > 0 ? maxDayInMonthWithData : 1; let averageProcessos = 0; if (totalProcessosNoMes > 0 && maxDayInMonthWithData > 0) { averageProcessos = totalProcessosNoMes / daysToConsider; } document.getElementById('dailyAverage').textContent = averageProcessos.toFixed(1); }
+        function getNormalizedConsultantKey(fullName) { if (!fullName || typeof fullName !== 'string') return 'desconhecido'; return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0]; }
+        function updateConsultantRanking(monthSales) { const consultantStats = {}; monthSales.forEach(sale => { const rawConsultantName = sale.consultor; if (!rawConsultantName || !rawConsultantName.trim()) { return; } const normalizedKey = getNormalizedConsultantKey(rawConsultantName); if (!consultantStats[normalizedKey]) { const displayName = rawConsultantName.trim().split(' ')[0]; const capitalizedDisplayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(); consultantStats[normalizedKey] = { name: capitalizedDisplayName, sales: 0 }; } consultantStats[normalizedKey].sales += countValidProcessesInRow(sale); }); const ranking = Object.values(consultantStats).sort((a, b) => b.sales - a.sales); let topConsultantName = '-'; if (ranking.length > 0 && ranking[0].sales > 0) { topConsultantName = ranking[0].name; } document.getElementById('topConsultant').textContent = topConsultantName; let html = ''; if (ranking.length > 0 && ranking.some(c => c.sales > 0)) { ranking.slice(0, 10).forEach((consultant, index) => { if (consultant.sales > 0) html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${index + 1}</div><div class="consultant-name">${consultant.name}</div></div><div class="sales-count">${consultant.sales}</div></div>`; }); } else { html = `<div style="text-align: center; color: #6b7280; padding: 20px;">Nenhum processo para o mês.</div>`; } document.getElementById('consultantRanking').innerHTML = html; }
+        function updateProcessStats(monthSales) { const metas = { 'PREVIDENCIÁRIOS': 400, 'SEGURO TERCEIRO': 30, 'SEGURO DE VIDA': 90 }; let prevCount = 0, svCount = 0, outrosIndividuais = 0; const clientesST = new Set(); monthSales.forEach(sale => { const cliente = sale.cliente; const listaProcessos = (sale.processo || '').toUpperCase().split(',').map(p => p.trim()).filter(p => p); listaProcessos.forEach(proc => { if (proc === DRA_RENATA_STRING) { return; } let classificadoPrincipal = false; if (PREVIDENCIARIO_TYPES.includes(proc)) { prevCount++; classificadoPrincipal = true; } if (SEGURO_VIDA_TYPES.includes(proc)) { svCount++; classificadoPrincipal = true; } if (SEGURO_TERCEIRO_TYPES.includes(proc)) { if (cliente) clientesST.add(cliente); classificadoPrincipal = true; } if (!classificadoPrincipal && proc) { outrosIndividuais++; } }); }); const stCount = clientesST.size; currentMonthCounts = { previdenciarios: prevCount, seguroTerceiro: stCount, seguroVida: svCount, outros: outrosIndividuais }; const prevMeta = metas['PREVIDENCIÁRIOS'], prevPercent = prevMeta > 0 ? Math.min(100, Math.round((prevCount / prevMeta) * 100)) : 0; document.getElementById('previdenciariosCount').textContent = prevCount; document.getElementById('previdenciariosGoal').textContent = `${prevCount}/${prevMeta}`; document.getElementById('previdenciariosPercent').textContent = prevPercent; const terMeta = metas['SEGURO TERCEIRO'], terPercent = terMeta > 0 ? Math.min(100, Math.round((stCount / terMeta) * 100)) : 0; document.getElementById('seguroTerceiroCount').textContent = stCount; document.getElementById('seguroTerceiroGoal').textContent = `${stCount}/${terMeta}`; document.getElementById('seguroTerceiroPercent').textContent = terPercent; const vidaMeta = metas['SEGURO DE VIDA'], vidaPercent = vidaMeta > 0 ? Math.min(100, Math.round((svCount / vidaMeta) * 100)) : 0; document.getElementById('seguroVidaCount').textContent = svCount; document.getElementById('seguroVidaGoal').textContent = `${svCount}/${vidaMeta}`; document.getElementById('seguroVidaPercent').textContent = vidaPercent; document.getElementById('outrosCount').textContent = outrosIndividuais; }
+        function updateMonthSales(monthSales) { const sortedSales = [...monthSales].sort((a, b) => { if (!a.data || !b.data) return 0; const parseDate = (dateStr) => { const parts = dateStr.split('/'); if (parts.length === 3) { return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); } return null; }; const dateAVal = parseDate(a.data); const dateBVal = parseDate(b.data); if (!dateAVal || !dateBVal || isNaN(dateAVal.getTime()) || isNaN(dateBVal.getTime())) { return 0; } if (dateBVal.getTime() !== dateAVal.getTime()) { return dateBVal.getTime() - dateAVal.getTime(); } else { return (b.originalIndex || 0) - (a.originalIndex || 0); } }); let html = ''; if (sortedSales.length > 0) { sortedSales.forEach(sale => { html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`; }); } else { html = `<tr><td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">Nenhuma venda para o mês.</td></tr>`; } document.getElementById('recentSalesTable').innerHTML = html; }
+        function updateLastUpdateTime() { if (lastUpdate) { document.getElementById('lastUpdateTime').textContent = lastUpdate.toLocaleTimeString('pt-BR'); } }
         
-        // --- FUNÇÃO DO GRÁFICO CORRIGIDA E OTIMIZADA ---
-        function updateDailyProcessChart(){const today=new Date,currentYear=today.getFullYear(),startDate=new Date(currentYear,4,1),filteredData=salesData.filter(e=>{if(!e.data)return!1;const t=e.data.split("/");if(3!==t.length)return!1;const s=new Date(parseInt(t[2]),parseInt(t[1])-1,parseInt(t[0]));return!isNaN(s.getTime())&&s>=startDate&&s<=today});const dailyCounts=new Map;filteredData.forEach(e=>{const t=e.data,s=countValidProcessesInRow(e);s>0&&dailyCounts.set(t,(dailyCounts.get(t)||0)+s)});const labels=[],dataPoints=[],aggregationPeriod=5;let currentDate=new Date(startDate);for(;currentDate<=today;){let e=0;const t=new Date(currentDate),s=new Date(currentDate);s.setDate(s.getDate()+aggregationPeriod-1);const o=s>today?today:s;for(let n=new Date(t);n<=o;n.setDate(n.getDate()+1)){const t=n.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});dailyCounts.has(t)&&(e+=dailyCounts.get(t))}const n=o.getDate()===t.getDate()?t.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}):`${t.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} - ${o.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}`;labels.push(n),dataPoints.push(e),currentDate.setDate(currentDate.getDate()+aggregationPeriod)}const ctx=document.getElementById("dailyProcessChart").getContext("2d");dailyChartInstance&&dailyChartInstance.destroy(),dailyChartInstance=new Chart(ctx,{type:"line",data:{labels:labels,datasets:[{label:"Processos no Período",data:dataPoints,backgroundColor:"rgba(139, 92, 246, 0.2)",borderColor:"#8b5cf6",borderWidth:3,pointBackgroundColor:"#8b5cf6",pointRadius:4,pointHoverRadius:6,tension:.3,fill:!0}]},options:{responsive:!0,maintainAspectRatio:!1,scales:{y:{beginAtZero:!0,ticks:{color:"#6b7280",stepSize:1},grid:{color:"#f3f4f6"}},x:{ticks:{color:"#6b7280"},grid:{display:!1}}},plugins:{legend:{display:!1},tooltip:{backgroundColor:"#6b46c1",titleFont:{size:14,weight:"bold"},bodyFont:{size:12},padding:12,cornerRadius:8,callbacks:{label:function(e){return` Processos: ${e.raw}`}}}}}})}
+        // --- FUNÇÃO DO GRÁFICO OTIMIZADA ---
+        function updateDailyProcessChart() {
+            const today = new Date(), currentYear = today.getFullYear(), startDate = new Date(currentYear, 4, 1);
+            const filteredData = salesData.filter(sale => { if (!sale.data) return false; const parts = sale.data.split('/'); if (parts.length !== 3) return false; const saleDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); return !isNaN(saleDate.getTime()) && saleDate >= startDate && saleDate <= today; });
+            const dailyCounts = new Map(); filteredData.forEach(sale => { const dateKey = sale.data; const processCount = countValidProcessesInRow(sale); if (processCount > 0) { dailyCounts.set(dateKey, (dailyCounts.get(dateKey) || 0) + processCount); } });
+            const labels = [], dataPoints = [], aggregationPeriod = 5; let currentDate = new Date(startDate);
+            while (currentDate <= today) {
+                let periodSum = 0; const periodStart = new Date(currentDate); const periodEnd = new Date(currentDate); periodEnd.setDate(periodEnd.getDate() + aggregationPeriod - 1);
+                const actualEnd = periodEnd > today ? today : periodEnd;
+                for (let d = new Date(periodStart); d <= actualEnd; d.setDate(d.getDate() + 1)) { const dateKey = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }); if (dailyCounts.has(dateKey)) { periodSum += dailyCounts.get(dateKey); } }
+                const label = actualEnd.getDate() === periodStart.getDate() ? periodStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) : `${periodStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} - ${actualEnd.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}`;
+                labels.push(label); dataPoints.push(periodSum); currentDate.setDate(currentDate.getDate() + aggregationPeriod);
+            }
+            const ctx = document.getElementById('dailyProcessChart').getContext('2d'); if (dailyChartInstance) { dailyChartInstance.destroy(); }
+            dailyChartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Processos no Período', data: dataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#8b5cf6', pointRadius: 4, pointHoverRadius: 6, tension: .3, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1 }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function (context) { return ` Processos: ${context.raw}` } } } } } });
+        }
 
         // --- INICIALIZAÇÃO ---
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const updateIndicator = document.getElementById('updateIndicator');
             if (updateIndicator) updateIndicator.style.display = 'flex';
-            
-            fetchSheetData(); 
-            // loadSampleData();
-            
+            fetchSheetData();
             showSlide(currentSlide);
             startCarouselTimer();
-
             autoUpdateInterval = setInterval(() => {
-                if (isAutoUpdateActive) { 
-                    if (updateIndicator) {
-                        updateIndicator.style.display = 'flex';
-                        updateIndicator.style.opacity = '1';
-                        updateIndicator.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando automaticamente...`;
-                    }
+                if (isAutoUpdateActive) {
+                    if (updateIndicator) { updateIndicator.style.display = 'flex'; updateIndicator.style.opacity = '1'; updateIndicator.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Atualizando...`; }
                     fetchSheetData();
                 }
-            }, 30000); 
+            }, 30000);
         });
     </script>
 </body>
