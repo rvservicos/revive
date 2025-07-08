@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard ReVive - Vendas e Cultura</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Adicionado CDN do Chart.js para o gráfico -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* --- ESTILOS GERAIS --- */
@@ -37,6 +36,8 @@
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
         .consultant-name { color: #374151; font-weight: 500; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+        /* NOVO: Estilo para a foto do consultor no ranking */
+        .consultant-photo-ranking { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecff; }
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 20px; border-radius: 15px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
@@ -59,7 +60,7 @@
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- PÁGINA DE CULTURA (MISSÃO, VISÃO, VALORES) --- */
+        /* --- PÁGINA DE CULTURA --- */
         .culture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
         .culture-card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); border-top: 5px solid #a78bfa; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .culture-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15); }
@@ -91,6 +92,8 @@
         #sale-notification-overlay.show { display: flex; opacity: 1; }
         .notification-content { background: white; padding: 40px 50px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 700px; border-top: 8px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
+        /* NOVO: Estilo para a foto do consultor na notificação */
+        .notification-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
         .notification-content h2 { font-size: 2.8rem; font-weight: 800; color: #6b46c1; margin-bottom: 15px; }
         .notification-content p { font-size: 1.3rem; color: #555; line-height: 1.6; }
@@ -120,14 +123,8 @@
                 <h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1>
                 <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
             </div>
-            <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;">
-                <i class="fas fa-sync fa-spin"></i>
-                <span id="statusText">Verificando conexão...</span>
-            </div>
-            <div class="month-selector">
-                <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
-                <select id="monthFilter" onchange="updateDashboard()"></select>
-            </div>
+            <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
+            <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
                 <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span></div><div class="stat-label">em processos este mês</div></div>
@@ -168,18 +165,10 @@
             </div>
         </div>
 
-        <!-- ===== NOVA PÁGINA 4: GRÁFICO DE EVOLUÇÃO ===== -->
+        <!-- ===== PÁGINA 4: GRÁFICO DE EVOLUÇÃO ===== -->
         <div id="chart-view" class="carousel-page">
-            <div class="header">
-                <h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1>
-                <p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p>
-            </div>
-            <div class="panel">
-                <!-- Container para o gráfico com altura definida -->
-                <div style="position: relative; height: 450px;">
-                     <canvas id="processEvolutionChart"></canvas>
-                </div>
-            </div>
+            <div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div>
+            <div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div>
         </div>
 
     </div>
@@ -187,7 +176,12 @@
     <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA ===== -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
-            <div class="icon"><i class="fas fa-trophy"></i></div><h2>Nova Venda!</h2><p id="sale-notification-text"></p><div class="process-info" id="sale-notification-process"></div>
+            <!-- NOVO: Container da foto na notificação -->
+            <img id="sale-notification-photo" src="" alt="Foto do Consultor" class="notification-photo">
+            <div class="icon"><i class="fas fa-trophy"></i></div>
+            <h2>Nova Venda!</h2>
+            <p id="sale-notification-text"></p>
+            <div class="process-info" id="sale-notification-process"></div>
             <div class="rockets"><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i></div>
         </div>
     </div>
@@ -202,7 +196,10 @@
         const FIXED_SHEET_GID = "1536647709";
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
-        let processEvolutionChartInstance = null; // Variável para a instância do gráfico
+        let processEvolutionChartInstance = null;
+
+        // NOVO: Avatar padrão em formato SVG (não precisa de arquivo externo)
+        const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
@@ -213,22 +210,27 @@
             const pages = document.querySelectorAll('.carousel-page');
             let currentPageIndex = 0;
             if (pages.length === 0) return;
-
             setInterval(() => {
-                if(isAnimationPlaying) return; // Pausa a rotação durante a animação de venda
+                if(isAnimationPlaying) return;
                 pages[currentPageIndex].classList.remove('active');
                 currentPageIndex = (currentPageIndex + 1) % pages.length;
                 pages[currentPageIndex].classList.add('active');
-            }, 30000); // Rotação a cada 30 segundos
+            }, 30000);
         }
 
-        // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA ---
+        // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA (MODIFICADA) ---
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
             isAnimationPlaying = true;
             const overlay = document.getElementById('sale-notification-overlay');
             const textElement = document.getElementById('sale-notification-text');
             const processElement = document.getElementById('sale-notification-process');
+            const photoElement = document.getElementById('sale-notification-photo');
+
+            const photoUrl = getConsultantPhotoUrl(sale.consultor);
+            photoElement.src = photoUrl;
+            // Define o fallback caso a foto não carregue
+            photoElement.onerror = () => { photoElement.src = DEFAULT_AVATAR; photoElement.onerror = null; };
 
             textElement.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
             processElement.textContent = `Processos: ${sale.processo || 'N/A'}`;
@@ -238,7 +240,7 @@
             setTimeout(() => {
                 overlay.classList.remove('show');
                 isAnimationPlaying = false;
-            }, 20000); // Duração de 20 segundos
+            }, 20000);
         }
 
         function checkForNewSales(newSales, oldSales) {
@@ -258,8 +260,8 @@
                 triggerSaleAnimation(latestSale);
             }
         }
-
-        // --- LÓGICA DE BUSCA E PROCESSAMENTO DE DADOS ---
+        
+        // --- FUNÇÕES DE PROCESSAMENTO E ATUALIZAÇÃO ---
         async function fetchSheetData() {
             updateConnectionStatus('loading', 'Conectando...');
             try {
@@ -284,7 +286,7 @@
                 updateConnectionStatus('error', 'Falha na conexão');
             }
         }
-
+        
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const tempData = [];
@@ -318,7 +320,6 @@
             return result.map(item => item.trim());
         }
 
-        // --- FUNÇÕES DE ATUALIZAÇÃO DO DASHBOARD ---
         function updateConnectionStatus(status, message) {
             const el = document.getElementById('connectionStatus');
             if (!el) return;
@@ -361,10 +362,10 @@
             if (allMonths.includes(currentVal)) {
                 monthSelect.value = currentVal;
             } else if (allMonths.length > 0) {
-                monthSelect.value = allMonths[0]; // Define o mês mais recente como padrão
+                monthSelect.value = allMonths[0];
             }
         }
-
+        
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) return [];
@@ -375,7 +376,7 @@
                 return saleMonth === filterMonth && saleYear === filterYear;
             });
         }
-
+        
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
             const monthSales = getMonthSales();
@@ -384,7 +385,6 @@
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
             updateMonthSales(monthSales);
-            // Chama a atualização do novo gráfico, passando todos os dados
             updateProcessEvolutionChart(salesData); 
         }
 
@@ -410,6 +410,14 @@
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
 
+        // NOVO: Função para pegar a URL da foto do consultor
+        function getConsultantPhotoUrl(consultantName) {
+            if (!consultantName) return DEFAULT_AVATAR;
+            const baseName = getNormalizedConsultantKey(consultantName);
+            return `${baseName}.PNG`; // Ex: 'yudi.png'
+        }
+
+        // FUNÇÃO DO RANKING MODIFICADA
         function updateConsultantRanking(monthSales) {
             const stats = {};
             monthSales.forEach(sale => {
@@ -428,7 +436,15 @@
             
             let html = '';
             ranking.slice(0, 10).forEach((c, i) => {
-                html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${i + 1}</div><div class="consultant-name">${c.name}</div></div><div class="sales-count">${c.sales}</div></div>`;
+                const photoUrl = getConsultantPhotoUrl(c.name);
+                html += `<div class="ranking-item">
+                            <div class="consultant-info">
+                                <div class="rank-number">${i + 1}</div>
+                                <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;">
+                                <div class="consultant-name">${c.name}</div>
+                            </div>
+                            <div class="sales-count">${c.sales}</div>
+                         </div>`;
             });
             document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
         }
@@ -477,102 +493,41 @@
             document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
         }
 
-        // --- NOVA FUNÇÃO PARA ATUALIZAR O GRÁFICO DE EVOLUÇÃO ---
         function updateProcessEvolutionChart(allSalesData) {
             if (!allSalesData || allSalesData.length === 0) return;
-
-            // Encontra o ano mais recente nos dados
             const mostRecentYear = Math.max(...allSalesData
                 .map(sale => sale.data ? parseInt(sale.data.split('/')[2], 10) : 0)
                 .filter(year => !isNaN(year) && year > 1900)
             );
-
             if (!mostRecentYear) return;
-            
-            // Atualiza o subtítulo da página do gráfico com o ano
             document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
-
-            // Prepara a contagem para os meses a partir de Maio (mês 5)
             const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            
             allSalesData.forEach(sale => {
                 if (!sale.data || !sale.processo) return;
                 const parts = sale.data.split('/');
                 if (parts.length !== 3) return;
-                
                 const year = parseInt(parts[2], 10);
                 const month = parseInt(parts[1], 10);
-
-                // Filtra para o ano mais recente e meses a partir de Maio
                 if (year === mostRecentYear && month >= 5) {
-                    const numProcessos = (sale.processo || '').split(',')
-                                         .filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING)
-                                         .length;
-                    if (monthlyCounts.hasOwnProperty(month)) {
-                        monthlyCounts[month] += numProcessos;
-                    }
+                    const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
+                    if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
                 }
             });
-
             const ctx = document.getElementById('processEvolutionChart').getContext('2d');
             const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             const dataPoints = Object.values(monthlyCounts);
-
-            // Destroi a instância anterior do gráfico se ela existir, para evitar sobreposições
-            if (processEvolutionChartInstance) {
-                processEvolutionChartInstance.destroy();
-            }
-            
-            // Cria o novo gráfico
+            if (processEvolutionChartInstance) { processEvolutionChartInstance.destroy(); }
             processEvolutionChartInstance = new Chart(ctx, {
-                type: 'line', // Gráfico de linha para mostrar evolução
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Número de Processos',
-                        data: dataPoints,
-                        backgroundColor: 'rgba(139, 92, 246, 0.2)', // Cor de preenchimento com tema
-                        borderColor: '#8b5cf6', // Cor da linha com tema
-                        borderWidth: 3,
-                        pointBackgroundColor: '#6b46c1',
-                        pointRadius: 5,
-                        tension: 0.3 // Deixa a linha levemente curvada
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Permite que o gráfico preencha o container
-                    scales: {
-                        y: {
-                            beginAtZero: true, // Eixo Y começa em zero
-                            ticks: { color: '#6b7280' },
-                            grid: { color: '#f3f4f6' }
-                        },
-                        x: {
-                            ticks: { color: '#6b7280' },
-                            grid: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false // Esconde a legenda para um visual mais limpo
-                        },
-                        tooltip: {
-                            backgroundColor: '#6b46c1',
-                            titleFont: { size: 14 },
-                            bodyFont: { size: 12 },
-                            padding: 10
-                        }
-                    }
-                }
+                type: 'line', data: { labels: labels, datasets: [{ label: 'Número de Processos', data: dataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#6b46c1', pointRadius: 5, tension: 0.3 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } } }
             });
         }
-
+        
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
             setupCarousel();
             fetchSheetData();
-            setInterval(fetchSheetData, 30000); // Atualiza os dados a cada 30s
+            setInterval(fetchSheetData, 30000);
         });
     </script>
 </body>
