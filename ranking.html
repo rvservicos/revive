@@ -36,7 +36,6 @@
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
         .consultant-name { color: #374151; font-weight: 500; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
-        /* NOVO: Estilo para a foto do consultor no ranking */
         .consultant-photo-ranking { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecff; }
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 20px; border-radius: 15px; text-align: center; }
@@ -92,7 +91,6 @@
         #sale-notification-overlay.show { display: flex; opacity: 1; }
         .notification-content { background: white; padding: 40px 50px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 700px; border-top: 8px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
-        /* NOVO: Estilo para a foto do consultor na notificação */
         .notification-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
         .notification-content h2 { font-size: 2.8rem; font-weight: 800; color: #6b46c1; margin-bottom: 15px; }
@@ -176,7 +174,6 @@
     <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA ===== -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
-            <!-- NOVO: Container da foto na notificação -->
             <img id="sale-notification-photo" src="" alt="Foto do Consultor" class="notification-photo">
             <div class="icon"><i class="fas fa-trophy"></i></div>
             <h2>Nova Venda!</h2>
@@ -197,8 +194,6 @@
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
-
-        // NOVO: Avatar padrão em formato SVG (não precisa de arquivo externo)
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
@@ -218,7 +213,7 @@
             }, 30000);
         }
 
-        // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA (MODIFICADA) ---
+        // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA ---
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
             isAnimationPlaying = true;
@@ -226,17 +221,13 @@
             const textElement = document.getElementById('sale-notification-text');
             const processElement = document.getElementById('sale-notification-process');
             const photoElement = document.getElementById('sale-notification-photo');
-
             const photoUrl = getConsultantPhotoUrl(sale.consultor);
             photoElement.src = photoUrl;
-            // Define o fallback caso a foto não carregue
             photoElement.onerror = () => { photoElement.src = DEFAULT_AVATAR; photoElement.onerror = null; };
-
             textElement.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
             processElement.textContent = `Processos: ${sale.processo || 'N/A'}`;
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
-
             setTimeout(() => {
                 overlay.classList.remove('show');
                 isAnimationPlaying = false;
@@ -244,19 +235,12 @@
         }
 
         function checkForNewSales(newSales, oldSales) {
-            if (firstLoad) {
-                firstLoad = false;
-                return;
-            }
+            if (firstLoad) { firstLoad = false; return; }
             if (isAnimationPlaying || newSales.length <= oldSales.length) return;
-
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
-
             if (newlyAddedSales.length > 0) {
-                const latestSale = newlyAddedSales.reduce((latest, current) =>
-                    (current.originalIndex > latest.originalIndex) ? current : latest
-                );
+                const latestSale = newlyAddedSales.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
                 triggerSaleAnimation(latestSale);
             }
         }
@@ -269,12 +253,10 @@
                 const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão: ${response.statusText}`);
                 const csvData = await response.text();
-
                 if (csvData && csvData.trim()) {
                     const newSalesData = await processCsvData(csvData);
                     checkForNewSales(newSalesData, salesData);
                     salesData = newSalesData;
-                    
                     if (document.getElementById('monthFilter').options.length === 0) {
                         populateMonthFilter(salesData);
                     }
@@ -342,7 +324,6 @@
                     }
                 }
             });
-
             const monthSelect = document.getElementById('monthFilter');
             const currentVal = monthSelect.value;
             const allMonths = Array.from(monthSet).sort((a, b) => {
@@ -350,7 +331,6 @@
                 const [mb, yb] = b.split('/');
                 return new Date(yb, mb - 1) - new Date(ya, ma - 1);
             });
-
             monthSelect.innerHTML = '';
             allMonths.forEach(month => {
                 const option = document.createElement('option');
@@ -358,7 +338,6 @@
                 option.textContent = month;
                 monthSelect.appendChild(option);
             });
-
             if (allMonths.includes(currentVal)) {
                 monthSelect.value = currentVal;
             } else if (allMonths.length > 0) {
@@ -380,7 +359,6 @@
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
             const monthSales = getMonthSales();
-            
             updateProcessStats(monthSales);
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
@@ -391,12 +369,10 @@
         function updateMainStats(monthSalesData) {
             const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
             document.getElementById('totalMonth').textContent = totalProcessos;
-
             const selectedMonthYear = document.getElementById('monthFilter').value;
             const [monthStr, yearStr] = selectedMonthYear.split('/');
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
-
             const maxDay = monthSalesData.reduce((max, sale) => {
                 const day = parseInt(sale.data.split('/')[0], 10);
                 return isNaN(day) ? max : Math.max(max, day);
@@ -410,14 +386,12 @@
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
 
-        // NOVO: Função para pegar a URL da foto do consultor
         function getConsultantPhotoUrl(consultantName) {
             if (!consultantName) return DEFAULT_AVATAR;
             const baseName = getNormalizedConsultantKey(consultantName);
-            return `${baseName}.PNG`; // Ex: 'yudi.png'
+            return `${baseName}.png`;
         }
 
-        // FUNÇÃO DO RANKING MODIFICADA
         function updateConsultantRanking(monthSales) {
             const stats = {};
             monthSales.forEach(sale => {
@@ -430,21 +404,12 @@
                 const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
                 stats[key].sales += numProcessos;
             });
-
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
             document.getElementById('topConsultant').textContent = ranking.length > 0 ? ranking[0].name : '-';
-            
             let html = '';
             ranking.slice(0, 10).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
-                html += `<div class="ranking-item">
-                            <div class="consultant-info">
-                                <div class="rank-number">${i + 1}</div>
-                                <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;">
-                                <div class="consultant-name">${c.name}</div>
-                            </div>
-                            <div class="sales-count">${c.sales}</div>
-                         </div>`;
+                html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count">${c.sales}</div></div>`;
             });
             document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
         }
@@ -453,7 +418,6 @@
             const metas = { 'PREVIDENCIÁRIOS': 400, 'SEGURO TERCEIRO': 30, 'SEGURO DE VIDA': 90 };
             let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
             const clientesST = new Set();
-            
             monthSales.forEach(sale => {
                 (sale.processo || '').split(',').forEach(procRaw => {
                     const proc = procRaw.trim().toUpperCase();
@@ -466,7 +430,6 @@
             });
             counts.seguroTerceiro = clientesST.size;
             currentMonthCounts = counts;
-
             const updateCard = (type, count, meta, goalEl, percentEl) => {
                 document.getElementById(`${type}Count`).textContent = count;
                 const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
@@ -479,19 +442,30 @@
             document.getElementById('outrosCount').textContent = counts.outros;
         }
 
+        function updateMonthSales(monthSales) {
+            const sortedSales = [...monthSales].sort((a, b) => {
+                const dateA = new Date(a.data.split('/').reverse().join('-'));
+                const dateB = new Date(b.data.split('/').reverse().join('-'));
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
+        }
+
+        // --- FUNÇÃO DO GRÁFICO (MODIFICADA) ---
         function updateProcessEvolutionChart(allSalesData) {
             if (!allSalesData || allSalesData.length === 0) return;
-            
             const mostRecentYear = Math.max(...allSalesData
                 .map(sale => sale.data ? parseInt(sale.data.split('/')[2], 10) : 0)
                 .filter(year => !isNaN(year) && year > 1900)
             );
             if (!mostRecentYear) return;
-            
             document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
-            
             const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            
             allSalesData.forEach(sale => {
                 if (!sale.data || !sale.processo) return;
                 const parts = sale.data.split('/');
@@ -500,48 +474,31 @@
                 const month = parseInt(parts[1], 10);
                 if (year === mostRecentYear && month >= 5) {
                     const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
-                    if (monthlyCounts.hasOwnProperty(month)) { 
-                        monthlyCounts[month] += numProcessos; 
-                    }
+                    if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
                 }
             });
-        
-            // Obter o mês atual
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth() + 1; // getMonth() retorna 0-11, então soma 1
-            const currentYear = currentDate.getFullYear();
             
-            // Filtrar dados apenas para meses que já passaram ou têm dados
-            const allMonths = [
-                { number: 5, label: 'Maio' },
-                { number: 6, label: 'Junho' },
-                { number: 7, label: 'Julho' },
-                { number: 8, label: 'Agosto' },
-                { number: 9, label: 'Setembro' },
-                { number: 10, label: 'Outubro' },
-                { number: 11, label: 'Novembro' },
-                { number: 12, label: 'Dezembro' }
-            ];
+            const dataPoints = Object.values(monthlyCounts);
+
+            // --- LÓGICA PARA NÃO DESENHAR A LINHA PARA MESES FUTUROS (VALOR 0) ---
+            // Encontra o índice do último mês que teve processos (> 0)
+            const lastDataIndex = dataPoints.findLastIndex(d => d > 0);
             
-            // Filtrar meses: mostrar apenas se já passou ou se tem dados (> 0)
-            const filteredMonths = allMonths.filter(month => {
-                // Se o ano do gráfico é o ano atual, mostrar apenas meses que já passaram
-                if (mostRecentYear === currentYear) {
-                    return month.number <= currentMonth;
+            // Cria um novo array de dados. Se o mês for futuro (após o último com dados), seu valor será null.
+            const finalDataPoints = dataPoints.map((point, index) => {
+                // Se nenhum mês teve dados ainda, ou se o índice atual é anterior/igual ao último com dados, mantém o ponto.
+                if (lastDataIndex === -1 || index <= lastDataIndex) {
+                    return point;
                 }
-                // Se é um ano passado, mostrar todos os meses
-                // Se é um ano futuro, mostrar apenas meses com dados
-                return mostRecentYear < currentYear || monthlyCounts[month.number] > 0;
+                // Caso contrário (é um mês futuro sem dados), retorna null para quebrar a linha.
+                return null;
             });
-            
-            const labels = filteredMonths.map(month => month.label);
-            const dataPoints = filteredMonths.map(month => monthlyCounts[month.number]);
-            
+            // --------------------------------------------------------------------------
+
             const ctx = document.getElementById('processEvolutionChart').getContext('2d');
+            const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             
-            if (processEvolutionChartInstance) { 
-                processEvolutionChartInstance.destroy(); 
-            }
+            if (processEvolutionChartInstance) { processEvolutionChartInstance.destroy(); }
             
             processEvolutionChartInstance = new Chart(ctx, {
                 type: 'line', 
@@ -549,7 +506,7 @@
                     labels: labels, 
                     datasets: [{ 
                         label: 'Número de Processos', 
-                        data: dataPoints, 
+                        data: finalDataPoints, // Usa o novo array de dados com nulls
                         backgroundColor: 'rgba(139, 92, 246, 0.2)', 
                         borderColor: '#8b5cf6', 
                         borderWidth: 3, 
@@ -562,24 +519,12 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            ticks: { color: '#6b7280' }, 
-                            grid: { color: '#f3f4f6' } 
-                        }, 
-                        x: { 
-                            ticks: { color: '#6b7280' }, 
-                            grid: { display: false } 
-                        } 
+                        y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, 
+                        x: { ticks: { color: '#6b7280' }, grid: { display: false } } 
                     }, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { 
-                            backgroundColor: '#6b46c1', 
-                            titleFont: { size: 14 }, 
-                            bodyFont: { size: 12 }, 
-                            padding: 10 
-                        } 
+                        tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } 
                     } 
                 }
             });
