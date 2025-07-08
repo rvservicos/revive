@@ -134,6 +134,11 @@
             </div>
             <div class="panel recent-sales"><h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2><table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table></div>
         </div>
+        <!-- ===== PÁGINA 4: GRÁFICO DE EVOLUÇÃO ===== -->
+        <div id="chart-view" class="carousel-page">
+            <div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div>
+            <div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div>
+        </div>
 
         <!-- ===== PÁGINA 2: MISSÃO, VISÃO E VALORES ===== -->
         <div id="mission-view" class="carousel-page">
@@ -162,13 +167,6 @@
                 <div class="timeline-item"><div class="content"><span class="date">23 de Agosto de 2025</span><h3>Feijoada ReVive</h3><p>Um momento de descontração e integração para toda a equipe com uma deliciosa feijoada.</p></div></div>
             </div>
         </div>
-
-        <!-- ===== PÁGINA 4: GRÁFICO DE EVOLUÇÃO ===== -->
-        <div id="chart-view" class="carousel-page">
-            <div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div>
-            <div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div>
-        </div>
-
     </div>
 
     <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA ===== -->
@@ -415,7 +413,7 @@
         }
 
         function updateProcessStats(monthSales) {
-            const metas = { 'PREVIDENCIÁRIOS': 400, 'SEGURO TERCEIRO': 30, 'SEGURO DE VIDA': 90 };
+            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
             let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
             const clientesST = new Set();
             monthSales.forEach(sale => {
