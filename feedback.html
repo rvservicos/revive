@@ -409,7 +409,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>🗣️ Pendências cobradas</label>
+                        <label>🗣️ Processos finalizados</label>
                         <div class="number-input">
                             <button class="btn-counter minus" onclick="changeValue('pendenciasCobradas', -1)">-</button>
                             <input type="number" id="pendenciasCobradas" min="0" value="0">
@@ -774,7 +774,7 @@
             if (data.clientesWhatsapp > 0) feedback += `Respondi ${data.clientesWhatsapp} clientes no WhatsApp\n`;
             if (data.pendenciasResolvidas > 0) feedback += `Resolvi ${data.pendenciasResolvidas} pendências\n`;
             if (data.pendenciasSolicitadas > 0) feedback += `Solicitei ${data.pendenciasSolicitadas} pendências\n`;
-            if (data.pendenciasCobradas > 0) feedback += `Cobrei ${data.pendenciasCobradas} pendências\n`;
+            if (data.pendenciasCobradas > 0) feedback += `Finalizei ${data.pendenciasCobradas} processos para protocolar\n`;
             if (data.documentosSalvos > 0) feedback += `Salvei ${data.documentosSalvos} documentos\n`;
             if (data.documentosRecebidos > 0) feedback += `Recebi ${data.documentosRecebidos} documentos\n`;
             if (data.emailsEnviados > 0) feedback += `Enviei ${data.emailsEnviados} e-mails\n`;
