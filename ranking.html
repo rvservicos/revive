@@ -58,6 +58,23 @@
         .month-selector { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 15px; }
         .month-selector label { font-weight: 600; color: #6b46c1; }
         .month-selector select { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; }
+        
+        /* NOVO: ESTILO PARA O BOTÃO DE PAUSAR/PLAY */
+        #carousel-toggle-button {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: white;
+            color: #6b46c1; /* Cor do ícone */
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, color 0.2s;
+            line-height: 1; /* Ajuda no alinhamento vertical do ícone */
+        }
+        #carousel-toggle-button:hover {
+            background-color: #f3f4f6;
+        }
+
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -130,7 +147,16 @@
                 <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
             </div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
-            <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
+            
+            <!-- ÁREA MODIFICADA: ADICIONADO BOTÃO DE PAUSE/PLAY -->
+            <div class="month-selector">
+                <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
+                <select id="monthFilter" onchange="updateDashboard()"></select>
+                <button id="carousel-toggle-button" title="Pausar Carrossel">
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
                 <div class="stat-card">
@@ -196,6 +222,7 @@
         let salesData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
+        let carouselPaused = false; // NOVO: Variável de controle para o carrossel
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
         const DRA_RENATA_STRING = "DRA RENATA";
@@ -213,7 +240,8 @@
             let currentPageIndex = 0;
             if (pages.length === 0) return;
             setInterval(() => {
-                if(isAnimationPlaying) return;
+                // MODIFICADO: Verifica se o carrossel está pausado
+                if(isAnimationPlaying || carouselPaused) return; 
                 pages[currentPageIndex].classList.remove('active');
                 currentPageIndex = (currentPageIndex + 1) % pages.length;
                 pages[currentPageIndex].classList.add('active');
@@ -575,6 +603,23 @@
                     closeProcessDetails();
                 }
             }
+
+            // NOVO: Lógica para o botão de pausar/retomar o carrossel
+            const toggleBtn = document.getElementById('carousel-toggle-button');
+            const icon = toggleBtn.querySelector('i');
+
+            toggleBtn.addEventListener('click', () => {
+                carouselPaused = !carouselPaused; // Inverte o estado de pausa
+                if (carouselPaused) {
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                    toggleBtn.title = 'Retomar Carrossel';
+                } else {
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                    toggleBtn.title = 'Pausar Carrossel';
+                }
+            });
         });
     </script>
 </body>
