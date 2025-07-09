@@ -37,6 +37,15 @@
         .consultant-name { color: #374151; font-weight: 500; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
         .consultant-photo-ranking { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecff; }
+        /* NOVO ESTILO PARA A FOTO DO MELHOR CONSULTOR */
+        #topConsultantPhoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #a78bfa;
+            margin-right: 10px;
+        }
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 20px; border-radius: 15px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
@@ -125,7 +134,15 @@
             <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span></div><div class="stat-label">em processos este mês</div></div>
+                <!-- HTML MODIFICADO PARA INCLUIR A FOTO DO MELHOR CONSULTOR -->
+                <div class="stat-card">
+                    <h3><i class="fas fa-trophy"></i> Melhor Consultor</h3>
+                    <div class="stat-value">
+                        <img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;">
+                        🏆 <span id="topConsultant">-</span>
+                    </div>
+                    <div class="stat-label">em processos este mês</div>
+                </div>
                 <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
             </div>
             <div class="main-content">
@@ -164,7 +181,7 @@
             <div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div>
             <div class="timeline">
                 <div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div>
-                <div class="timeline-item"><div class="content"><span class="date">23 de Agosto de 2025</span><h3>Feijoada ReVive</h3><p>Um momento de descontração e integração para toda a equipe com uma deliciosa feijoada.</p></div></div>
+                <div class="timeline-item"><div class="content"><span class="date">23 de Agosto de 2025</span><h3>Feijoada ReVive</h3><p>Um momento de descontração e integração para toda a equipe. uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. O grupo tem como objetivo reforçar a marca da ReVive através de um momento marcado por interação, conexão e possibilidade de muitos fechamentos de processo.</p></div></div>
             </div>
         </div>
     </div>
@@ -187,7 +204,6 @@
         let salesData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
-        const saleSound = new Audio('foguete.mp3'); // <-- MUDANÇA 1: OBJETO DE ÁUDIO CRIADO
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
         const DRA_RENATA_STRING = "DRA RENATA";
@@ -215,10 +231,14 @@
         // --- LÓGICA DE ANIMAÇÃO DE NOVA VENDA ---
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
-            isAnimationPlaying = true;
-            
-            saleSound.play().catch(error => console.error("Erro ao tocar o som:", error)); // <-- MUDANÇA 2: SOM É TOCADO
 
+            // NOVA FUNCIONALIDADE: TOCAR SOM DE VENDA
+            const saleSound = new Audio('foguete.mp3');
+            saleSound.play().catch(error => {
+                console.error("Erro ao tocar o som da venda:", error);
+            });
+
+            isAnimationPlaying = true;
             const overlay = document.getElementById('sale-notification-overlay');
             const textElement = document.getElementById('sale-notification-text');
             const processElement = document.getElementById('sale-notification-process');
@@ -407,7 +427,29 @@
                 stats[key].sales += numProcessos;
             });
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
-            document.getElementById('topConsultant').textContent = ranking.length > 0 ? ranking[0].name : '-';
+
+            // NOVA LÓGICA PARA ATUALIZAR O CARD DO MELHOR CONSULTOR COM FOTO
+            const topConsultantNameEl = document.getElementById('topConsultant');
+            const topConsultantPhotoEl = document.getElementById('topConsultantPhoto');
+
+            if (ranking.length > 0 && ranking[0].sales > 0) {
+                const topConsultant = ranking[0];
+                const photoUrl = getConsultantPhotoUrl(topConsultant.name);
+
+                topConsultantNameEl.textContent = topConsultant.name;
+                topConsultantPhotoEl.src = photoUrl;
+                topConsultantPhotoEl.onerror = () => { 
+                    topConsultantPhotoEl.src = DEFAULT_AVATAR; 
+                    topConsultantPhotoEl.onerror = null; 
+                };
+                topConsultantPhotoEl.style.display = 'inline-block';
+            } else {
+                topConsultantNameEl.textContent = '-';
+                topConsultantPhotoEl.style.display = 'none';
+                topConsultantPhotoEl.src = ''; 
+            }
+
+            // A lógica abaixo para a lista de ranking continua a mesma
             let html = '';
             ranking.slice(0, 10).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
@@ -481,21 +523,13 @@
             });
             
             const dataPoints = Object.values(monthlyCounts);
-
-            // --- LÓGICA PARA NÃO DESENHAR A LINHA PARA MESES FUTUROS (VALOR 0) ---
-            // Encontra o índice do último mês que teve processos (> 0)
             const lastDataIndex = dataPoints.findLastIndex(d => d > 0);
-            
-            // Cria um novo array de dados. Se o mês for futuro (após o último com dados), seu valor será null.
             const finalDataPoints = dataPoints.map((point, index) => {
-                // Se nenhum mês teve dados ainda, ou se o índice atual é anterior/igual ao último com dados, mantém o ponto.
                 if (lastDataIndex === -1 || index <= lastDataIndex) {
                     return point;
                 }
-                // Caso contrário (é um mês futuro sem dados), retorna null para quebrar a linha.
                 return null;
             });
-            // --------------------------------------------------------------------------
 
             const ctx = document.getElementById('processEvolutionChart').getContext('2d');
             const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -508,7 +542,7 @@
                     labels: labels, 
                     datasets: [{ 
                         label: 'Número de Processos', 
-                        data: finalDataPoints, // Usa o novo array de dados com nulls
+                        data: finalDataPoints,
                         backgroundColor: 'rgba(139, 92, 246, 0.2)', 
                         borderColor: '#8b5cf6', 
                         borderWidth: 3, 
