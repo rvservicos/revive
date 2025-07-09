@@ -37,15 +37,23 @@
         .consultant-name { color: #374151; font-weight: 500; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
         .consultant-photo-ranking { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecff; }
-        /* NOVO ESTILO PARA A FOTO DO MELHOR CONSULTOR */
+        
+        /* ESTILO APRIMORADO PARA A FOTO DO MELHOR CONSULTOR */
         #topConsultantPhoto {
-            width: 50px;
-            height: 50px;
+            width: 55px; /* Um pouco maior para mais destaque */
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #a78bfa;
-            margin-right: 10px;
+            margin-right: 12px; /* Espaçamento ajustado */
+            box-shadow: 0 4px 10px rgba(147, 51, 234, 0.2); /* Sombra suave para dar profundidade */
+            background-color: #f0f2ff; /* Cor de fundo caso a imagem demore a carregar */
+            transition: transform 0.3s ease;
         }
+        .stat-card:hover #topConsultantPhoto {
+            transform: scale(1.05); /* Efeito de zoom sutil no hover do card */
+        }
+        
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 20px; border-radius: 15px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
@@ -134,7 +142,6 @@
             <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <!-- HTML MODIFICADO PARA INCLUIR A FOTO DO MELHOR CONSULTOR -->
                 <div class="stat-card">
                     <h3><i class="fas fa-trophy"></i> Melhor Consultor</h3>
                     <div class="stat-value">
@@ -232,7 +239,6 @@
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
 
-            // NOVA FUNCIONALIDADE: TOCAR SOM DE VENDA
             const saleSound = new Audio('foguete.mp3');
             saleSound.play().catch(error => {
                 console.error("Erro ao tocar o som da venda:", error);
@@ -428,7 +434,6 @@
             });
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
 
-            // NOVA LÓGICA PARA ATUALIZAR O CARD DO MELHOR CONSULTOR COM FOTO
             const topConsultantNameEl = document.getElementById('topConsultant');
             const topConsultantPhotoEl = document.getElementById('topConsultantPhoto');
 
@@ -449,7 +454,6 @@
                 topConsultantPhotoEl.src = ''; 
             }
 
-            // A lógica abaixo para a lista de ranking continua a mesma
             let html = '';
             ranking.slice(0, 10).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
@@ -500,7 +504,6 @@
             document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
         }
 
-        // --- FUNÇÃO DO GRÁFICO (MODIFICADA) ---
         function updateProcessEvolutionChart(allSalesData) {
             if (!allSalesData || allSalesData.length === 0) return;
             const mostRecentYear = Math.max(...allSalesData
