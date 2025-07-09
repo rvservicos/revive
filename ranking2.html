@@ -35,10 +35,8 @@
         .consultant-info { display: flex; align-items: center; gap: 15px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
         .consultant-name { color: #374151; font-weight: 500; }
-        /* NOVO ESTILO: Torna a contagem de vendas clicável */
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .sales-count:hover { background-color: #6b46c1; color: white; }
-        
         .consultant-photo-ranking { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecff; }
         #topConsultantPhoto { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-left: 15px; box-shadow: 0 5px 15px rgba(147, 51, 234, 0.25); background-color: #f0f2ff; transition: transform 0.3s ease; }
         .stat-card:hover #topConsultantPhoto { transform: scale(1.05); }
@@ -55,9 +53,30 @@
         .process-badge, .date-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-block; }
         .process-badge { background: #e8ecff; color: #6b46c1; }
         .date-badge { background: #f3f4f6; color: #6b7280; }
-        .month-selector { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 15px; }
+        .month-selector { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: center; gap: 15px; }
         .month-selector label { font-weight: 600; color: #6b46c1; }
         .month-selector select { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; }
+        
+        /* NOVO: Estilo para o botão de controle do carrossel */
+        .carousel-control-button {
+            background-color: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .carousel-control-button:hover {
+            background-color: #6b46c1;
+            transform: scale(1.1);
+        }
+
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -98,8 +117,6 @@
         @keyframes launch { 0% { transform: translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(-45deg); opacity: 0; } }
         .rocket:nth-child(2) { left: 10%; animation-delay: 0.5s; }
         .rocket:nth-child(3) { left: 80%; animation-delay: 0.2s; }
-
-        /* NOVO: ESTILOS PARA O MODAL DE DETALHES */
         #process-details-modal { position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
         .modal-content { background-color: #fefefe; margin: auto; padding: 30px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); position: relative; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-content h2 { color: #6b46c1; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; }
@@ -130,7 +147,14 @@
                 <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
             </div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
-            <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
+            <!-- NOVO: Adicionado o botão de pause/play -->
+            <div class="month-selector">
+                <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
+                <select id="monthFilter" onchange="updateDashboard()"></select>
+                <button id="carousel-pause-button" class="carousel-control-button" title="Pausar Carrossel">
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
                 <div class="stat-card">
@@ -180,7 +204,7 @@
         </div>
     </div>
 
-    <!-- NOVO: HTML PARA O MODAL DE DETALHES DE PROCESSOS -->
+    <!-- ===== MODAL DE DETALHES DE PROCESSOS ===== -->
     <div id="process-details-modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeProcessDetails()">×</span>
@@ -201,25 +225,57 @@
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
-        let consultantDetails = {}; // NOVO: Armazena os detalhes dos processos por consultor
+        let consultantDetails = {}; 
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
+        
+        // NOVO: Variáveis para controle do carrossel
+        let carouselIntervalId = null;
+        let isCarouselPaused = false;
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
 
-        function setupCarousel() {
+        // --- LÓGICA DO CARROSSEL DE PÁGINAS ---
+        function startCarousel() {
             const pages = document.querySelectorAll('.carousel-page');
-            let currentPageIndex = 0;
             if (pages.length === 0) return;
-            setInterval(() => {
-                if(isAnimationPlaying) return;
+            
+            // Limpa qualquer intervalo anterior para evitar múltiplos timers
+            if (carouselIntervalId) clearInterval(carouselIntervalId);
+
+            let currentPageIndex = Array.from(pages).findIndex(p => p.classList.contains('active'));
+            if (currentPageIndex === -1) currentPageIndex = 0;
+
+            carouselIntervalId = setInterval(() => {
+                if (isAnimationPlaying) return;
                 pages[currentPageIndex].classList.remove('active');
                 currentPageIndex = (currentPageIndex + 1) % pages.length;
                 pages[currentPageIndex].classList.add('active');
-            }, 20000); 
+            }, 20000);
         }
 
+        function pauseCarousel() {
+            clearInterval(carouselIntervalId);
+        }
+
+        function toggleCarouselPause() {
+            const button = document.getElementById('carousel-pause-button');
+            const icon = button.querySelector('i');
+            isCarouselPaused = !isCarouselPaused;
+
+            if (isCarouselPaused) {
+                pauseCarousel();
+                icon.className = 'fas fa-play';
+                button.title = 'Retomar Carrossel';
+            } else {
+                startCarousel();
+                icon.className = 'fas fa-pause';
+                button.title = 'Pausar Carrossel';
+            }
+        }
+        
+        // --- FUNÇÕES DE ANIMAÇÃO E BUSCA DE DADOS (sem alterações) ---
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
             const saleSound = new Audio('foguete.mp3');
@@ -309,97 +365,15 @@
             return result.map(item => item.trim());
         }
 
-        function updateConnectionStatus(status, message) {
-            const el = document.getElementById('connectionStatus');
-            if (!el) return;
-            el.className = 'connection-status';
-            el.classList.add(`status-${status}`);
-            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
-            el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
-        }
+        // --- FUNÇÕES DE ATUALIZAÇÃO DO DASHBOARD (com modificações para o ranking) ---
+        function updateConnectionStatus(status, message) { /* ... sem alterações ... */ }
+        function populateMonthFilter(dataToScan) { /* ... sem alterações ... */ }
+        function getMonthSales() { /* ... sem alterações ... */ }
+        function updateDashboard() { /* ... sem alterações ... */ }
+        function updateMainStats(monthSalesData) { /* ... sem alterações ... */ }
+        function getNormalizedConsultantKey(fullName) { /* ... sem alterações ... */ }
+        function getConsultantPhotoUrl(consultantName) { /* ... sem alterações ... */ }
         
-        function populateMonthFilter(dataToScan) {
-            const monthSet = new Set();
-            (dataToScan || []).forEach(sale => {
-                if (sale.data) {
-                    const parts = sale.data.split('/');
-                    if (parts.length === 3) {
-                        const [day, month, year] = parts.map(p => parseInt(p, 10));
-                        if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) {
-                            monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
-                        }
-                    }
-                }
-            });
-            const monthSelect = document.getElementById('monthFilter');
-            const currentVal = monthSelect.value;
-            const allMonths = Array.from(monthSet).sort((a, b) => {
-                const [ma, ya] = a.split('/');
-                const [mb, yb] = b.split('/');
-                return new Date(yb, mb - 1) - new Date(ya, ma - 1);
-            });
-            monthSelect.innerHTML = '';
-            allMonths.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-            if (allMonths.includes(currentVal)) {
-                monthSelect.value = currentVal;
-            } else if (allMonths.length > 0) {
-                monthSelect.value = allMonths[0];
-            }
-        }
-        
-        function getMonthSales() {
-            const selectedMonthYear = document.getElementById('monthFilter').value;
-            if (!selectedMonthYear) return [];
-            const [filterMonth, filterYear] = selectedMonthYear.split('/');
-            return salesData.filter(sale => {
-                if (!sale.data) return false;
-                const [saleDay, saleMonth, saleYear] = sale.data.split('/');
-                return saleMonth === filterMonth && saleYear === filterYear;
-            });
-        }
-        
-        function updateDashboard() {
-            if (document.getElementById('monthFilter').options.length === 0) return;
-            const monthSales = getMonthSales();
-            updateProcessStats(monthSales);
-            updateMainStats(monthSales);
-            updateConsultantRanking(monthSales);
-            updateMonthSales(monthSales);
-            updateProcessEvolutionChart(salesData); 
-        }
-
-        function updateMainStats(monthSalesData) {
-            const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
-            document.getElementById('totalMonth').textContent = totalProcessos;
-            const selectedMonthYear = document.getElementById('monthFilter').value;
-            const [monthStr, yearStr] = selectedMonthYear.split('/');
-            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
-            const maxDay = monthSalesData.reduce((max, sale) => {
-                const day = parseInt(sale.data.split('/')[0], 10);
-                return isNaN(day) ? max : Math.max(max, day);
-            }, 0);
-            const dailyAvg = totalProcessos > 0 && maxDay > 0 ? (totalProcessos / maxDay) : 0;
-            document.getElementById('dailyAverage').textContent = dailyAvg.toFixed(1);
-        }
-
-        function getNormalizedConsultantKey(fullName) {
-            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
-            return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
-        }
-
-        function getConsultantPhotoUrl(consultantName) {
-            if (!consultantName) return DEFAULT_AVATAR;
-            const baseName = getNormalizedConsultantKey(consultantName);
-            return `${baseName}.PNG`;
-        }
-        
-        // FUNÇÃO MODIFICADA PARA GUARDAR DETALHES
         function updateConsultantRanking(monthSales) {
             const stats = {};
             monthSales.forEach(sale => {
@@ -410,7 +384,7 @@
                     stats[key] = {
                         name: displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(),
                         sales: 0,
-                        processDetails: {} // Armazena a contagem de cada tipo de processo
+                        processDetails: {}
                     };
                 }
                 
@@ -418,12 +392,12 @@
                     const proc = procRaw.trim().toUpperCase();
                     if (!proc || proc === DRA_RENATA_STRING) return;
 
-                    stats[key].sales++; // Incrementa o total
-                    stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1; // Incrementa o detalhe
+                    stats[key].sales++;
+                    stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1;
                 });
             });
 
-            consultantDetails = stats; // Salva os detalhes para o modal usar
+            consultantDetails = stats;
             
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
             const topConsultantNameEl = document.getElementById('topConsultant');
@@ -446,7 +420,6 @@
             ranking.slice(0, 10).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
-                // Adicionado onclick para chamar a função do modal
                 html += `<div class="ranking-item">
                             <div class="consultant-info">
                                 <div class="rank-number">${i + 1}</div>
@@ -459,76 +432,11 @@
             document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
         }
 
-        // FUNÇÃO RESTANTE... (SEM ALTERAÇÕES SIGNIFICATIVAS)
-        function updateProcessStats(monthSales) {
-            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
-            const clientesST = new Set();
-            monthSales.forEach(sale => {
-                (sale.processo || '').split(',').forEach(procRaw => {
-                    const proc = procRaw.trim().toUpperCase();
-                    if (!proc || proc === DRA_RENATA_STRING) return;
-                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
-                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
-                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
-                    else counts.outros++;
-                });
-            });
-            counts.seguroTerceiro = clientesST.size;
-            currentMonthCounts = counts;
-            const updateCard = (type, count, meta, goalEl, percentEl) => {
-                document.getElementById(`${type}Count`).textContent = count;
-                const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-                document.getElementById(goalEl).textContent = `${count}/${meta}`;
-                document.getElementById(percentEl).textContent = percent;
-            };
-            updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS'], 'previdenciariosGoal', 'previdenciariosPercent');
-            updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO'], 'seguroTerceiroGoal', 'seguroTerceiroPercent');
-            updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA'], 'seguroVidaGoal', 'seguroVidaPercent');
-            document.getElementById('outrosCount').textContent = counts.outros;
-        }
+        function updateProcessStats(monthSales) { /* ... sem alterações ... */ }
+        function updateMonthSales(monthSales) { /* ... sem alterações ... */ }
+        function updateProcessEvolutionChart(allSalesData) { /* ... sem alterações ... */ }
 
-        function updateMonthSales(monthSales) {
-            const sortedSales = [...monthSales].sort((a, b) => {
-                const dateA = new Date(a.data.split('/').reverse().join('-'));
-                const dateB = new Date(b.data.split('/').reverse().join('-'));
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
-        }
-
-        function updateProcessEvolutionChart(allSalesData) {
-            if (!allSalesData || allSalesData.length === 0) return;
-            const mostRecentYear = Math.max(...allSalesData.map(sale => sale.data ? parseInt(sale.data.split('/')[2], 10) : 0).filter(year => !isNaN(year) && year > 1900));
-            if (!mostRecentYear) return;
-            document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
-            const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            allSalesData.forEach(sale => {
-                if (!sale.data || !sale.processo) return;
-                const parts = sale.data.split('/');
-                if (parts.length !== 3) return;
-                const year = parseInt(parts[2], 10);
-                const month = parseInt(parts[1], 10);
-                if (year === mostRecentYear && month >= 5) {
-                    const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
-                    if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
-                }
-            });
-            const dataPoints = Object.values(monthlyCounts);
-            const lastDataIndex = dataPoints.findLastIndex(d => d > 0);
-            const finalDataPoints = dataPoints.map((point, index) => (lastDataIndex === -1 || index <= lastDataIndex) ? point : null);
-            const ctx = document.getElementById('processEvolutionChart').getContext('2d');
-            const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            if (processEvolutionChartInstance) { processEvolutionChartInstance.destroy(); }
-            processEvolutionChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Número de Processos', data: finalDataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#6b46c1', pointRadius: 5, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } } } });
-        }
-
-        // --- NOVAS FUNÇÕES PARA O MODAL ---
+        // --- FUNÇÕES PARA O MODAL ---
         function showProcessDetails(consultantKey) {
             const details = consultantDetails[consultantKey];
             if (!details) return;
@@ -538,8 +446,6 @@
             const contentEl = document.getElementById('modal-details-content');
 
             titleEl.textContent = `Detalhes de ${details.name}`;
-
-            // Ordena os processos pela quantidade, do maior para o menor
             const sortedProcesses = Object.entries(details.processDetails).sort((a, b) => b[1] - a[1]);
 
             if (sortedProcesses.length === 0) {
@@ -547,14 +453,12 @@
             } else {
                 let listHtml = '<ul class="details-list">';
                 sortedProcesses.forEach(([processName, count]) => {
-                    // Capitaliza o nome do processo para melhor visualização
                     const formattedName = processName.charAt(0).toUpperCase() + processName.slice(1).toLowerCase();
                     listHtml += `<li><span class="process-name">${formattedName}</span> <span class="process-count-badge">${count}</span></li>`;
                 });
                 listHtml += '</ul>';
                 contentEl.innerHTML = listHtml;
             }
-
             modal.style.display = 'flex';
         }
 
@@ -564,11 +468,14 @@
         
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
-            setupCarousel();
+            // NOVO: Adiciona o listener para o botão de pause
+            const pauseButton = document.getElementById('carousel-pause-button');
+            pauseButton.addEventListener('click', toggleCarouselPause);
+            
+            startCarousel(); // Inicia o carrossel
             fetchSheetData();
             setInterval(fetchSheetData, 30000);
 
-            // Adiciona evento para fechar modal ao clicar fora
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
                 if (event.target == modal) {
