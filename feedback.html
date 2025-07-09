@@ -591,7 +591,7 @@
                 </div>
             </div>
 
-            <!-- Setor Seguro (Restaurado) -->
+            <!-- Setor Seguro (Restaurado e MODIFICADO) -->
             <div class="form-section" id="seguro-section">
                 <div class="sector-header">🛡️ Núcleo de Seguro de Vida</div>
                 <div class="quick-actions">
@@ -624,7 +624,23 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>⚖️ Juntas solicitadas</label>
+                        <label>🗓️ Perícias Agendadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('periciasAgendadasSeguro', -1)">-</button>
+                            <input type="number" id="periciasAgendadasSeguro" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('periciasAgendadasSeguro', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🤝 Juntas Agendadas</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('juntasAgendadas', -1)">-</button>
+                            <input type="number" id="juntasAgendadas" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('juntasAgendadas', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>⚖️ Juntas Médicas Solicitadas</label>
                         <div class="number-input">
                             <button class="btn-counter minus" onclick="changeValue('juntasSolicitadas', -1)">-</button>
                             <input type="number" id="juntasSolicitadas" min="0" value="0">
@@ -708,7 +724,7 @@
                 'pendencias': ['clientesWhatsapp', 'pendenciasResolvidas', 'pendenciasSolicitadas', 'documentosSalvos', 'emailsEnviados', 'documentosRecebidos', 'pastasCriadas', 'recibosLancados', 'processosCadastrados', 'pendenciasCobradas'],
                 'rtm': ['periciasAgendadas', 'periciasRealizadas', 'laudosSalvos', 'laudosCorrigidos', 'clientesRTM', 'taxasCobradas'],
                 'prontuario': ['prontuariosSolicitados', 'prontuariosRecebidos', 'prontuariosSalvos', 'examesRaioX', 'hospitaisContatados', 'clientesOrientados'],
-                'seguro': ['pagamentosRealizados', 'processosDespachados', 'acompanhamentosExternos', 'juntasSolicitadas', 'revisoesProtocoladas', 'aprovacoesAcompanhadas']
+                'seguro': ['pagamentosRealizados', 'processosDespachados', 'acompanhamentosExternos', 'juntasSolicitadas', 'revisoesProtocoladas', 'aprovacoesAcompanhadas', 'periciasAgendadasSeguro', 'juntasAgendadas']
             };
             
             sections[section].forEach(id => {
@@ -728,7 +744,7 @@
                 },
                 'rtm': { 'periciasAgendadas': 6, 'periciasRealizadas': 8, 'laudosSalvos': 12, 'laudosCorrigidos': 5, 'clientesRTM': 25, 'taxasCobradas': 15 },
                 'prontuario': { 'prontuariosSolicitados': 35, 'prontuariosRecebidos': 18, 'prontuariosSalvos': 12, 'examesRaioX': 8, 'hospitaisContatados': 6, 'clientesOrientados': 10 },
-                'seguro': { 'pagamentosRealizados': 5, 'processosDespachados': 8, 'acompanhamentosExternos': 15, 'juntasSolicitadas': 3, 'revisoesProtocoladas': 6, 'aprovacoesAcompanhadas': 4 }
+                'seguro': { 'pagamentosRealizados': 5, 'processosDespachados': 8, 'acompanhamentosExternos': 15, 'juntasSolicitadas': 3, 'revisoesProtocoladas': 6, 'aprovacoesAcompanhadas': 4, 'periciasAgendadasSeguro': 2, 'juntasAgendadas': 1 }
             };
             
             Object.keys(examples[section]).forEach(id => {
@@ -842,6 +858,8 @@
                 pagamentosRealizados: parseInt(document.getElementById('pagamentosRealizados').value) || 0,
                 processosDespachados: parseInt(document.getElementById('processosDespachados').value) || 0,
                 acompanhamentosExternos: parseInt(document.getElementById('acompanhamentosExternos').value) || 0,
+                periciasAgendadasSeguro: parseInt(document.getElementById('periciasAgendadasSeguro').value) || 0,
+                juntasAgendadas: parseInt(document.getElementById('juntasAgendadas').value) || 0,
                 juntasSolicitadas: parseInt(document.getElementById('juntasSolicitadas').value) || 0,
                 revisoesProtocoladas: parseInt(document.getElementById('revisoesProtocoladas').value) || 0,
                 aprovacoesAcompanhadas: parseInt(document.getElementById('aprovacoesAcompanhadas').value) || 0
@@ -850,7 +868,9 @@
             if (data.pagamentosRealizados > 0) feedback += `Realizei ${data.pagamentosRealizados} pagamentos\n`;
             if (data.processosDespachados > 0) feedback += `Despachei ${data.processosDespachados} processos\n`;
             if (data.acompanhamentosExternos > 0) feedback += `Acompanhei ${data.acompanhamentosExternos} processos externos\n`;
-            if (data.juntasSolicitadas > 0) feedback += `Solicitei ${data.juntasSolicitadas} juntas\n`;
+            if (data.periciasAgendadasSeguro > 0) feedback += `Agendei ${data.periciasAgendadasSeguro} perícias\n`;
+            if (data.juntasAgendadas > 0) feedback += `Agendei ${data.juntasAgendadas} juntas\n`;
+            if (data.juntasSolicitadas > 0) feedback += `Solicitei ${data.juntasSolicitadas} juntas médicas\n`;
             if (data.revisoesProtocoladas > 0) feedback += `Protocolei ${data.revisoesProtocoladas} revisões\n`;
             if (data.aprovacoesAcompanhadas > 0) feedback += `Acompanhei ${data.aprovacoesAcompanhadas} aprovações\n`;
             return feedback.trim() || 'Nenhuma atividade registrada hoje.';
