@@ -208,7 +208,7 @@
         // FUNÇÃO MODIFICADA PARA EXIBIR A FOTO
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
-            const saleSound = new Audio('foguete.mp3');
+            const saleSound = new Audio('foguete.wav');
             saleSound.play().catch(error => console.error("Erro ao tocar o som da venda:", error));
             isAnimationPlaying = true;
 
