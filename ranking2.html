@@ -142,7 +142,6 @@
                 <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
                 <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%) e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
             </div>
-            <!-- ===== SEÇÃO MODIFICADA ===== -->
             <div class="panel recent-sales">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
                     <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
@@ -372,7 +371,7 @@
             updateProcessStats(monthSales);
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
-            populateConsultantFilter(monthSales); // NOVO: Popula o filtro de consultor
+            populateConsultantFilter(monthSales);
             updateMonthSales(monthSales);
             updateProcessEvolutionChart(salesData); 
         }
@@ -480,52 +479,62 @@
             updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA'], 'seguroVidaGoal', 'seguroVidaPercent');
             document.getElementById('outrosCount').textContent = counts.outros;
         }
-
-        // ===== NOVA FUNÇÃO =====
+        
+        // ===== FUNÇÃO MODIFICADA =====
+        // Popula o filtro usando a mesma lógica do ranking para evitar duplicatas.
         function populateConsultantFilter(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
             if (!consultantFilterSelect) return;
 
             const currentSelection = consultantFilterSelect.value;
-            const consultants = new Set();
+            const consultantsMap = new Map(); // Usar um Map para { 'chave_normalizada': 'Nome Exibido' }
+
             monthSales.forEach(sale => {
                 if (sale.consultor && sale.consultor.trim() !== "") {
-                    consultants.add(sale.consultor.trim());
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName); // Ex: 'joao'
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(); // Ex: 'Joao'
+                        consultantsMap.set(key, formattedName);
+                    }
                 }
             });
 
-            const sortedConsultants = Array.from(consultants).sort((a, b) => a.localeCompare(b));
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
 
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>'; // Opção "Todos"
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
 
-            sortedConsultants.forEach(consultant => {
+            sortedConsultants.forEach(([key, displayName]) => {
                 const option = document.createElement('option');
-                option.value = consultant;
-                option.textContent = consultant;
+                option.value = key; // O valor é a chave normalizada
+                option.textContent = displayName; // O texto é o nome formatado
                 consultantFilterSelect.appendChild(option);
             });
-
-            // Mantém a seleção anterior se o consultor ainda existir na nova lista
+            
             if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
                 consultantFilterSelect.value = currentSelection;
             }
         }
-
-        // ===== NOVA FUNÇÃO =====
+        
         function filterSalesByConsultant() {
             const monthSales = getMonthSales();
             updateMonthSales(monthSales);
         }
 
         // ===== FUNÇÃO MODIFICADA =====
+        // Filtra a tabela de vendas usando a chave normalizada do consultor.
         function updateMonthSales(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
-            const selectedConsultant = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
 
             let filteredSales = monthSales;
 
-            if (selectedConsultant !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && sale.consultor.trim() === selectedConsultant);
+            if (selectedConsultantKey !== 'all') {
+                // A lógica de filtragem agora usa a chave normalizada
+                filteredSales = monthSales.filter(sale => 
+                    sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey
+                );
             }
 
             const sortedSales = [...filteredSales].sort((a, b) => {
