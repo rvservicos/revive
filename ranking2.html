@@ -64,17 +64,92 @@
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
-        .culture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
-        .culture-card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); border-top: 5px solid #a78bfa; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .culture-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15); }
-        .culture-card .icon { font-size: 3rem; background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        .culture-card h2 { font-size: 1.8rem; color: #6b46c1; margin-bottom: 15px; }
-        .culture-card p { font-size: 1.1rem; color: #555; line-height: 1.6; }
-        #values-card { grid-column: 1 / -1; }
-        .values-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 25px; }
-        .value-item { background: #f8f9ff; padding: 20px; border-radius: 15px; border: 1px solid #e8ecff; }
-        .value-item .icon { font-size: 1.8rem; margin-bottom: 10px; }
-        .value-item h4 { font-size: 1rem; color: #6b46c1; font-weight: 600; }
+        
+        /* --- ESTILOS DA PÁGINA DE CULTURA (MODIFICADOS) --- */
+        .culture-section {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .mission-vision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .culture-card { 
+            background: white; 
+            padding: 35px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); 
+            border-top: 5px solid #a78bfa; 
+            text-align: center; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .culture-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15); 
+        }
+        .culture-card.prominent-card {
+            background: linear-gradient(135deg, #fdfcff, #f3f5ff);
+            border-top-color: #8b5cf6;
+        }
+        .culture-card.prominent-card h2 {
+            font-size: 2rem;
+        }
+        .culture-card.prominent-card p {
+            font-size: 1.2rem;
+        }
+        .culture-card .icon { 
+            font-size: 3rem; 
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 20px; 
+        }
+        .culture-card h2 { 
+            font-size: 1.8rem; 
+            color: #6b46c1; 
+            margin-bottom: 15px; 
+        }
+        .culture-card p { 
+            font-size: 1.1rem; 
+            color: #555; 
+            line-height: 1.6; 
+        }
+        .values-inline-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .value-tag {
+            background: #f8f9ff;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #e8ecff;
+            color: #6b46c1;
+            font-weight: 500;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        .value-tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.1);
+            border-color: #dadaff;
+        }
+        .value-tag i {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* --- FIM DOS ESTILOS DE CULTURA --- */
+
         .timeline { position: relative; max-width: 800px; margin: 50px auto; padding: 20px 0; }
         .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #a78bfa, #8b5cf6); border-radius: 3px; transform: translateX(-50%); }
         .timeline-item { padding: 10px 40px; position: relative; width: 50%; }
@@ -95,7 +170,6 @@
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
         
         .notification-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
         .notification-content h2 { font-size: 2.8rem; font-weight: 800; color: #6b46c1; margin-bottom: 15px; }
         .notification-content p { font-size: 1.3rem; color: #555; line-height: 1.6; }
@@ -118,7 +192,8 @@
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 4px 10px; border-radius: 15px; font-weight: 600; font-size: 0.85rem; }
 
         @media (max-width: 768px) {
-            .main-content, .culture-grid { grid-template-columns: 1fr; }
+            .main-content { grid-template-columns: 1fr; }
+            .mission-vision-grid { grid-template-columns: 1fr; }
             .timeline::before { left: 15px; }
             .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -159,7 +234,43 @@
             </div>
         </div>
         <div id="chart-view" class="carousel-page"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
-        <div id="mission-view" class="carousel-page"><div class="header"><h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1><p class="subtitle">Os pilares que nos guiam todos os dias.</p></div><div class="culture-grid"><div class="culture-card"><div class="icon"><i class="fas fa-bullseye"></i></div><h2>Missão</h2><p>Simplificar o acesso a direitos para quem enfrenta a dor.</p></div><div class="culture-card"><div class="icon"><i class="fas fa-eye"></i></div><h2>Visão</h2><p>Conduzir ao êxito mais de 100 mil processos até 2030.</p></div><div id="values-card" class="culture-card"><div class="icon"><i class="fas fa-star"></i></div><h2>Nossos Valores</h2><div class="values-list"><div class="value-item"><div class="icon"><i class="fas fa-balance-scale"></i></div><h4>Ética Profissional</h4></div><div class="value-item"><div class="icon"><i class="fas fa-trophy"></i></div><h4>Meritocracia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-lightbulb"></i></div><h4>Inovação</h4></div><div class="value-item"><div class="icon"><i class="fas fa-heart"></i></div><h4>Empatia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-bolt"></i></div><h4>Proatividade</h4></div><div class="value-item"><div class="icon"><i class="fas fa-search"></i></div><h4>Atenção aos Detalhes</h4></div></div></div></div></div>
+        
+        <!-- SEÇÃO DE CULTURA MODIFICADA -->
+        <div id="mission-view" class="carousel-page">
+            <div class="header">
+                <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
+                <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
+            </div>
+            <div class="culture-section">
+                <!-- Missão e Visão destacadas -->
+                <div class="mission-vision-grid">
+                    <div class="culture-card prominent-card">
+                        <div class="icon"><i class="fas fa-bullseye"></i></div>
+                        <h2>Missão</h2>
+                        <p>Simplificar o acesso a direitos para quem enfrenta a dor.</p>
+                    </div>
+                    <div class="culture-card prominent-card">
+                        <div class="icon"><i class="fas fa-eye"></i></div>
+                        <h2>Visão</h2>
+                        <p>Conduzir ao êxito mais de 100 mil processos até 2030.</p>
+                    </div>
+                </div>
+                <!-- Card de Valores com lista em linha -->
+                <div id="values-card" class="culture-card">
+                    <div class="icon"><i class="fas fa-star"></i></div>
+                    <h2>Nossos Valores</h2>
+                    <div class="values-inline-list">
+                        <span class="value-tag"><i class="fas fa-balance-scale"></i> Ética Profissional</span>
+                        <span class="value-tag"><i class="fas fa-trophy"></i> Meritocracia</span>
+                        <span class="value-tag"><i class="fas fa-lightbulb"></i> Inovação</span>
+                        <span class="value-tag"><i class="fas fa-heart"></i> Empatia</span>
+                        <span class="value-tag"><i class="fas fa-bolt"></i> Proatividade</span>
+                        <span class="value-tag"><i class="fas fa-search"></i> Atenção aos Detalhes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Um momento de descontração e integração para toda a equipe. uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. O grupo tem como objetivo reforçar a marca da ReVive através de um momento marcado por interação, conexão e possibilidade de muitos fechamentos de processo.</p></div></div></div></div>
     </div>
 
@@ -480,22 +591,20 @@
             document.getElementById('outrosCount').textContent = counts.outros;
         }
         
-        // ===== FUNÇÃO MODIFICADA =====
-        // Popula o filtro usando a mesma lógica do ranking para evitar duplicatas.
         function populateConsultantFilter(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
             if (!consultantFilterSelect) return;
 
             const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map(); // Usar um Map para { 'chave_normalizada': 'Nome Exibido' }
+            const consultantsMap = new Map();
 
             monthSales.forEach(sale => {
                 if (sale.consultor && sale.consultor.trim() !== "") {
                     const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName); // Ex: 'joao'
+                    const key = getNormalizedConsultantKey(rawName);
                     if (!consultantsMap.has(key)) {
                         const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(); // Ex: 'Joao'
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
                         consultantsMap.set(key, formattedName);
                     }
                 }
@@ -507,8 +616,8 @@
 
             sortedConsultants.forEach(([key, displayName]) => {
                 const option = document.createElement('option');
-                option.value = key; // O valor é a chave normalizada
-                option.textContent = displayName; // O texto é o nome formatado
+                option.value = key;
+                option.textContent = displayName;
                 consultantFilterSelect.appendChild(option);
             });
             
@@ -522,8 +631,6 @@
             updateMonthSales(monthSales);
         }
 
-        // ===== FUNÇÃO MODIFICADA =====
-        // Filtra a tabela de vendas usando a chave normalizada do consultor.
         function updateMonthSales(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
             const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
@@ -531,7 +638,6 @@
             let filteredSales = monthSales;
 
             if (selectedConsultantKey !== 'all') {
-                // A lógica de filtragem agora usa a chave normalizada
                 filteredSales = monthSales.filter(sale => 
                     sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey
                 );
