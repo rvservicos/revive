@@ -35,7 +35,6 @@
         .consultant-info { display: flex; align-items: center; gap: 15px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
         .consultant-name { color: #374151; font-weight: 500; }
-        /* NOVO ESTILO: Torna a contagem de vendas clicável */
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .sales-count:hover { background-color: #6b46c1; color: white; }
         
@@ -59,21 +58,8 @@
         .month-selector label { font-weight: 600; color: #6b46c1; }
         .month-selector select { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; }
         
-        /* NOVO: ESTILO PARA O BOTÃO DE PAUSAR/PLAY */
-        #carousel-toggle-button {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background-color: white;
-            color: #6b46c1; /* Cor do ícone */
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.2s, color 0.2s;
-            line-height: 1; /* Ajuda no alinhamento vertical do ícone */
-        }
-        #carousel-toggle-button:hover {
-            background-color: #f3f4f6;
-        }
+        #carousel-toggle-button { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; background-color: white; color: #6b46c1; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s, color 0.2s; line-height: 1; }
+        #carousel-toggle-button:hover { background-color: #f3f4f6; }
 
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
@@ -101,11 +87,15 @@
         .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border: 4px solid #8b5cf6; border-radius: 50%; top: 25px; z-index: 1; }
         .timeline-item:nth-child(odd)::after { right: -10px; }
         .timeline-item:nth-child(even)::after { left: -10px; }
+        
+        /* ESTILOS DA ANIMAÇÃO DE VENDA */
         #sale-notification-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(29, 13, 51, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s ease; overflow: hidden; }
         #sale-notification-overlay.show { display: flex; opacity: 1; }
         .notification-content { background: white; padding: 40px 50px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 700px; border-top: 8px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
+        
         .notification-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
         .notification-content h2 { font-size: 2.8rem; font-weight: 800; color: #6b46c1; margin-bottom: 15px; }
         .notification-content p { font-size: 1.3rem; color: #555; line-height: 1.6; }
@@ -116,7 +106,6 @@
         .rocket:nth-child(2) { left: 10%; animation-delay: 0.5s; }
         .rocket:nth-child(3) { left: 80%; animation-delay: 0.2s; }
 
-        /* NOVO: ESTILOS PARA O MODAL DE DETALHES */
         #process-details-modal { position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
         .modal-content { background-color: #fefefe; margin: auto; padding: 30px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); position: relative; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-content h2 { color: #6b46c1; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; }
@@ -139,65 +128,47 @@
 </head>
 <body>
     <div class="main-container">
-
-        <!-- ===== PÁGINA 1: DASHBOARD DE VENDAS ===== -->
+        <!-- ... (código das páginas do carrossel não modificado) ... -->
         <div id="dashboard-view" class="carousel-page active">
-            <div class="header">
-                <h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1>
-                <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
-            </div>
+            <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
-            
-            <!-- ÁREA MODIFICADA: ADICIONADO BOTÃO DE PAUSE/PLAY -->
-            <div class="month-selector">
-                <label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label>
-                <select id="monthFilter" onchange="updateDashboard()"></select>
-                <button id="carousel-toggle-button" title="Pausar Carrossel">
-                    <i class="fas fa-pause"></i>
-                </button>
-            </div>
-
+            <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select><button id="carousel-toggle-button" title="Pausar Carrossel"><i class="fas fa-pause"></i></button></div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <div class="stat-card">
-                    <h3><i class="fas fa-trophy"></i> Melhor Consultor</h3>
-                    <div class="stat-value">
-                        🏆 <span id="topConsultant">-</span>
-                        <img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;">
-                    </div>
-                    <div class="stat-label">em processos este mês</div>
-                </div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
                 <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
             </div>
             <div class="main-content">
                 <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
                 <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%) e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
             </div>
-            <div class="panel recent-sales"><h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2><table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table></div>
-        </div>
-        <!-- ===== PÁGINAS RESTANTES (Cultura, Cronograma, etc.) ===== -->
-        <div id="chart-view" class="carousel-page">
-            <div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div>
-            <div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div>
-        </div>
-        <div id="mission-view" class="carousel-page">
-            <div class="header"><h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1><p class="subtitle">Os pilares que nos guiam todos os dias.</p></div>
-            <div class="culture-grid">
-                <div class="culture-card"><div class="icon"><i class="fas fa-bullseye"></i></div><h2>Missão</h2><p>Simplificar o acesso a direitos para quem enfrenta a dor.</p></div>
-                <div class="culture-card"><div class="icon"><i class="fas fa-eye"></i></div><h2>Visão</h2><p>Conduzir ao êxito mais de 100 mil processos até 2030.</p></div>
-                <div id="values-card" class="culture-card"><div class="icon"><i class="fas fa-star"></i></div><h2>Nossos Valores</h2><div class="values-list"><div class="value-item"><div class="icon"><i class="fas fa-balance-scale"></i></div><h4>Ética Profissional</h4></div><div class="value-item"><div class="icon"><i class="fas fa-trophy"></i></div><h4>Meritocracia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-lightbulb"></i></div><h4>Inovação</h4></div><div class="value-item"><div class="icon"><i class="fas fa-heart"></i></div><h4>Empatia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-bolt"></i></div><h4>Proatividade</h4></div><div class="value-item"><div class="icon"><i class="fas fa-search"></i></div><h4>Atenção aos Detalhes</h4></div></div></div>
+            <!-- ===== SEÇÃO MODIFICADA ===== -->
+            <div class="panel recent-sales">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                    <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
+                    <div class="consultant-filter-container">
+                        <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px;">Filtrar por Consultor:</label>
+                        <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; background-color: white; cursor: pointer;"></select>
+                    </div>
+                </div>
+                <table class="sales-table">
+                    <thead>
+                        <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
+                    </thead>
+                    <tbody id="recentSalesTable"></tbody>
+                </table>
             </div>
         </div>
-        <div id="schedule-view" class="carousel-page">
-            <div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div>
-            <div class="timeline"><div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">23 de Agosto de 2025</span><h3>Feijoada ReVive</h3><p>Um momento de descontração e integração para toda a equipe. uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. O grupo tem como objetivo reforçar a marca da ReVive através de um momento marcado por interação, conexão e possibilidade de muitos fechamentos de processo.</p></div></div></div>
-        </div>
+        <div id="chart-view" class="carousel-page"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
+        <div id="mission-view" class="carousel-page"><div class="header"><h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1><p class="subtitle">Os pilares que nos guiam todos os dias.</p></div><div class="culture-grid"><div class="culture-card"><div class="icon"><i class="fas fa-bullseye"></i></div><h2>Missão</h2><p>Simplificar o acesso a direitos para quem enfrenta a dor.</p></div><div class="culture-card"><div class="icon"><i class="fas fa-eye"></i></div><h2>Visão</h2><p>Conduzir ao êxito mais de 100 mil processos até 2030.</p></div><div id="values-card" class="culture-card"><div class="icon"><i class="fas fa-star"></i></div><h2>Nossos Valores</h2><div class="values-list"><div class="value-item"><div class="icon"><i class="fas fa-balance-scale"></i></div><h4>Ética Profissional</h4></div><div class="value-item"><div class="icon"><i class="fas fa-trophy"></i></div><h4>Meritocracia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-lightbulb"></i></div><h4>Inovação</h4></div><div class="value-item"><div class="icon"><i class="fas fa-heart"></i></div><h4>Empatia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-bolt"></i></div><h4>Proatividade</h4></div><div class="value-item"><div class="icon"><i class="fas fa-search"></i></div><h4>Atenção aos Detalhes</h4></div></div></div></div></div>
+        <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Um momento de descontração e integração para toda a equipe. uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. O grupo tem como objetivo reforçar a marca da ReVive através de um momento marcado por interação, conexão e possibilidade de muitos fechamentos de processo.</p></div></div></div></div>
     </div>
 
-    <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA ===== -->
+    <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA (MODIFICADO) ===== -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
             <img id="sale-notification-photo" src="" alt="Foto do Consultor" class="notification-photo">
+            
             <div class="icon"><i class="fas fa-trophy"></i></div>
             <h2>Nova Venda!</h2>
             <p id="sale-notification-text"></p>
@@ -206,7 +177,7 @@
         </div>
     </div>
 
-    <!-- NOVO: HTML PARA O MODAL DE DETALHES DE PROCESSOS -->
+    <!-- MODAL DE DETALHES -->
     <div id="process-details-modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeProcessDetails()">×</span>
@@ -222,13 +193,13 @@
         let salesData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
-        let carouselPaused = false; // NOVO: Variável de controle para o carrossel
+        let carouselPaused = false;
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
-        let consultantDetails = {}; // NOVO: Armazena os detalhes dos processos por consultor
+        let consultantDetails = {};
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
@@ -240,30 +211,34 @@
             let currentPageIndex = 0;
             if (pages.length === 0) return;
             setInterval(() => {
-                // MODIFICADO: Verifica se o carrossel está pausado
                 if(isAnimationPlaying || carouselPaused) return; 
                 pages[currentPageIndex].classList.remove('active');
                 currentPageIndex = (currentPageIndex + 1) % pages.length;
                 pages[currentPageIndex].classList.add('active');
             }, 20000); 
         }
-
+        
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
-            const saleSound = new Audio('foguete.mp3');
+            const saleSound = new Audio('foguete.wav');
             saleSound.play().catch(error => console.error("Erro ao tocar o som da venda:", error));
             isAnimationPlaying = true;
+
             const overlay = document.getElementById('sale-notification-overlay');
             const textElement = document.getElementById('sale-notification-text');
             const processElement = document.getElementById('sale-notification-process');
+            
             const photoElement = document.getElementById('sale-notification-photo');
             const photoUrl = getConsultantPhotoUrl(sale.consultor);
+            
             photoElement.src = photoUrl;
             photoElement.onerror = () => { photoElement.src = DEFAULT_AVATAR; photoElement.onerror = null; };
+
             textElement.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
             processElement.textContent = `Processos: ${sale.processo || 'N/A'}`;
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+            
             setTimeout(() => {
                 overlay.classList.remove('show');
                 isAnimationPlaying = false;
@@ -397,6 +372,7 @@
             updateProcessStats(monthSales);
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
+            populateConsultantFilter(monthSales); // NOVO: Popula o filtro de consultor
             updateMonthSales(monthSales);
             updateProcessEvolutionChart(salesData); 
         }
@@ -427,7 +403,6 @@
             return `${baseName}.PNG`;
         }
         
-        // FUNÇÃO MODIFICADA PARA GUARDAR DETALHES
         function updateConsultantRanking(monthSales) {
             const stats = {};
             monthSales.forEach(sale => {
@@ -438,20 +413,19 @@
                     stats[key] = {
                         name: displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(),
                         sales: 0,
-                        processDetails: {} // Armazena a contagem de cada tipo de processo
+                        processDetails: {}
                     };
                 }
                 
                 (sale.processo || '').split(',').forEach(procRaw => {
                     const proc = procRaw.trim().toUpperCase();
                     if (!proc || proc === DRA_RENATA_STRING) return;
-
-                    stats[key].sales++; // Incrementa o total
-                    stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1; // Incrementa o detalhe
+                    stats[key].sales++;
+                    stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1;
                 });
             });
 
-            consultantDetails = stats; // Salva os detalhes para o modal usar
+            consultantDetails = stats;
             
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
             const topConsultantNameEl = document.getElementById('topConsultant');
@@ -474,20 +448,11 @@
             ranking.slice(0, 10).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
-                // Adicionado onclick para chamar a função do modal
-                html += `<div class="ranking-item">
-                            <div class="consultant-info">
-                                <div class="rank-number">${i + 1}</div>
-                                <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;">
-                                <div class="consultant-name">${c.name}</div>
-                            </div>
-                            <div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div>
-                         </div>`;
+                html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
             document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
         }
 
-        // FUNÇÃO RESTANTE... (SEM ALTERAÇÕES SIGNIFICATIVAS)
         function updateProcessStats(monthSales) {
             const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
             let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
@@ -516,8 +481,54 @@
             document.getElementById('outrosCount').textContent = counts.outros;
         }
 
+        // ===== NOVA FUNÇÃO =====
+        function populateConsultantFilter(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            if (!consultantFilterSelect) return;
+
+            const currentSelection = consultantFilterSelect.value;
+            const consultants = new Set();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    consultants.add(sale.consultor.trim());
+                }
+            });
+
+            const sortedConsultants = Array.from(consultants).sort((a, b) => a.localeCompare(b));
+
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>'; // Opção "Todos"
+
+            sortedConsultants.forEach(consultant => {
+                const option = document.createElement('option');
+                option.value = consultant;
+                option.textContent = consultant;
+                consultantFilterSelect.appendChild(option);
+            });
+
+            // Mantém a seleção anterior se o consultor ainda existir na nova lista
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+
+        // ===== NOVA FUNÇÃO =====
+        function filterSalesByConsultant() {
+            const monthSales = getMonthSales();
+            updateMonthSales(monthSales);
+        }
+
+        // ===== FUNÇÃO MODIFICADA =====
         function updateMonthSales(monthSales) {
-            const sortedSales = [...monthSales].sort((a, b) => {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            const selectedConsultant = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+
+            let filteredSales = monthSales;
+
+            if (selectedConsultant !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && sale.consultor.trim() === selectedConsultant);
+            }
+
+            const sortedSales = [...filteredSales].sort((a, b) => {
                 const dateA = new Date(a.data.split('/').reverse().join('-'));
                 const dateB = new Date(b.data.split('/').reverse().join('-'));
                 if (dateB - dateA !== 0) return dateB - dateA;
@@ -527,7 +538,7 @@
             sortedSales.forEach(sale => {
                 html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
             });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado para os filtros selecionados.</td></tr>';
         }
 
         function updateProcessEvolutionChart(allSalesData) {
@@ -556,33 +567,25 @@
             processEvolutionChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Número de Processos', data: finalDataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#6b46c1', pointRadius: 5, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } } } });
         }
 
-        // --- NOVAS FUNÇÕES PARA O MODAL ---
         function showProcessDetails(consultantKey) {
             const details = consultantDetails[consultantKey];
             if (!details) return;
-
             const modal = document.getElementById('process-details-modal');
             const titleEl = document.getElementById('modal-title');
             const contentEl = document.getElementById('modal-details-content');
-
             titleEl.textContent = `Detalhes de ${details.name}`;
-
-            // Ordena os processos pela quantidade, do maior para o menor
             const sortedProcesses = Object.entries(details.processDetails).sort((a, b) => b[1] - a[1]);
-
             if (sortedProcesses.length === 0) {
                 contentEl.innerHTML = '<p>Nenhum detalhe de processo encontrado.</p>';
             } else {
                 let listHtml = '<ul class="details-list">';
                 sortedProcesses.forEach(([processName, count]) => {
-                    // Capitaliza o nome do processo para melhor visualização
                     const formattedName = processName.charAt(0).toUpperCase() + processName.slice(1).toLowerCase();
                     listHtml += `<li><span class="process-name">${formattedName}</span> <span class="process-count-badge">${count}</span></li>`;
                 });
                 listHtml += '</ul>';
                 contentEl.innerHTML = listHtml;
             }
-
             modal.style.display = 'flex';
         }
 
@@ -590,13 +593,11 @@
             document.getElementById('process-details-modal').style.display = 'none';
         }
         
-        // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
             setupCarousel();
             fetchSheetData();
             setInterval(fetchSheetData, 30000);
 
-            // Adiciona evento para fechar modal ao clicar fora
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
                 if (event.target == modal) {
@@ -604,12 +605,10 @@
                 }
             }
 
-            // NOVO: Lógica para o botão de pausar/retomar o carrossel
             const toggleBtn = document.getElementById('carousel-toggle-button');
             const icon = toggleBtn.querySelector('i');
-
             toggleBtn.addEventListener('click', () => {
-                carouselPaused = !carouselPaused; // Inverte o estado de pausa
+                carouselPaused = !carouselPaused;
                 if (carouselPaused) {
                     icon.classList.remove('fa-pause');
                     icon.classList.add('fa-play');
