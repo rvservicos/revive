@@ -94,7 +94,6 @@
         .notification-content { background: white; padding: 40px 50px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 700px; border-top: 8px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
         
-        /* NOVO: Estilo para a foto do consultor na notificação */
         .notification-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #a78bfa; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
         .notification-content .icon { font-size: 4rem; color: #ffc107; text-shadow: 0 4px 10px rgba(255, 193, 7, 0.5); margin-bottom: 20px; }
@@ -143,7 +142,21 @@
                 <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
                 <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%) e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
             </div>
-            <div class="panel recent-sales"><h2><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2><table class="sales-table"><thead><tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr></thead><tbody id="recentSalesTable"></tbody></table></div>
+            <div class="panel recent-sales">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                    <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
+                    <div class="consultant-filter-container">
+                        <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px;">Filtrar por Consultor:</label>
+                        <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; background-color: white; cursor: pointer;"></select>
+                    </div>
+                </div>
+                <table class="sales-table">
+                    <thead>
+                        <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
+                    </thead>
+                    <tbody id="recentSalesTable"></tbody>
+                </table>
+            </div>
         </div>
         <div id="chart-view" class="carousel-page"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
         <div id="mission-view" class="carousel-page"><div class="header"><h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1><p class="subtitle">Os pilares que nos guiam todos os dias.</p></div><div class="culture-grid"><div class="culture-card"><div class="icon"><i class="fas fa-bullseye"></i></div><h2>Missão</h2><p>Simplificar o acesso a direitos para quem enfrenta a dor.</p></div><div class="culture-card"><div class="icon"><i class="fas fa-eye"></i></div><h2>Visão</h2><p>Conduzir ao êxito mais de 100 mil processos até 2030.</p></div><div id="values-card" class="culture-card"><div class="icon"><i class="fas fa-star"></i></div><h2>Nossos Valores</h2><div class="values-list"><div class="value-item"><div class="icon"><i class="fas fa-balance-scale"></i></div><h4>Ética Profissional</h4></div><div class="value-item"><div class="icon"><i class="fas fa-trophy"></i></div><h4>Meritocracia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-lightbulb"></i></div><h4>Inovação</h4></div><div class="value-item"><div class="icon"><i class="fas fa-heart"></i></div><h4>Empatia</h4></div><div class="value-item"><div class="icon"><i class="fas fa-bolt"></i></div><h4>Proatividade</h4></div><div class="value-item"><div class="icon"><i class="fas fa-search"></i></div><h4>Atenção aos Detalhes</h4></div></div></div></div></div>
@@ -153,7 +166,6 @@
     <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA (MODIFICADO) ===== -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
-            <!-- NOVO: Imagem do consultor adicionada aqui -->
             <img id="sale-notification-photo" src="" alt="Foto do Consultor" class="notification-photo">
             
             <div class="icon"><i class="fas fa-trophy"></i></div>
@@ -204,8 +216,7 @@
                 pages[currentPageIndex].classList.add('active');
             }, 20000); 
         }
-
-        // FUNÇÃO MODIFICADA PARA EXIBIR A FOTO
+        
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
             const saleSound = new Audio('foguete.wav');
@@ -216,7 +227,6 @@
             const textElement = document.getElementById('sale-notification-text');
             const processElement = document.getElementById('sale-notification-process');
             
-            // NOVO: Pega o elemento da foto e define sua fonte
             const photoElement = document.getElementById('sale-notification-photo');
             const photoUrl = getConsultantPhotoUrl(sale.consultor);
             
@@ -233,8 +243,6 @@
                 isAnimationPlaying = false;
             }, 20000);
         }
-
-        // --- RESTANTE DO SCRIPT (NÃO FOI MODIFICADO, APENAS A FUNÇÃO ACIMA) ---
 
         function checkForNewSales(newSales, oldSales) {
             if (firstLoad) { firstLoad = false; return; }
@@ -363,6 +371,7 @@
             updateProcessStats(monthSales);
             updateMainStats(monthSales);
             updateConsultantRanking(monthSales);
+            populateConsultantFilter(monthSales);
             updateMonthSales(monthSales);
             updateProcessEvolutionChart(salesData); 
         }
@@ -470,9 +479,65 @@
             updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA'], 'seguroVidaGoal', 'seguroVidaPercent');
             document.getElementById('outrosCount').textContent = counts.outros;
         }
+        
+        // ===== FUNÇÃO MODIFICADA =====
+        // Popula o filtro usando a mesma lógica do ranking para evitar duplicatas.
+        function populateConsultantFilter(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            if (!consultantFilterSelect) return;
 
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map(); // Usar um Map para { 'chave_normalizada': 'Nome Exibido' }
+
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName); // Ex: 'joao'
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(); // Ex: 'Joao'
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; // O valor é a chave normalizada
+                option.textContent = displayName; // O texto é o nome formatado
+                consultantFilterSelect.appendChild(option);
+            });
+            
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultant() {
+            const monthSales = getMonthSales();
+            updateMonthSales(monthSales);
+        }
+
+        // ===== FUNÇÃO MODIFICADA =====
+        // Filtra a tabela de vendas usando a chave normalizada do consultor.
         function updateMonthSales(monthSales) {
-            const sortedSales = [...monthSales].sort((a, b) => {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+
+            let filteredSales = monthSales;
+
+            if (selectedConsultantKey !== 'all') {
+                // A lógica de filtragem agora usa a chave normalizada
+                filteredSales = monthSales.filter(sale => 
+                    sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey
+                );
+            }
+
+            const sortedSales = [...filteredSales].sort((a, b) => {
                 const dateA = new Date(a.data.split('/').reverse().join('-'));
                 const dateB = new Date(b.data.split('/').reverse().join('-'));
                 if (dateB - dateA !== 0) return dateB - dateA;
@@ -482,7 +547,7 @@
             sortedSales.forEach(sale => {
                 html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
             });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhuma venda para o mês.</td></tr>';
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado para os filtros selecionados.</td></tr>';
         }
 
         function updateProcessEvolutionChart(allSalesData) {
