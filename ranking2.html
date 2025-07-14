@@ -65,57 +65,80 @@
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
         
-        /* --- ESTILOS DA PÁGINA DE CULTURA (MODIFICADOS) --- */
+        /* --- ESTILOS DA PÁGINA DE CULTURA (MODIFICADOS PARA MÁXIMO IMPACTO) --- */
         .culture-section {
             margin-top: 30px;
             display: flex;
             flex-direction: column;
+            gap: 35px;
+        }
+
+        /* Card base para todos na seção de cultura */
+        .culture-card {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .culture-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15);
+        }
+
+        /* CARD DE DESTAQUE PARA MISSÃO E VISÃO */
+        .prominent-card {
+            background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 25px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(107, 70, 193, 0.25), 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
             gap: 30px;
         }
-        .mission-vision-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        .prominent-card:hover {
+             box-shadow: 0 15px 50px rgba(107, 70, 193, 0.35);
         }
-        .culture-card { 
-            background: white; 
-            padding: 35px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1); 
-            border-top: 5px solid #a78bfa; 
-            text-align: center; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        .prominent-card .icon {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0;
+            flex-shrink: 0;
+            background: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: unset;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
-        .culture-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 40px rgba(147, 51, 234, 0.15); 
+        .prominent-card h2 {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
-        .culture-card.prominent-card {
-            background: linear-gradient(135deg, #fdfcff, #f3f5ff);
-            border-top-color: #8b5cf6;
+        .prominent-card p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.3rem;
+            line-height: 1.6;
+            font-weight: 300;
         }
-        .culture-card.prominent-card h2 {
-            font-size: 2rem;
+
+        /* Card de valores */
+        #values-card {
+            text-align: center;
         }
-        .culture-card.prominent-card p {
-            font-size: 1.2rem;
+        #values-card .icon {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
         }
-        .culture-card .icon { 
-            font-size: 3rem; 
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin-bottom: 20px; 
-        }
-        .culture-card h2 { 
-            font-size: 1.8rem; 
-            color: #6b46c1; 
-            margin-bottom: 15px; 
-        }
-        .culture-card p { 
-            font-size: 1.1rem; 
-            color: #555; 
-            line-height: 1.6; 
+        #values-card h2 {
+            font-size: 1.8rem;
+            color: #6b46c1;
+            margin-bottom: 15px;
         }
         .values-inline-list {
             display: flex;
@@ -147,8 +170,6 @@
             font-size: 1.1rem;
             opacity: 0.8;
         }
-
-        /* --- FIM DOS ESTILOS DE CULTURA --- */
 
         .timeline { position: relative; max-width: 800px; margin: 50px auto; padding: 20px 0; }
         .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #a78bfa, #8b5cf6); border-radius: 3px; transform: translateX(-50%); }
@@ -193,7 +214,15 @@
 
         @media (max-width: 768px) {
             .main-content { grid-template-columns: 1fr; }
-            .mission-vision-grid { grid-template-columns: 1fr; }
+            .prominent-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                padding: 40px 25px;
+            }
+             .prominent-card h2 {
+                font-size: 2.2rem;
+            }
             .timeline::before { left: 15px; }
             .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -203,7 +232,7 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- ... (código das páginas do carrossel não modificado) ... -->
+        <!-- Dashboard e outras páginas -->
         <div id="dashboard-view" class="carousel-page active">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
@@ -235,22 +264,25 @@
         </div>
         <div id="chart-view" class="carousel-page"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 450px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
         
-        <!-- SEÇÃO DE CULTURA MODIFICADA -->
+        <!-- SEÇÃO DE CULTURA COM NOVO LAYOUT DE IMPACTO -->
         <div id="mission-view" class="carousel-page">
             <div class="header">
                 <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
                 <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
             </div>
             <div class="culture-section">
-                <!-- Missão e Visão destacadas -->
-                <div class="mission-vision-grid">
-                    <div class="culture-card prominent-card">
-                        <div class="icon"><i class="fas fa-bullseye"></i></div>
+                <!-- Missão em Destaque -->
+                <div class="culture-card prominent-card">
+                    <div class="icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="text-content">
                         <h2>Missão</h2>
                         <p>Simplificar o acesso a direitos para quem enfrenta a dor.</p>
                     </div>
-                    <div class="culture-card prominent-card">
-                        <div class="icon"><i class="fas fa-eye"></i></div>
+                </div>
+                <!-- Visão em Destaque -->
+                <div class="culture-card prominent-card">
+                    <div class="icon"><i class="fas fa-eye"></i></div>
+                    <div class="text-content">
                         <h2>Visão</h2>
                         <p>Conduzir ao êxito mais de 100 mil processos até 2030.</p>
                     </div>
@@ -271,7 +303,7 @@
             </div>
         </div>
         
-        <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Um momento de descontração e integração para toda a equipe. uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. O grupo tem como objetivo reforçar a marca da ReVive através de um momento marcado por interação, conexão e possibilidade de muitos fechamentos de processo.</p></div></div></div></div>
+        <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">08 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Uma ação inteiramente planejada pelo projeto de estágio dos Novos Talentos. Evento ainda em planejamento.</p></div></div></div></div>
     </div>
 
     <!-- ===== SOBREPOSIÇÃO DE ANIMAÇÃO DE VENDA (MODIFICADO) ===== -->
@@ -296,7 +328,6 @@
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         // --- VARIÁVEIS DE CONTROLE ---
@@ -313,7 +344,7 @@
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
-        const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
+        const SEGURO_TERCEiro_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
 
         function setupCarousel() {
@@ -573,7 +604,7 @@
                     if (!proc || proc === DRA_RENATA_STRING) return;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
                     else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
-                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
+                    else if (SEGURO_TERCEiro_TYPES.includes(proc)) clientesST.add(sale.cliente);
                     else counts.outros++;
                 });
             });
