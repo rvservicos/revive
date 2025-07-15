@@ -208,7 +208,6 @@
             box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
         }
         
-        /* Estilos para a nova seção de detalhes de documentos */
         .document-details-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -462,6 +461,30 @@
                             <button class="btn-counter minus" onclick="changeValue('processosCadastrados', -1)">-</button>
                             <input type="number" id="processosCadastrados" min="0" value="0">
                             <button class="btn-counter" onclick="changeValue('processosCadastrados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📄 Documentos digitalizados</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('documentosDigitalizados', -1)">-</button>
+                            <input type="number" id="documentosDigitalizados" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('documentosDigitalizados', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 Docs cobrados de consultores</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('cobrancaConsultores', -1)">-</button>
+                            <input type="number" id="cobrancaConsultores" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('cobrancaConsultores', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🗣️ Docs cobrados de clientes</label>
+                        <div class="number-input">
+                            <button class="btn-counter minus" onclick="changeValue('cobrancaClientes', -1)">-</button>
+                            <input type="number" id="cobrancaClientes" min="0" value="0">
+                            <button class="btn-counter" onclick="changeValue('cobrancaClientes', 1)">+</button>
                         </div>
                     </div>
                 </div>
@@ -721,7 +744,7 @@
 
         function resetSection(section) {
             const sections = {
-                'pendencias': ['clientesWhatsapp', 'pendenciasResolvidas', 'pendenciasSolicitadas', 'documentosSalvos', 'emailsEnviados', 'documentosRecebidos', 'pastasCriadas', 'recibosLancados', 'processosCadastrados', 'pendenciasCobradas'],
+                'pendencias': ['clientesWhatsapp', 'pendenciasResolvidas', 'pendenciasSolicitadas', 'documentosSalvos', 'emailsEnviados', 'documentosRecebidos', 'pastasCriadas', 'recibosLancados', 'processosCadastrados', 'pendenciasCobradas', 'documentosDigitalizados', 'cobrancaConsultores', 'cobrancaClientes'],
                 'rtm': ['periciasAgendadas', 'periciasRealizadas', 'laudosSalvos', 'laudosCorrigidos', 'clientesRTM', 'taxasCobradas'],
                 'prontuario': ['prontuariosSolicitados', 'prontuariosRecebidos', 'prontuariosSalvos', 'examesRaioX', 'hospitaisContatados', 'clientesOrientados'],
                 'seguro': ['pagamentosRealizados', 'processosDespachados', 'acompanhamentosExternos', 'juntasSolicitadas', 'revisoesProtocoladas', 'aprovacoesAcompanhadas', 'periciasAgendadasSeguro', 'juntasAgendadas']
@@ -740,7 +763,8 @@
             const examples = {
                 'pendencias': {
                     'clientesWhatsapp': 15, 'pendenciasResolvidas': 8, 'pendenciasSolicitadas': 12, 'documentosSalvos': 25, 'emailsEnviados': 10,
-                    'documentosRecebidos': 20, 'pastasCriadas': 5, 'recibosLancados': 7, 'processosCadastrados': 3, 'pendenciasCobradas': 9
+                    'documentosRecebidos': 20, 'pastasCriadas': 5, 'recibosLancados': 7, 'processosCadastrados': 3, 'pendenciasCobradas': 9,
+                    'documentosDigitalizados': 18, 'cobrancaConsultores': 4, 'cobrancaClientes': 11
                 },
                 'rtm': { 'periciasAgendadas': 6, 'periciasRealizadas': 8, 'laudosSalvos': 12, 'laudosCorrigidos': 5, 'clientesRTM': 25, 'taxasCobradas': 15 },
                 'prontuario': { 'prontuariosSolicitados': 35, 'prontuariosRecebidos': 18, 'prontuariosSalvos': 12, 'examesRaioX': 8, 'hospitaisContatados': 6, 'clientesOrientados': 10 },
@@ -783,7 +807,10 @@
                 pastasCriadas: parseInt(document.getElementById('pastasCriadas').value) || 0,
                 recibosLancados: parseInt(document.getElementById('recibosLancados').value) || 0,
                 processosCadastrados: parseInt(document.getElementById('processosCadastrados').value) || 0,
-                pendenciasCobradas: parseInt(document.getElementById('pendenciasCobradas').value) || 0
+                pendenciasCobradas: parseInt(document.getElementById('pendenciasCobradas').value) || 0,
+                documentosDigitalizados: parseInt(document.getElementById('documentosDigitalizados').value) || 0,
+                cobrancaConsultores: parseInt(document.getElementById('cobrancaConsultores').value) || 0,
+                cobrancaClientes: parseInt(document.getElementById('cobrancaClientes').value) || 0
             };
             
             let feedback = '';
@@ -797,7 +824,10 @@
             if (data.pastasCriadas > 0) feedback += `Criei ${data.pastasCriadas} pastas\n`;
             if (data.recibosLancados > 0) feedback += `Lancei ${data.recibosLancados} recibos\n`;
             if (data.processosCadastrados > 0) feedback += `Cadastrei ${data.processosCadastrados} processos\n`;
-            
+            if (data.documentosDigitalizados > 0) feedback += `Digitalizei ${data.documentosDigitalizados} documentos\n`;
+            if (data.cobrancaConsultores > 0) feedback += `Cobrei documentos de ${data.cobrancaConsultores} consultores\n`;
+            if (data.cobrancaClientes > 0) feedback += `Cobrei documentos de ${data.cobrancaClientes} clientes\n`;
+
             const detailEntries = document.querySelectorAll('.document-detail-entry');
             let detailsText = '';
             detailEntries.forEach(entry => {
