@@ -406,6 +406,17 @@
             const tempData = [];
             for (let i = 1; i < lines.length; i++) {
                 const columns = parseCSVLine(lines[i]);
+                
+                // --- ADIÇÃO SOLICITADA ---
+                // Pega o valor da primeira coluna (processo) e o normaliza
+                const processoValue = (columns[0] || '').trim().toUpperCase();
+                
+                // Se o valor for 'CANCELADO', pula para a próxima linha e não contabiliza
+                if (processoValue === 'CANCELADO') {
+                    continue; 
+                }
+                // --- FIM DA ADIÇÃO ---
+
                 if (columns.length >= 5) {
                     tempData.push({
                         processo: (columns[0] || '').trim(),
