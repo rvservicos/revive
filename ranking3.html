@@ -276,7 +276,7 @@
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
         // ALTERAÇÃO: Adicione o GID da sua aba 'pgto' aqui
-        const PGTO_SHEET_GID = "COLE_O_GID_DA_SUA_ABA_PGTO_AQUI"; 
+        const PGTO_SHEET_GID = "1456804198"; 
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
@@ -407,7 +407,7 @@
         // --- ALTERAÇÃO SOLICITADA: Novas funções para a página de pagamentos e contador ---
 
         async function fetchPaymentsData() {
-            if (!PGTO_SHEET_GID || PGTO_SHEET_GID === "COLE_O_GID_DA_SUA_ABA_PGTO_AQUI") {
+            if (!PGTO_SHEET_GID || PGTO_SHEET_GID === "1456804198") {
                 console.warn("GID da aba de pagamentos não configurado. O contador e a página de pagamentos não funcionarão.");
                 updateProcessCounter(0); // Inicia o contador com 0 pagamentos
                 return;
