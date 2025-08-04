@@ -80,12 +80,10 @@
         #values-card .icon { font-size: 3.9rem; background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 26px; }
         #values-card h2 { font-size: 2.3rem; color: #6b46c1; margin-bottom: 20px; }
         .values-inline-list { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; margin-top: 33px; }
-        /* --- ALTERAÇÃO SOLICITADA: Valores maiores --- */
         .value-tag { background: #f8f9ff; padding: 20px 32px; border-radius: 45px; border: 1px solid #e8ecff; color: #6b46c1; font-weight: 600; font-size: 2rem; display: inline-flex; align-items: center; gap: 16px; transition: all 0.3s ease; }
         .value-tag:hover { transform: translateY(-4px); box-shadow: 0 5px 20px rgba(147, 51, 234, 0.1); border-color: #dadaff; }
         .value-tag i { font-size: 2.1rem; opacity: 0.8; }
 
-        /* --- ALTERAÇÃO SOLICITADA: Estilos do contador --- */
         .process-counter-container { margin-top: 26px; padding-top: 26px; border-top: 2px solid #e8ecff; }
         .process-counter-container h3 { color: #6b46c1; font-size: 1.8rem; font-weight: 600; margin-bottom: 13px; text-transform: uppercase; letter-spacing: 1px; }
         .process-counter { font-size: 3rem; font-weight: 700; color: #8b5cf6; }
@@ -187,7 +185,6 @@
                         <h2>Missão</h2>
                         <p>Simplificar o acesso a direitos para quem enfrenta a dor.</p>
                     </div>
-                    <!-- ALTERAÇÃO SOLICITADA: Card de Visão com o contador -->
                     <div class="culture-card prominent-card">
                         <div class="icon"><i class="fas fa-eye"></i></div>
                         <h2>Visão</h2>
@@ -215,7 +212,6 @@
             </div>
         </div>
         
-        <!-- ALTERAÇÃO SOLICITADA: Nova página do carrossel para pagamentos -->
         <div id="pagamentos-view" class="carousel-page">
             <div class="header">
                 <h1><i class="fas fa-hand-holding-usd"></i> Painel de Pagamentos</h1>
@@ -235,7 +231,6 @@
                         </tr>
                     </thead>
                     <tbody id="paymentsTableBody">
-                        <!-- Os dados serão inseridos aqui pelo JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -269,13 +264,13 @@
     <script>
         // --- VARIÁVEIS DE CONTROLE ---
         let salesData = [];
-        let paymentsData = []; // ALTERAÇÃO: Variável para dados de pagamentos
+        let paymentsData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
         let carouselPaused = false;
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const FIXED_SHEET_GID = "1536647709";
-        // ALTERAÇÃO: Adicione o GID da sua aba 'pgto' aqui
+        // --- CORREÇÃO APLICADA ---
         const PGTO_SHEET_GID = "1456804198"; 
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
@@ -404,12 +399,10 @@
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
         
-        // --- ALTERAÇÃO SOLICITADA: Novas funções para a página de pagamentos e contador ---
-
         async function fetchPaymentsData() {
-            if (!PGTO_SHEET_GID || PGTO_SHEET_GID === "1456804198") {
+            if (!PGTO_SHEET_GID) {
                 console.warn("GID da aba de pagamentos não configurado. O contador e a página de pagamentos não funcionarão.");
-                updateProcessCounter(0); // Inicia o contador com 0 pagamentos
+                updateProcessCounter(0); 
                 return;
             }
             try {
@@ -420,7 +413,6 @@
                 
                 if (csvData && csvData.trim()) {
                     const newPayments = await processPaymentsCsv(csvData);
-                    // Apenas atualiza se houver mudança no número de pagamentos
                     if (newPayments.length !== paymentsData.length) {
                         paymentsData = newPayments;
                         updatePaymentsPage(paymentsData);
@@ -437,9 +429,9 @@
         async function processPaymentsCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const data = [];
-            for (let i = 1; i < lines.length; i++) { // Começa em 1 para pular o cabeçalho
+            for (let i = 1; i < lines.length; i++) { 
                 const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 4 && columns[0]) { // Garante que a linha tem dados e pelo menos um nome
+                if (columns.length >= 4 && columns[0]) { 
                     data.push({
                         nome: (columns[0] || '').trim(),
                         processo: (columns[1] || '').trim(),
@@ -461,7 +453,7 @@
                     const datePartsB = b.data.split('/');
                     const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
                     const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
-                    return dateB - dateA; // Mais recente primeiro
+                    return dateB - dateA; 
                 } catch (e) { return 0; }
             });
 
@@ -486,8 +478,6 @@
             }
         }
         
-        // --- FIM DAS NOVAS FUNÇÕES ---
-
         function populateMonthFilter(dataToScan) {
             const monthSet = new Set();
             (dataToScan || []).forEach(sale => {
@@ -767,13 +757,12 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             setupCarousel();
-            // --- ALTERAÇÃO: Chama as duas funções de busca ---
             fetchSheetData();
             fetchPaymentsData(); 
             setInterval(() => {
                 fetchSheetData();
                 fetchPaymentsData();
-            }, 30000); // Atualiza a cada 30 segundos
+            }, 30000); 
 
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
