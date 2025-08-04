@@ -65,7 +65,6 @@
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
         
-        /* --- ESTILOS DA PÁGINA DE CULTURA (AUMENTADOS ~30%) --- */
         .culture-section { margin-top: 39px; display: flex; flex-direction: column; gap: 39px; }
         .mission-vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 39px; }
         .culture-card { background: white; padding: 45px; border-radius: 26px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; justify-content: center; }
@@ -102,22 +101,31 @@
         .timeline-item:nth-child(odd)::after { right: -13px; }
         .timeline-item:nth-child(even)::after { left: -13px; }
         
-        /* ESTILOS DA ANIMAÇÃO DE VENDA (AUMENTADOS ~30%) */
         #sale-notification-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(29, 13, 51, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s ease; overflow: hidden; }
         #sale-notification-overlay.show { display: flex; opacity: 1; }
         .notification-content { background: white; padding: 52px 65px; border-radius: 33px; text-align: center; box-shadow: 0 26px 65px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 910px; border-top: 10px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
         
         .notification-photo { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 5px solid #a78bfa; margin-bottom: 26px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .notification-content .icon { font-size: 5.2rem; color: #ffc107; text-shadow: 0 5px 13px rgba(255, 193, 7, 0.5); margin-bottom: 26px; }
+        .notification-content .main-icon { font-size: 5.2rem; color: #ffc107; text-shadow: 0 5px 13px rgba(255, 193, 7, 0.5); margin-bottom: 26px; }
         .notification-content h2 { font-size: 3.6rem; font-weight: 800; color: #6b46c1; margin-bottom: 20px; }
         .notification-content p { font-size: 1.7rem; color: #555; line-height: 1.6; }
         .notification-content p strong { color: #8b5cf6; font-weight: 700; }
         .notification-content .process-info { font-size: 1.3rem; color: #777; margin-top: 13px; background: #f8f9ff; padding: 10px 20px; border-radius: 13px; display: inline-block; border: 1px solid #e8ecff; }
-        .rocket { position: absolute; font-size: 2.6rem; color: #8b5cf6; opacity: 0; bottom: -65px; animation: launch 3s ease-in forwards; }
+        
+        .animation-extras { position: absolute; bottom: -65px; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .rocket, .money-symbol { position: absolute; font-size: 2.6rem; opacity: 0; }
+        .rocket { color: #8b5cf6; animation: launch 3s ease-in forwards; }
         @keyframes launch { 0% { transform: translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(-45deg); opacity: 0; } }
-        .rocket:nth-child(2) { left: 10%; animation-delay: 0.5s; }
-        .rocket:nth-child(3) { left: 80%; animation-delay: 0.2s; }
+        .rocket:nth-child(1) { left: 15%; animation-delay: 0.1s; }
+        .rocket:nth-child(2) { left: 80%; animation-delay: 0.5s; }
+        .rocket:nth-child(3) { left: 50%; animation-delay: 0.2s; }
+        
+        .money-symbol { color: #22c55e; animation: float-up 4s ease-out forwards; }
+        @keyframes float-up { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
+        .money-symbol:nth-child(1) { left: 20%; font-size: 3rem; animation-delay: 0.1s; }
+        .money-symbol:nth-child(2) { left: 75%; font-size: 2.5rem; animation-delay: 0.8s; }
+        .money-symbol:nth-child(3) { left: 45%; font-size: 3.5rem; animation-delay: 0.4s; }
 
         #process-details-modal { position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
         .modal-content { background-color: #fefefe; margin: auto; padding: 39px; border: 1px solid #888; width: 90%; max-width: 650px; border-radius: 20px; box-shadow: 0 7px 33px rgba(0,0,0,0.2); position: relative; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -141,7 +149,7 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Dashboard e outras páginas -->
+        <!-- Páginas do Carrossel -->
         <div id="dashboard-view" class="carousel-page active">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
@@ -215,7 +223,7 @@
         <div id="pagamentos-view" class="carousel-page">
             <div class="header">
                 <h1><i class="fas fa-hand-holding-usd"></i> Painel de Pagamentos</h1>
-                <p class="subtitle">Acompanhamento de processos finalizados e pagos.</p>
+                <p class="subtitle">Acompanhamento de processos finalizados.</p>
             </div>
             <div class="panel">
                 <h2 style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
@@ -239,18 +247,19 @@
         <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">11 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Em planejamento.</p></div></div></div></div>
     </div>
 
+    <!-- Container da Notificação -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
-            <img id="sale-notification-photo" src="" alt="Foto do Consultor" class="notification-photo">
-            
-            <div class="icon"><i class="fas fa-trophy"></i></div>
-            <h2>Nova Venda!</h2>
-            <p id="sale-notification-text"></p>
-            <div class="process-info" id="sale-notification-process"></div>
-            <div class="rockets"><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i></div>
+            <img id="notification-photo" src="" alt="Foto" class="notification-photo">
+            <div id="notification-main-icon" class="main-icon"></div>
+            <h2 id="notification-title"></h2>
+            <p id="notification-text"></p>
+            <div class="process-info" id="notification-secondary-text"></div>
+            <div id="animation-extras-container" class="animation-extras"></div>
         </div>
     </div>
 
+    <!-- Modal de Detalhes -->
     <div id="process-details-modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeProcessDetails()">×</span>
@@ -269,8 +278,7 @@
         let isAnimationPlaying = false;
         let carouselPaused = false;
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
-        const FIXED_SHEET_GID = "1536647709";
-        // --- CORREÇÃO APLICADA ---
+        const SALES_SHEET_GID = "1536647709";
         const PGTO_SHEET_GID = "1456804198"; 
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
@@ -293,25 +301,31 @@
                 pages[currentPageIndex].classList.add('active');
             }, 20000); 
         }
-        
+
         function triggerSaleAnimation(sale) {
             if (isAnimationPlaying) return;
-            const saleSound = new Audio('foguete.wav');
-            saleSound.play().catch(error => console.error("Erro ao tocar o som da venda:", error));
             isAnimationPlaying = true;
+            
+            new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
 
             const overlay = document.getElementById('sale-notification-overlay');
-            const textElement = document.getElementById('sale-notification-text');
-            const processElement = document.getElementById('sale-notification-process');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
             
-            const photoElement = document.getElementById('sale-notification-photo');
-            const photoUrl = getConsultantPhotoUrl(sale.consultor);
+            photoEl.style.display = 'block';
+            photoEl.src = getConsultantPhotoUrl(sale.consultor);
+            photoEl.onerror = () => { photoEl.src = DEFAULT_AVATAR; photoEl.onerror = null; };
             
-            photoElement.src = photoUrl;
-            photoElement.onerror = () => { photoElement.src = DEFAULT_AVATAR; photoElement.onerror = null; };
-
-            textElement.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
-            processElement.textContent = `Processos: ${sale.processo || 'N/A'}`;
+            iconEl.innerHTML = '<i class="fas fa-trophy"></i>';
+            titleEl.textContent = 'Nova Venda!';
+            textEl.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
+            secondaryTextEl.textContent = `Processos: ${sale.processo || 'N/A'}`;
+            extrasContainer.innerHTML = '<i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i>';
+            
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
@@ -321,8 +335,40 @@
             }, 20000);
         }
 
+        function triggerPaymentAnimation(payment) {
+            if (isAnimationPlaying) return;
+            isAnimationPlaying = true;
+            
+            new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
+
+            const overlay = document.getElementById('sale-notification-overlay');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
+
+            photoEl.style.display = 'none'; // Não há foto para pagamento
+
+            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
+            titleEl.textContent = 'Pagamento Recebido!';
+            textEl.innerHTML = `Pagamento do processo <strong>${payment.processo || 'N/A'}</strong> para <strong>${payment.nome || 'N/A'}</strong> foi registrado!`;
+            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
+            extrasContainer.innerHTML = `
+                <i class="fas fa-dollar-sign money-symbol"></i>
+                <i class="fas fa-euro-sign money-symbol"></i>
+                <i class="fas fa-pound-sign money-symbol"></i>`;
+
+            overlay.classList.add('show');
+            
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                isAnimationPlaying = false;
+            }, 20000);
+        }
+        
         function checkForNewSales(newSales, oldSales) {
-            if (firstLoad) { firstLoad = false; return; }
             if (isAnimationPlaying || newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
@@ -331,17 +377,27 @@
                 triggerSaleAnimation(latestSale);
             }
         }
+
+        function checkForNewPayments(newPayments, oldPayments) {
+            if (isAnimationPlaying || newPayments.length <= oldPayments.length) return;
+            const oldPaymentIndices = new Set(oldPayments.map(p => p.originalIndex));
+            const newlyAddedPayments = newPayments.filter(p => !oldPaymentIndices.has(p.originalIndex));
+            if (newlyAddedPayments.length > 0) {
+                const latestPayment = newlyAddedPayments.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
+                triggerPaymentAnimation(latestPayment);
+            }
+        }
         
-        async function fetchSheetData() {
-            updateConnectionStatus('loading', 'Conectando...');
+        async function fetchSalesData() {
+            updateConnectionStatus('loading', 'Conectando à Vendas...');
             try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${FIXED_SHEET_GID}&_=${new Date().getTime()}`;
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${SALES_SHEET_GID}&_=${new Date().getTime()}`;
                 const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão: ${response.statusText}`);
                 const csvData = await response.text();
                 if (csvData && csvData.trim()) {
                     const newSalesData = await processCsvData(csvData);
-                    checkForNewSales(newSalesData, salesData);
+                    if (!firstLoad) checkForNewSales(newSalesData, salesData);
                     salesData = newSalesData;
                     if (document.getElementById('monthFilter').options.length === 0) {
                         populateMonthFilter(salesData);
@@ -350,11 +406,35 @@
                     updateConnectionStatus('connected', 'Conectado');
                 }
             } catch (error) {
-                console.error("Erro ao buscar dados:", error);
-                updateConnectionStatus('error', 'Falha na conexão');
+                console.error("Erro ao buscar dados de vendas:", error);
+                updateConnectionStatus('error', 'Falha na conexão de vendas');
             }
         }
         
+        async function fetchPaymentsData() {
+            if (!PGTO_SHEET_GID) {
+                updateProcessCounter(0); 
+                return;
+            }
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão com pagamentos: ${response.statusText}`);
+                const csvData = await response.text();
+                
+                if (csvData && csvData.trim()) {
+                    const newPayments = await processPaymentsCsv(csvData);
+                    if (!firstLoad) checkForNewPayments(newPayments, paymentsData);
+                    paymentsData = newPayments;
+                    updatePaymentsPage(paymentsData);
+                    updateProcessCounter(paymentsData.length);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de pagamentos:", error);
+                if(document.getElementById('paymentsTableBody')) document.getElementById('paymentsTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar pagamentos.</td></tr>';
+            }
+        }
+
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const tempData = [];
@@ -373,6 +453,24 @@
                 }
             }
             return tempData;
+        }
+
+        async function processPaymentsCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const data = [];
+            for (let i = 1; i < lines.length; i++) { 
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 4 && columns[0]) { 
+                    data.push({
+                        nome: (columns[0] || '').trim(),
+                        processo: (columns[1] || '').trim(),
+                        valor: (columns[2] || '').trim(),
+                        data: (columns[3] || '').trim(),
+                        originalIndex: i
+                    });
+                }
+            }
+            return data;
         }
 
         function parseCSVLine(line) {
@@ -399,50 +497,6 @@
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
         
-        async function fetchPaymentsData() {
-            if (!PGTO_SHEET_GID) {
-                console.warn("GID da aba de pagamentos não configurado. O contador e a página de pagamentos não funcionarão.");
-                updateProcessCounter(0); 
-                return;
-            }
-            try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
-                const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
-                if (!response.ok) throw new Error(`Falha na conexão com a aba de pagamentos: ${response.statusText}`);
-                const csvData = await response.text();
-                
-                if (csvData && csvData.trim()) {
-                    const newPayments = await processPaymentsCsv(csvData);
-                    if (newPayments.length !== paymentsData.length) {
-                        paymentsData = newPayments;
-                        updatePaymentsPage(paymentsData);
-                        updateProcessCounter(paymentsData.length);
-                    }
-                }
-            } catch (error) {
-                console.error("Erro ao buscar dados de pagamentos:", error);
-                const tableBody = document.getElementById('paymentsTableBody');
-                if(tableBody) tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Não foi possível carregar os dados de pagamento.</td></tr>';
-            }
-        }
-
-        async function processPaymentsCsv(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            const data = [];
-            for (let i = 1; i < lines.length; i++) { 
-                const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 4 && columns[0]) { 
-                    data.push({
-                        nome: (columns[0] || '').trim(),
-                        processo: (columns[1] || '').trim(),
-                        valor: (columns[2] || '').trim(),
-                        data: (columns[3] || '').trim()
-                    });
-                }
-            }
-            return data;
-        }
-
         function updatePaymentsPage(data) {
             const tableBody = document.getElementById('paymentsTableBody');
             if (!tableBody) return;
@@ -755,14 +809,15 @@
             document.getElementById('process-details-modal').style.display = 'none';
         }
         
+        async function fetchAllData() {
+            await Promise.all([fetchSalesData(), fetchPaymentsData()]);
+            firstLoad = false;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             setupCarousel();
-            fetchSheetData();
-            fetchPaymentsData(); 
-            setInterval(() => {
-                fetchSheetData();
-                fetchPaymentsData();
-            }, 30000); 
+            fetchAllData(); 
+            setInterval(fetchAllData, 30000);
 
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
