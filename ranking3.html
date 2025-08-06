@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* --- ESTILOS GERAIS (AUMENTADOS ~30%) --- */
+        /* --- ESTILOS GERAIS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%); min-height: 100vh; color: #333; overflow-x: hidden; }
         .main-container { max-width: 1820px; margin: 0 auto; padding: 26px; }
@@ -17,7 +17,7 @@
         .header h1 i { background: linear-gradient(135deg, #8b5cf6, #6b46c1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header .subtitle { color: #8b5cf6; font-size: 1.4rem; opacity: 0.8; }
 
-        /* --- ESTILOS DO DASHBOARD (AUMENTADOS ~30%) --- */
+        /* --- ESTILOS DO DASHBOARD --- */
         .connection-status { margin: 20px auto; padding: 13px 20px; border-radius: 13px; font-size: 1.2rem; font-weight: 500; display: inline-flex; align-items: center; gap: 13px; max-width: 390px; }
         .status-connected { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
         .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
@@ -47,13 +47,16 @@
         .process-number { font-size: 2.6rem; font-weight: 700; color: #8b5cf6; }
         .process-meta { font-size: 1rem; color: #6b7280; margin-top: 7px; }
         .recent-sales { grid-column: 1 / -1; }
+        
+        /* --- ESTILOS DA TABELA E DISTINTIVOS --- */
         .sales-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.2rem; }
-        .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 600; }
-        .sales-table td { padding: 20px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+        .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
+        .sales-table td { padding: 20px; border-bottom: 1px solid #f3f4f6; color: #374151; vertical-align: middle; }
         .sales-table tr:nth-child(even) { background-color: #f9fafb; }
-        .process-badge, .date-badge { padding: 7px 13px; border-radius: 26px; font-size: 1rem; display: inline-block; }
+        .process-badge, .date-badge { padding: 8px 16px; border-radius: 26px; font-size: 1rem; display: inline-block; font-weight: 500; }
         .process-badge { background: #e8ecff; color: #6b46c1; }
         .date-badge { background: #f3f4f6; color: #6b7280; }
+        
         .month-selector { background: white; padding: 20px; border-radius: 20px; margin-bottom: 26px; box-shadow: 0 5px 16px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 20px; }
         .month-selector label { font-weight: 600; color: #6b46c1; font-size: 1.2rem; }
         .month-selector select { padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; }
@@ -73,15 +76,15 @@
         .prominent-card { background: linear-gradient(135deg, #fdfcff, #f3f5ff); border-top: 7px solid #8b5cf6; }
         .prominent-card .icon { font-size: 4.5rem; margin-bottom: 33px; background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .prominent-card h2 { font-size: 2.8rem; color: #6b46c1; margin-bottom: 26px; }
-        .prominent-card p { font-size: 2.1rem; font-weight: 500; color: #374151; line-height: 1.5; }
+        .prominent-card p { font-size: 1.8rem; font-weight: 500; color: #374151; line-height: 1.5; }
 
         #values-card { border-top: 7px solid #a78bfa; }
         #values-card .icon { font-size: 3.9rem; background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 26px; }
         #values-card h2 { font-size: 2.3rem; color: #6b46c1; margin-bottom: 20px; }
         .values-inline-list { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; margin-top: 33px; }
-        .value-tag { background: #f8f9ff; padding: 20px 32px; border-radius: 45px; border: 1px solid #e8ecff; color: #6b46c1; font-weight: 600; font-size: 2rem; display: inline-flex; align-items: center; gap: 16px; transition: all 0.3s ease; }
+        .value-tag { background: #f8f9ff; padding: 16px 26px; border-radius: 39px; border: 1px solid #e8ecff; color: #6b46c1; font-weight: 600; font-size: 1.6rem; display: inline-flex; align-items: center; gap: 13px; transition: all 0.3s ease; }
         .value-tag:hover { transform: translateY(-4px); box-shadow: 0 5px 20px rgba(147, 51, 234, 0.1); border-color: #dadaff; }
-        .value-tag i { font-size: 2.1rem; opacity: 0.8; }
+        .value-tag i { font-size: 1.8rem; opacity: 0.8; }
 
         .process-counter-container { margin-top: 26px; padding-top: 26px; border-top: 2px solid #e8ecff; }
         .process-counter-container h3 { color: #6b46c1; font-size: 1.8rem; font-weight: 600; margin-bottom: 13px; text-transform: uppercase; letter-spacing: 1px; }
@@ -137,6 +140,14 @@
         .details-list li:last-child { border-bottom: none; }
         .details-list .process-name { color: #374151; }
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 5px 13px; border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
+        
+        /* --- ALTERAÇÃO SOLICITADA: Estilos para Abas da Página de Aprovados --- */
+        .status-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 3px solid #f3f4f6; }
+        .status-tab { padding: 15px 25px; cursor: pointer; border: none; background-color: transparent; font-size: 1.4rem; font-weight: 600; color: #6b7280; border-bottom: 4px solid transparent; transition: color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .status-tab:hover { color: #6b46c1; }
+        .status-tab.active { color: #6b46c1; border-bottom-color: #8b5cf6; }
+        .status-section { display: none; animation: fadeIn 0.5s; }
+        .status-section.active { display: block; }
 
         @media (max-width: 1024px) {
             .main-content, .mission-vision-grid { grid-template-columns: 1fr; }
@@ -171,7 +182,7 @@
                         <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
                     </div>
                 </div>
-                <table class="sales-table">
+                <table class="sales-table" style="font-size: 1.2rem;">
                     <thead>
                         <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
                     </thead>
@@ -197,12 +208,6 @@
                         <div class="icon"><i class="fas fa-eye"></i></div>
                         <h2>Visão</h2>
                         <p>Conduzir ao êxito mais de 100 mil processos até 2030.</p>
-                        <div class="process-counter-container">
-                            <h3>Processos Finalizados</h3>
-                            <div class="process-counter">
-                                <span id="finishedProcesses">20.000</span> / 100.000
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div id="values-card" class="culture-card">
@@ -220,27 +225,48 @@
             </div>
         </div>
         
+        <!-- ALTERAÇÃO SOLICITADA: Visão de Pagamentos com Abas -->
         <div id="pagamentos-view" class="carousel-page">
             <div class="header">
-                <h1><i class="fas fa-hand-holding-usd"></i> Painel de Pagamentos</h1>
-                <p class="subtitle">Acompanhamento de processos finalizados.</p>
+                <h1><i class="fas fa-hand-holding-usd"></i> Painel de Aprovados</h1>
+                <p class="subtitle">Acompanhamento de processos por status.</p>
+                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
+                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
+                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
+                        <span id="finishedProcesses">20.000</span> / 100.000
+                    </div>
+                </div>
             </div>
             <div class="panel">
-                <h2 style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
-                    <i class="fas fa-history"></i> Histórico de Pagamentos
-                </h2>
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Nome</th>
-                            <th>Processo</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody id="paymentsTableBody">
-                    </tbody>
-                </table>
+                <div class="status-tabs">
+                    <button class="status-tab active" onclick="showStatusTab('aprovado')"><i class="fas fa-thumbs-up"></i> Aprovado</button>
+                    <button class="status-tab" onclick="showStatusTab('na_conta')"><i class="fas fa-wallet"></i> Na Conta</button>
+                    <button class="status-tab" onclick="showStatusTab('pago')"><i class="fas fa-check-double"></i> Pago</button>
+                </div>
+        
+                <div id="aprovado-section" class="status-section active">
+                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Aprovado'</h2>
+                    <table class="sales-table">
+                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
+                        <tbody id="aprovadoTableBody"></tbody>
+                    </table>
+                </div>
+        
+                <div id="na_conta-section" class="status-section">
+                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Na Conta'</h2>
+                    <table class="sales-table">
+                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
+                        <tbody id="naContaTableBody"></tbody>
+                    </table>
+                </div>
+        
+                <div id="pago-section" class="status-section">
+                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Pago'</h2>
+                    <table class="sales-table">
+                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
+                        <tbody id="pagoTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -352,8 +378,8 @@
             photoEl.style.display = 'none'; // Não há foto para pagamento
 
             iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
-            titleEl.textContent = 'Pagamento Recebido!';
-            textEl.innerHTML = `Pagamento do processo <strong>${payment.processo || 'N/A'}</strong> para <strong>${payment.nome || 'N/A'}</strong> foi registrado!`;
+            titleEl.textContent = 'Pagamento Realizado!';
+            textEl.innerHTML = `O status do processo <strong>${payment.processo || 'N/A'}</strong> de <strong>${payment.nome || 'N/A'}</strong> foi atualizado para PAGO!`;
             secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
             extrasContainer.innerHTML = `
                 <i class="fas fa-dollar-sign money-symbol"></i>
@@ -378,13 +404,18 @@
             }
         }
 
-        function checkForNewPayments(newPayments, oldPayments) {
-            if (isAnimationPlaying || newPayments.length <= oldPayments.length) return;
-            const oldPaymentIndices = new Set(oldPayments.map(p => p.originalIndex));
-            const newlyAddedPayments = newPayments.filter(p => !oldPaymentIndices.has(p.originalIndex));
-            if (newlyAddedPayments.length > 0) {
-                const latestPayment = newlyAddedPayments.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
-                triggerPaymentAnimation(latestPayment);
+        // ALTERAÇÃO SOLICITADA: Nova função para checar mudança de status para "PAGO"
+        function checkForPaidStatusChange(newPayments, oldPayments) {
+            if (isAnimationPlaying || firstLoad || oldPayments.length === 0) return;
+
+            const oldPaymentsMap = new Map(oldPayments.map(p => [p.originalIndex, p]));
+
+            for (const newPayment of newPayments) {
+                const oldPayment = oldPaymentsMap.get(newPayment.originalIndex);
+                if (oldPayment && oldPayment.status !== 'PAGO' && newPayment.status === 'PAGO') {
+                    triggerPaymentAnimation(newPayment);
+                    return; 
+                }
             }
         }
         
@@ -424,14 +455,18 @@
                 
                 if (csvData && csvData.trim()) {
                     const newPayments = await processPaymentsCsv(csvData);
-                    if (!firstLoad) checkForNewPayments(newPayments, paymentsData);
+                    // ALTERAÇÃO SOLICITADA: Chamar a nova função de checagem
+                    checkForPaidStatusChange(newPayments, paymentsData);
                     paymentsData = newPayments;
-                    updatePaymentsPage(paymentsData);
+                    updateApprovedProcessesView(paymentsData); // Chamar a nova função de renderização
                     updateProcessCounter(paymentsData.length);
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de pagamentos:", error);
-                if(document.getElementById('paymentsTableBody')) document.getElementById('paymentsTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar pagamentos.</td></tr>';
+                 ['aprovadoTableBody', 'naContaTableBody', 'pagoTableBody'].forEach(id => {
+                    const body = document.getElementById(id);
+                    if(body) body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>';
+                });
             }
         }
 
@@ -455,17 +490,19 @@
             return tempData;
         }
 
+        // ALTERAÇÃO SOLICITADA: Processar a coluna E (Status)
         async function processPaymentsCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const data = [];
             for (let i = 1; i < lines.length; i++) { 
                 const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 4 && columns[0]) { 
+                if (columns.length >= 5 && columns[0]) { 
                     data.push({
                         nome: (columns[0] || '').trim(),
                         processo: (columns[1] || '').trim(),
                         valor: (columns[2] || '').trim(),
                         data: (columns[3] || '').trim(),
+                        status: (columns[4] || '').trim().toUpperCase(),
                         originalIndex: i
                     });
                 }
@@ -497,8 +534,30 @@
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
         
-        function updatePaymentsPage(data) {
-            const tableBody = document.getElementById('paymentsTableBody');
+        // ALTERAÇÃO SOLICITADA: Funções para renderizar as tabelas por status
+        function updateApprovedProcessesView(allApprovedData) {
+            const statusMap = {
+                'APROVADO': [],
+                'NA CONTA': [],
+                'PAGO': []
+            };
+
+            allApprovedData.forEach(item => {
+                const status = item.status || 'APROVADO';
+                if (statusMap.hasOwnProperty(status)) {
+                    statusMap[status].push(item);
+                } else {
+                    statusMap['APROVADO'].push(item); // Fallback para status desconhecido
+                }
+            });
+
+            populatePaymentTable('aprovadoTableBody', statusMap['APROVADO']);
+            populatePaymentTable('naContaTableBody', statusMap['NA CONTA']);
+            populatePaymentTable('pagoTableBody', statusMap['PAGO']);
+        }
+
+        function populatePaymentTable(tableBodyId, data) {
+            const tableBody = document.getElementById(tableBodyId);
             if (!tableBody) return;
 
             const sortedData = [...data].sort((a, b) => {
@@ -507,7 +566,7 @@
                     const datePartsB = b.data.split('/');
                     const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
                     const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
-                    return dateB - dateA; 
+                    return dateB - dateA;
                 } catch (e) { return 0; }
             });
 
@@ -520,7 +579,7 @@
                     <td>${payment.valor || '-'}</td>
                 </tr>`;
             });
-            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum pagamento registrado ainda.</td></tr>';
+            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
         }
 
         function updateProcessCounter(count) {
@@ -808,6 +867,15 @@
         function closeProcessDetails() {
             document.getElementById('process-details-modal').style.display = 'none';
         }
+
+        // ALTERAÇÃO SOLICITADA: Nova função para controlar as abas
+        function showStatusTab(tabName) {
+            document.querySelectorAll('.status-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.status-tab').forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(`${tabName}-section`).classList.add('active');
+            document.querySelector(`[onclick="showStatusTab('${tabName}')"]`).classList.add('active');
+        }
         
         async function fetchAllData() {
             await Promise.all([fetchSalesData(), fetchPaymentsData()]);
@@ -840,6 +908,9 @@
                     toggleBtn.title = 'Pausar Carrossel';
                 }
             });
+
+            // Inicia com a primeira aba ativa
+            showStatusTab('aprovado');
         });
     </script>
 </body>
