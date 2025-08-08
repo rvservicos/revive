@@ -311,7 +311,6 @@
             </div>
         </div>
 
-        <!-- NOVA SEÇÃO ADICIONADA: Painel de Acordos -->
         <div id="acordos-view" class="carousel-page" data-name="Acordos">
             <div class="header">
                 <h1><i class="fas fa-handshake"></i> Painel de Acordos</h1>
@@ -643,7 +642,6 @@
             for (const newAcordo of newAcordos) {
                 const oldAcordo = oldAcordosMap.get(newAcordo.uniqueId);
                 if (oldAcordo && oldAcordo.status !== newAcordo.status) {
-                    // Notifica apenas sobre os status relevantes
                     const relevantStatus = ['TRATATIVA DE ACORDO', 'ACORDO FECHADO', 'PAGAMENTO EFETUADO'];
                     if(relevantStatus.includes(newAcordo.status.toUpperCase())) {
                         notificationQueue.push({ type: 'acordoUpdate', data: newAcordo });
@@ -679,10 +677,6 @@
         }
         
         async function fetchPaymentsData() {
-            if (!PGTO_SHEET_GID) {
-                updateProcessCounter(0); 
-                return;
-            }
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
                 const response = await fetch(csvUrl, { mode: 'cors' });
@@ -848,6 +842,15 @@
             return data;
         }
         
+        function updateConnectionStatus(status, message) {
+            const el = document.getElementById('connectionStatus');
+            if (!el) return;
+            el.className = 'connection-status';
+            el.classList.add(`status-${status}`);
+            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
+            el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
+        }
+
         function updateApprovedProcessesView(allApprovedData) {
             const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
             allApprovedData.forEach(item => {
