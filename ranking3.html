@@ -610,7 +610,7 @@
         }
 
         function checkForPaidStatusChange(newPayments, oldPayments) {
-            if (firstLoad || newPayments.length === 0 || oldPayments.length === 0) return;
+            if (firstLoad || oldPayments.length === 0) return;
             const oldPaymentsMap = new Map(oldPayments.map(p => [p.uniqueId, p]));
             
             for (const newPayment of newPayments) {
@@ -654,8 +654,8 @@
         }
         
         async function fetchSalesData() {
-            updateConnectionStatus('loading', 'Conectando à Vendas...');
             try {
+                updateConnectionStatus('loading', 'Conectando à Vendas...');
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${SALES_SHEET_GID}&_=${new Date().getTime()}`;
                 const response = await fetch(csvUrl, { mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão de Vendas: ${response.statusText}`);
@@ -668,7 +668,6 @@
                         populateMonthFilter(salesData);
                     }
                     updateDashboard();
-                    updateConnectionStatus('connected', 'Conectado');
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de vendas:", error);
@@ -688,7 +687,6 @@
                     checkForPaidStatusChange(newPayments, paymentsData);
                     paymentsData = newPayments;
                     updateApprovedProcessesView(paymentsData);
-                    // ALTERAÇÃO/ADIÇÃO SOLICITADA: Chamada removida daqui para centralizar a contagem
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de pagamentos:", error);
@@ -842,6 +840,15 @@
             return data;
         }
         
+        function updateConnectionStatus(status, message) {
+            const el = document.getElementById('connectionStatus');
+            if (!el) return;
+            el.className = 'connection-status';
+            el.classList.add(`status-${status}`);
+            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
+            el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
+        }
+
         function updateApprovedProcessesView(allApprovedData) {
             const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
             allApprovedData.forEach(item => {
@@ -945,7 +952,6 @@
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
         }
 
-        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Função de contagem individual
         function updateProcessCounter(count) {
             const counterElement = document.getElementById('finishedProcesses');
             if (counterElement) {
@@ -955,7 +961,6 @@
             }
         }
         
-        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para centralizar a contagem total
         function updateTotalFinishedCounter() {
             const paidPaymentsCount = paymentsData.filter(p => p.status === 'PAGO').length;
             const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
@@ -1104,6 +1109,7 @@
                     if (!proc || proc === DRA_RENATA_STRING) return;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
                     else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
+                    // CORREÇÃO DO ERRO DE DIGITAÇÃO AQUI
                     else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
                     else counts.outros++;
                 });
@@ -1243,15 +1249,22 @@
         }
 
         async function fetchAllData() {
-            await Promise.all([
+            // CORREÇÃO: Usar Promise.allSettled para garantir que todas as buscas terminem,
+            // mesmo que uma falhe, permitindo que a lógica de contagem e atualização de status ocorra.
+            await Promise.allSettled([
                 fetchSalesData(), 
                 fetchPaymentsData(),
                 fetchRtmPaymentsData(),
                 fetchAcordosData() 
             ]);
             
-            // ALTERAÇÃO/ADIÇÃO SOLICITADA: Chamada da função central de contagem
             updateTotalFinishedCounter();
+            
+            // Se nenhuma das buscas de dados principais (vendas) teve sucesso, mantemos o erro.
+            // Do contrário, se pelo menos uma conectou, consideramos 'conectado'.
+            if (salesData.length > 0) {
+                 updateConnectionStatus('connected', 'Conectado');
+            }
             
             firstLoad = false;
         }
