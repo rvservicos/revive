@@ -688,7 +688,7 @@
                     checkForPaidStatusChange(newPayments, paymentsData);
                     paymentsData = newPayments;
                     updateApprovedProcessesView(paymentsData);
-                    updateProcessCounter(paymentsData.filter(p => p.status === 'PAGO').length);
+                    // ALTERAÇÃO/ADIÇÃO SOLICITADA: Chamada removida daqui para centralizar a contagem
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de pagamentos:", error);
@@ -842,15 +842,6 @@
             return data;
         }
         
-        function updateConnectionStatus(status, message) {
-            const el = document.getElementById('connectionStatus');
-            if (!el) return;
-            el.className = 'connection-status';
-            el.classList.add(`status-${status}`);
-            const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
-            el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
-        }
-
         function updateApprovedProcessesView(allApprovedData) {
             const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
             allApprovedData.forEach(item => {
@@ -954,6 +945,7 @@
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
         }
 
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Função de contagem individual
         function updateProcessCounter(count) {
             const counterElement = document.getElementById('finishedProcesses');
             if (counterElement) {
@@ -963,6 +955,15 @@
             }
         }
         
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para centralizar a contagem total
+        function updateTotalFinishedCounter() {
+            const paidPaymentsCount = paymentsData.filter(p => p.status === 'PAGO').length;
+            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
+            
+            const totalPaid = paidPaymentsCount + paidAcordosCount;
+            updateProcessCounter(totalPaid);
+        }
+
         function populateMonthFilter(dataToScan) {
             const monthSet = new Set();
             (dataToScan || []).forEach(sale => {
@@ -1248,6 +1249,10 @@
                 fetchRtmPaymentsData(),
                 fetchAcordosData() 
             ]);
+            
+            // ALTERAÇÃO/ADIÇÃO SOLICITADA: Chamada da função central de contagem
+            updateTotalFinishedCounter();
+            
             firstLoad = false;
         }
 
