@@ -1,3 +1,14 @@
+Com certeza! As modificações solicitadas foram integradas ao seu código HTML e JavaScript. Adicionei a nova aba "Pagamentos de RTM" ao carrossel, criei a lógica para buscar os dados da nova planilha e implementei o sistema de notificação para novos pagamentos de RTM, com som e a foto de quem realizou a cobrança.
+
+As seções adicionadas ou significativamente alteradas no código estão marcadas com comentários como <!-- NOVA SEÇÃO ADICIONADA --> ou // ALTERAÇÃO/ADIÇÃO SOLICITADA para fácil identificação.
+
+Código Modificado
+code
+Html
+download
+content_copy
+expand_less
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -48,7 +59,6 @@
         .process-meta { font-size: 1rem; color: #6b7280; margin-top: 7px; }
         .recent-sales { grid-column: 1 / -1; }
         
-        /* --- ESTILOS DA TABELA E DISTINTIVOS --- */
         .sales-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.2rem; }
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
         .sales-table td { padding: 20px; border-bottom: 1px solid #f3f4f6; color: #374151; vertical-align: middle; }
@@ -57,13 +67,16 @@
         .process-badge { background: #e8ecff; color: #6b46c1; }
         .date-badge { background: #f3f4f6; color: #6b7280; }
         
-        .month-selector { background: white; padding: 20px; border-radius: 20px; margin-bottom: 26px; box-shadow: 0 5px 16px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 20px; }
+        .month-selector { background: white; padding: 15px; border-radius: 20px; margin-bottom: 26px; box-shadow: 0 5px 16px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .month-selector-group { display: flex; align-items: center; gap: 10px; }
         .month-selector label { font-weight: 600; color: #6b46c1; font-size: 1.2rem; }
         .month-selector select { padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; }
         
-        #carousel-toggle-button { padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 10px; background-color: white; color: #6b46c1; cursor: pointer; font-size: 1.2rem; transition: background-color 0.2s, color 0.2s; line-height: 1; }
-        #carousel-toggle-button:hover { background-color: #f3f4f6; }
-
+        .carousel-controls-group { display: flex; align-items: center; gap: 10px; }
+        #carousel-toggle-button, .carousel-nav-btn { padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 10px; background-color: white; color: #6b46c1; cursor: pointer; font-size: 1.2rem; transition: background-color 0.2s, color 0.2s; line-height: 1; }
+        #carousel-toggle-button:hover, .carousel-nav-btn:hover { background-color: #f3f4f6; }
+        #carousel-nav-controls { display: none; gap: 10px; }
+        
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -141,13 +154,13 @@
         .details-list .process-name { color: #374151; }
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 5px 13px; border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
         
-        /* --- ALTERAÇÃO SOLICITADA: Estilos para Abas da Página de Aprovados --- */
-        .status-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 3px solid #f3f4f6; }
-        .status-tab { padding: 15px 25px; cursor: pointer; border: none; background-color: transparent; font-size: 1.4rem; font-weight: 600; color: #6b7280; border-bottom: 4px solid transparent; transition: color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .status-tab:hover { color: #6b46c1; }
-        .status-tab.active { color: #6b46c1; border-bottom-color: #8b5cf6; }
-        .status-section { display: none; animation: fadeIn 0.5s; }
-        .status-section.active { display: block; }
+        .payment-filter-container { display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; flex-wrap: wrap; }
+        .payment-filter-btn { padding: 10px 20px; cursor: pointer; border: 1px solid #d1d5db; background-color: #f9fafb; font-size: 1.1rem; font-weight: 600; color: #6b7280; border-radius: 20px; transition: color 0.3s, background-color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .payment-filter-btn:hover { background-color: #e8ecff; color: #6b46c1; }
+        .payment-filter-btn.active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
+        .payment-status-section { display: block; animation: fadeIn 0.5s; }
+        .payment-status-section h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 15px; margin-top: 25px; justify-content: flex-start; }
+        .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
             .main-content, .mission-vision-grid { grid-template-columns: 1fr; }
@@ -164,7 +177,16 @@
         <div id="dashboard-view" class="carousel-page active">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
-            <div class="month-selector"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select><button id="carousel-toggle-button" title="Pausar Carrossel"><i class="fas fa-pause"></i></button></div>
+            <div class="month-selector">
+                <div class="month-selector-group"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
+                <div class="carousel-controls-group">
+                    <div id="carousel-nav-controls">
+                        <button class="carousel-nav-btn" title="Página Anterior" onclick="manualNavigate(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-nav-btn" title="Próxima Página" onclick="manualNavigate(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button id="carousel-toggle-button" title="Pausar Carrossel"><i class="fas fa-pause"></i></button>
+                </div>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
                 <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
@@ -225,7 +247,6 @@
             </div>
         </div>
         
-        <!-- ALTERAÇÃO SOLICITADA: Visão de Pagamentos com Abas -->
         <div id="pagamentos-view" class="carousel-page">
             <div class="header">
                 <h1><i class="fas fa-hand-holding-usd"></i> Painel de Aprovados</h1>
@@ -238,35 +259,60 @@
                 </div>
             </div>
             <div class="panel">
-                <div class="status-tabs">
-                    <button class="status-tab active" onclick="showStatusTab('aprovado')"><i class="fas fa-thumbs-up"></i> Aprovado</button>
-                    <button class="status-tab" onclick="showStatusTab('na_conta')"><i class="fas fa-wallet"></i> Na Conta</button>
-                    <button class="status-tab" onclick="showStatusTab('pago')"><i class="fas fa-check-double"></i> Pago</button>
+                <div class="payment-filter-container">
+                    <button class="payment-filter-btn active" onclick="filterPayments('all')"><i class="fas fa-list-ul"></i> Todos</button>
+                    <button class="payment-filter-btn" onclick="filterPayments('aprovado')"><i class="fas fa-thumbs-up"></i> Aprovado</button>
+                    <button class="payment-filter-btn" onclick="filterPayments('na_conta')"><i class="fas fa-wallet"></i> Na Conta</button>
+                    <button class="payment-filter-btn" onclick="filterPayments('pago')"><i class="fas fa-check-double"></i> Pago</button>
                 </div>
         
-                <div id="aprovado-section" class="status-section active">
-                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Aprovado'</h2>
+                <div id="section-aprovado" class="payment-status-section">
+                    <h2><i class="fas fa-thumbs-up"></i> Processos com Status 'Aprovado'</h2>
                     <table class="sales-table">
                         <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
                         <tbody id="aprovadoTableBody"></tbody>
                     </table>
                 </div>
         
-                <div id="na_conta-section" class="status-section">
-                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Na Conta'</h2>
+                <div id="section-na_conta" class="payment-status-section">
+                    <h2><i class="fas fa-wallet"></i> Processos com Status 'Na Conta'</h2>
                     <table class="sales-table">
                         <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
                         <tbody id="naContaTableBody"></tbody>
                     </table>
                 </div>
         
-                <div id="pago-section" class="status-section">
-                    <h2 style="justify-content: flex-start; font-size: 2rem; margin-bottom: 20px; border:none; padding:0;"><i class="fas fa-history"></i> Processos com Status 'Pago'</h2>
+                <div id="section-pago" class="payment-status-section">
+                    <h2><i class="fas fa-check-double"></i> Processos com Status 'Pago'</h2>
                     <table class="sales-table">
                         <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
                         <tbody id="pagoTableBody"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- NOVA SEÇÃO ADICIONADA: Pagamentos de RTM -->
+        <div id="rtm-pagamentos-view" class="carousel-page">
+            <div class="header">
+                <h1><i class="fas fa-receipt"></i> Pagamentos de RTM</h1>
+                <p class="subtitle">Acompanhamento de pagamentos recebidos via RTM.</p>
+            </div>
+            <div class="panel">
+                <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-history"></i> Histórico de Recebimentos</h2>
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Valor</th>
+                            <th>Cobrado por</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rtmPaymentsTableBody">
+                        <!-- Os dados serão inseridos aqui via JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -300,40 +346,78 @@
         // --- VARIÁVEIS DE CONTROLE ---
         let salesData = [];
         let paymentsData = [];
+        let rtmPaymentsData = []; // ALTERAÇÃO/ADIÇÃO SOLICITADA
         let firstLoad = true;
         let isAnimationPlaying = false;
         let carouselPaused = false;
+        let notificationQueue = []; 
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
         const PGTO_SHEET_GID = "1456804198"; 
+        const RTM_SHEET_GID = "422939006"; // ALTERAÇÃO/ADIÇÃO SOLICITADA
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
         let consultantDetails = {};
+        let carouselInterval;
+        let carouselPages = [];
+        let currentPageIndex = 0;
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
-
+        
         function setupCarousel() {
-            const pages = document.querySelectorAll('.carousel-page');
-            let currentPageIndex = 0;
-            if (pages.length === 0) return;
-            setInterval(() => {
-                if(isAnimationPlaying || carouselPaused) return; 
-                pages[currentPageIndex].classList.remove('active');
-                currentPageIndex = (currentPageIndex + 1) % pages.length;
-                pages[currentPageIndex].classList.add('active');
-            }, 20000); 
+            carouselPages = document.querySelectorAll('.carousel-page');
+            if (carouselPages.length === 0) return;
+            startCarouselInterval();
+        }
+
+        function startCarouselInterval() {
+            carouselInterval = setInterval(() => {
+                if (isAnimationPlaying || carouselPaused) return;
+                navigateCarousel(1);
+            }, 20000);
+        }
+
+        function navigateCarousel(direction) {
+            if (carouselPages.length === 0) return;
+            carouselPages[currentPageIndex].classList.remove('active');
+            currentPageIndex = (currentPageIndex + direction + carouselPages.length) % carouselPages.length;
+            carouselPages[currentPageIndex].classList.add('active');
+        }
+
+        function manualNavigate(direction) {
+            if (!carouselPaused) return;
+            navigateCarousel(direction);
+        }
+
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Lógica da Fila de Notificações atualizada
+        function processNotificationQueue() {
+            if (isAnimationPlaying || notificationQueue.length === 0) {
+                return;
+            }
+            isAnimationPlaying = true;
+            const notificationData = notificationQueue.shift(); 
+            
+            if (notificationData.type === 'sale') {
+                triggerSaleAnimation(notificationData.data);
+            } else if (notificationData.type === 'payment') {
+                triggerPaymentAnimation(notificationData.data);
+            } else if (notificationData.type === 'rtmPayment') {
+                triggerRtmPaymentAnimation(notificationData.data);
+            }
+        }
+
+        function onAnimationFinish() {
+            document.getElementById('sale-notification-overlay').classList.remove('show');
+            isAnimationPlaying = false;
+            setTimeout(processNotificationQueue, 500); 
         }
 
         function triggerSaleAnimation(sale) {
-            if (isAnimationPlaying) return;
-            isAnimationPlaying = true;
-            
             new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
-
             const overlay = document.getElementById('sale-notification-overlay');
             const photoEl = document.getElementById('notification-photo');
             const iconEl = document.getElementById('notification-main-icon');
@@ -355,16 +439,34 @@
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                isAnimationPlaying = false;
-            }, 20000);
+            setTimeout(onAnimationFinish, 8000);
         }
 
         function triggerPaymentAnimation(payment) {
-            if (isAnimationPlaying) return;
-            isAnimationPlaying = true;
+            new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
+            const overlay = document.getElementById('sale-notification-overlay');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
+
+            photoEl.style.display = 'none';
+
+            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
+            titleEl.textContent = 'Pagamento Realizado!';
+            textEl.innerHTML = `O status do processo <strong>${payment.processo || 'N/A'}</strong> de <strong>${payment.nome || 'N/A'}</strong> foi atualizado para PAGO!`;
+            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
+            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
+
+            overlay.classList.add('show');
             
+            setTimeout(onAnimationFinish, 8000);
+        }
+
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para notificação de RTM
+        function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
 
             const overlay = document.getElementById('sale-notification-overlay');
@@ -375,47 +477,69 @@
             const secondaryTextEl = document.getElementById('notification-secondary-text');
             const extrasContainer = document.getElementById('animation-extras-container');
 
-            photoEl.style.display = 'none'; // Não há foto para pagamento
+            let cobradorName = 'Equipe';
+            let photoUrl = DEFAULT_AVATAR;
+            if (payment.cobrador && payment.cobrador.startsWith('@')) {
+                cobradorName = payment.cobrador.split(' ')[0].substring(1);
+                photoUrl = getConsultantPhotoUrl(cobradorName);
+            }
+
+            photoEl.style.display = 'block';
+            photoEl.src = photoUrl;
+            photoEl.onerror = () => { photoEl.src = DEFAULT_AVATAR; photoEl.onerror = null; };
 
             iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
-            titleEl.textContent = 'Pagamento Realizado!';
-            textEl.innerHTML = `O status do processo <strong>${payment.processo || 'N/A'}</strong> de <strong>${payment.nome || 'N/A'}</strong> foi atualizado para PAGO!`;
+            titleEl.textContent = 'Pagamento RTM Recebido!';
+            textEl.innerHTML = `Pagamento de <strong>${payment.cliente || 'N/A'}</strong> foi registrado por <strong>${cobradorName}</strong>!`;
             secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
-            extrasContainer.innerHTML = `
-                <i class="fas fa-dollar-sign money-symbol"></i>
-                <i class="fas fa-euro-sign money-symbol"></i>
-                <i class="fas fa-pound-sign money-symbol"></i>`;
+            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
 
             overlay.classList.add('show');
             
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                isAnimationPlaying = false;
-            }, 20000);
+            setTimeout(onAnimationFinish, 8000);
         }
         
         function checkForNewSales(newSales, oldSales) {
-            if (isAnimationPlaying || newSales.length <= oldSales.length) return;
+            if (newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
+
             if (newlyAddedSales.length > 0) {
                 const latestSale = newlyAddedSales.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
-                triggerSaleAnimation(latestSale);
+                notificationQueue.push({ type: 'sale', data: latestSale });
+                processNotificationQueue();
             }
         }
 
-        // ALTERAÇÃO SOLICITADA: Nova função para checar mudança de status para "PAGO"
         function checkForPaidStatusChange(newPayments, oldPayments) {
-            if (isAnimationPlaying || firstLoad || oldPayments.length === 0) return;
-
-            const oldPaymentsMap = new Map(oldPayments.map(p => [p.originalIndex, p]));
+            if (firstLoad || oldPayments.length === 0) return;
+            const oldPaymentsMap = new Map(oldPayments.map(p => [p.uniqueId, p]));
+            let newPaidFound = false;
 
             for (const newPayment of newPayments) {
-                const oldPayment = oldPaymentsMap.get(newPayment.originalIndex);
+                const oldPayment = oldPaymentsMap.get(newPayment.uniqueId);
                 if (oldPayment && oldPayment.status !== 'PAGO' && newPayment.status === 'PAGO') {
-                    triggerPaymentAnimation(newPayment);
-                    return; 
+                    notificationQueue.push({ type: 'payment', data: newPayment });
+                    newPaidFound = true;
                 }
+            }
+
+            if (newPaidFound) {
+                processNotificationQueue();
+            }
+        }
+
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para checar pagamentos RTM
+        function checkForNewRtmPayments(newRtmData, oldRtmData) {
+            if (newRtmData.length <= oldRtmData.length) return;
+            
+            const oldIndices = new Set(oldRtmData.map(p => p.originalIndex));
+            const newlyAdded = newRtmData.filter(p => !oldIndices.has(p.originalIndex));
+
+            if (newlyAdded.length > 0) {
+                const latestPayment = newlyAdded.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
+                notificationQueue.push({ type: 'rtmPayment', data: latestPayment });
+                processNotificationQueue();
             }
         }
         
@@ -455,11 +579,10 @@
                 
                 if (csvData && csvData.trim()) {
                     const newPayments = await processPaymentsCsv(csvData);
-                    // ALTERAÇÃO SOLICITADA: Chamar a nova função de checagem
                     checkForPaidStatusChange(newPayments, paymentsData);
                     paymentsData = newPayments;
-                    updateApprovedProcessesView(paymentsData); // Chamar a nova função de renderização
-                    updateProcessCounter(paymentsData.length);
+                    updateApprovedProcessesView(paymentsData);
+                    updateProcessCounter(paymentsData.filter(p => p.status === 'PAGO').length);
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de pagamentos:", error);
@@ -467,6 +590,29 @@
                     const body = document.getElementById(id);
                     if(body) body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>';
                 });
+            }
+        }
+        
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para buscar dados de RTM
+        async function fetchRtmPaymentsData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${RTM_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão com pagamentos RTM: ${response.statusText}`);
+                const csvData = await response.text();
+                
+                if (csvData && csvData.trim()) {
+                    const newRtmData = await processRtmCsv(csvData);
+                    if (!firstLoad) {
+                        checkForNewRtmPayments(newRtmData, rtmPaymentsData);
+                    }
+                    rtmPaymentsData = newRtmData;
+                    updateRtmPaymentsView(rtmPaymentsData);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de pagamentos RTM:", error);
+                const body = document.getElementById('rtmPaymentsTableBody');
+                if(body) body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados de RTM.</td></tr>';
             }
         }
 
@@ -490,19 +636,40 @@
             return tempData;
         }
 
-        // ALTERAÇÃO SOLICITADA: Processar a coluna E (Status)
         async function processPaymentsCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const data = [];
             for (let i = 1; i < lines.length; i++) { 
                 const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 5 && columns[0]) { 
+                if (columns.length >= 5 && columns[0]) {
+                    const nome = (columns[0] || '').trim();
+                    const processo = (columns[1] || '').trim();
                     data.push({
-                        nome: (columns[0] || '').trim(),
-                        processo: (columns[1] || '').trim(),
+                        nome: nome,
+                        processo: processo,
                         valor: (columns[2] || '').trim(),
                         data: (columns[3] || '').trim(),
-                        status: (columns[4] || '').trim().toUpperCase(),
+                        status: (columns[4] || 'APROVADO').trim().toUpperCase(),
+                        originalIndex: i,
+                        uniqueId: `${nome}-${processo}-${i}`
+                    });
+                }
+            }
+            return data;
+        }
+
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para processar CSV de RTM
+        async function processRtmCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 4 && columns[0]) {
+                    data.push({
+                        cliente: (columns[0] || '').trim(),
+                        valor: (columns[1] || '').trim(),
+                        data: (columns[2] || '').trim(),
+                        cobrador: (columns[3] || '').trim(),
                         originalIndex: i
                     });
                 }
@@ -534,42 +701,65 @@
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
         
-        // ALTERAÇÃO SOLICITADA: Funções para renderizar as tabelas por status
         function updateApprovedProcessesView(allApprovedData) {
-            const statusMap = {
-                'APROVADO': [],
-                'NA CONTA': [],
-                'PAGO': []
-            };
-
+            const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
             allApprovedData.forEach(item => {
-                const status = item.status || 'APROVADO';
+                const status = item.status;
                 if (statusMap.hasOwnProperty(status)) {
                     statusMap[status].push(item);
-                } else {
-                    statusMap['APROVADO'].push(item); // Fallback para status desconhecido
                 }
             });
-
             populatePaymentTable('aprovadoTableBody', statusMap['APROVADO']);
             populatePaymentTable('naContaTableBody', statusMap['NA CONTA']);
             populatePaymentTable('pagoTableBody', statusMap['PAGO']);
         }
 
-        function populatePaymentTable(tableBodyId, data) {
-            const tableBody = document.getElementById(tableBodyId);
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: Nova função para popular tabela de RTM
+        function updateRtmPaymentsView(data) {
+            const tableBody = document.getElementById('rtmPaymentsTableBody');
             if (!tableBody) return;
 
             const sortedData = [...data].sort((a, b) => {
                 try {
-                    const datePartsA = a.data.split('/');
-                    const datePartsB = b.data.split('/');
+                    const dateA = new Date(a.data);
+                    const dateB = new Date(b.data);
+                    return dateB - dateA;
+                } catch (e) { return 0; }
+            });
+
+            let html = '';
+            sortedData.forEach(payment => {
+                let formattedDate = '-';
+                try {
+                    const dateObj = new Date(payment.data);
+                    if (!isNaN(dateObj)) {
+                        const datePart = dateObj.toLocaleDateString('pt-BR');
+                        const timePart = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                        formattedDate = `${datePart} ${timePart}`;
+                    }
+                } catch(e) { /* usa o padrão '-' */ }
+
+                html += `<tr>
+                    <td><span class="date-badge">${formattedDate}</span></td>
+                    <td>${payment.cliente || '-'}</td>
+                    <td><span class="process-badge">${payment.valor || '-'}</span></td>
+                    <td>${payment.cobrador || '-'}</td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum pagamento RTM registrado.</td></tr>';
+        }
+
+        function populatePaymentTable(tableBodyId, data) {
+            const tableBody = document.getElementById(tableBodyId);
+            if (!tableBody) return;
+            const sortedData = [...data].sort((a, b) => {
+                try {
+                    const datePartsA = a.data.split('/'); const datePartsB = b.data.split('/');
                     const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
                     const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
                     return dateB - dateA;
                 } catch (e) { return 0; }
             });
-
             let html = '';
             sortedData.forEach(payment => {
                 html += `<tr>
@@ -607,15 +797,13 @@
             const monthSelect = document.getElementById('monthFilter');
             const currentVal = monthSelect.value;
             const allMonths = Array.from(monthSet).sort((a, b) => {
-                const [ma, ya] = a.split('/');
-                const [mb, yb] = b.split('/');
+                const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
                 return new Date(yb, mb - 1) - new Date(ya, ma - 1);
             });
             monthSelect.innerHTML = '';
             allMonths.forEach(month => {
                 const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month;
+                option.value = month; option.textContent = month;
                 monthSelect.appendChild(option);
             });
             if (allMonths.includes(currentVal)) {
@@ -696,7 +884,6 @@
             });
 
             consultantDetails = stats;
-            
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
             const topConsultantNameEl = document.getElementById('topConsultant');
             const topConsultantPhotoEl = document.getElementById('topConsultantPhoto');
@@ -754,10 +941,8 @@
         function populateConsultantFilter(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
             if (!consultantFilterSelect) return;
-
             const currentSelection = consultantFilterSelect.value;
             const consultantsMap = new Map();
-
             monthSales.forEach(sale => {
                 if (sale.consultor && sale.consultor.trim() !== "") {
                     const rawName = sale.consultor.trim();
@@ -769,18 +954,13 @@
                     }
                 }
             });
-
             const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-
             consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-
             sortedConsultants.forEach(([key, displayName]) => {
                 const option = document.createElement('option');
-                option.value = key;
-                option.textContent = displayName;
+                option.value = key; option.textContent = displayName;
                 consultantFilterSelect.appendChild(option);
             });
-            
             if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
                 consultantFilterSelect.value = currentSelection;
             }
@@ -794,15 +974,10 @@
         function updateMonthSales(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilter');
             const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-
             let filteredSales = monthSales;
-
             if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => 
-                    sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey
-                );
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
             }
-
             const sortedSales = [...filteredSales].sort((a, b) => {
                 const dateA = new Date(a.data.split('/').reverse().join('-'));
                 const dateB = new Date(b.data.split('/').reverse().join('-'));
@@ -867,18 +1042,27 @@
         function closeProcessDetails() {
             document.getElementById('process-details-modal').style.display = 'none';
         }
-
-        // ALTERAÇÃO SOLICITADA: Nova função para controlar as abas
-        function showStatusTab(tabName) {
-            document.querySelectorAll('.status-section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.status-tab').forEach(tab => tab.classList.remove('active'));
-
-            document.getElementById(`${tabName}-section`).classList.add('active');
-            document.querySelector(`[onclick="showStatusTab('${tabName}')"]`).classList.add('active');
-        }
         
+        function filterPayments(statusToShow) {
+            document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.payment-status-section').forEach(section => {
+                if (statusToShow === 'all') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = section.id === `section-${statusToShow}` ? 'block' : 'none';
+                }
+            });
+        }
+
+        // ALTERAÇÃO/ADIÇÃO SOLICITADA: fetchAllData atualizado para incluir RTM
         async function fetchAllData() {
-            await Promise.all([fetchSalesData(), fetchPaymentsData()]);
+            await Promise.all([
+                fetchSalesData(), 
+                fetchPaymentsData(),
+                fetchRtmPaymentsData() 
+            ]);
             firstLoad = false;
         }
 
@@ -896,21 +1080,25 @@
 
             const toggleBtn = document.getElementById('carousel-toggle-button');
             const icon = toggleBtn.querySelector('i');
+            const navControls = document.getElementById('carousel-nav-controls');
             toggleBtn.addEventListener('click', () => {
                 carouselPaused = !carouselPaused;
                 if (carouselPaused) {
                     icon.classList.remove('fa-pause');
                     icon.classList.add('fa-play');
                     toggleBtn.title = 'Retomar Carrossel';
+                    navControls.style.display = 'flex';
+                    clearInterval(carouselInterval);
                 } else {
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
                     toggleBtn.title = 'Pausar Carrossel';
+                    navControls.style.display = 'none';
+                    startCarouselInterval();
                 }
             });
 
-            // Inicia com a primeira aba ativa
-            showStatusTab('aprovado');
+            filterPayments('all');
         });
     </script>
 </body>
