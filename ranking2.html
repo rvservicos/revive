@@ -52,19 +52,20 @@
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
         .sales-table td { padding: 20px; border-bottom: 1px solid #f3f4f6; color: #374151; vertical-align: middle; }
         .sales-table tr:nth-child(even) { background-color: #f9fafb; }
-        .process-badge, .date-badge { padding: 8px 16px; border-radius: 26px; font-size: 1rem; display: inline-block; font-weight: 500; }
+        .process-badge, .date-badge, .status-badge { padding: 8px 16px; border-radius: 26px; font-size: 1rem; display: inline-block; font-weight: 500; }
         .process-badge { background: #e8ecff; color: #6b46c1; }
         .date-badge { background: #f3f4f6; color: #6b7280; }
+        .status-badge { color: white; }
         
         .month-selector { background: white; padding: 15px; border-radius: 20px; margin-bottom: 26px; box-shadow: 0 5px 16px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
-        .month-selector-group { display: flex; align-items: center; gap: 10px; }
+        .month-selector-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .month-selector label { font-weight: 600; color: #6b46c1; font-size: 1.2rem; }
-        .month-selector select { padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; }
+        .month-selector select { padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer; }
         
         .carousel-controls-group { display: flex; align-items: center; gap: 10px; }
         #carousel-toggle-button, .carousel-nav-btn { padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 10px; background-color: white; color: #6b46c1; cursor: pointer; font-size: 1.2rem; transition: background-color 0.2s, color 0.2s; line-height: 1; }
         #carousel-toggle-button:hover, .carousel-nav-btn:hover { background-color: #f3f4f6; }
-        #carousel-nav-controls { display: none; gap: 10px; }
+        #carousel-nav-controls { display: flex; gap: 10px; }
         
         .carousel-page { display: none; opacity: 0; animation: fadeIn 0.8s ease-in-out forwards; }
         .carousel-page.active { display: block; }
@@ -119,7 +120,7 @@
         .notification-content .process-info { font-size: 1.3rem; color: #777; margin-top: 13px; background: #f8f9ff; padding: 10px 20px; border-radius: 13px; display: inline-block; border: 1px solid #e8ecff; }
         
         .animation-extras { position: absolute; bottom: -65px; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .rocket, .money-symbol { position: absolute; font-size: 2.6rem; opacity: 0; }
+        .rocket, .money-symbol, .clapping-hands { position: absolute; font-size: 2.6rem; opacity: 0; }
         .rocket { color: #8b5cf6; animation: launch 3s ease-in forwards; }
         @keyframes launch { 0% { transform: translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(-45deg); opacity: 0; } }
         .rocket:nth-child(1) { left: 15%; animation-delay: 0.1s; }
@@ -127,10 +128,11 @@
         .rocket:nth-child(3) { left: 50%; animation-delay: 0.2s; }
         
         .money-symbol { color: #22c55e; animation: float-up 4s ease-out forwards; }
+        .clapping-hands { color: #ffc107; animation: float-up 4s ease-out forwards; }
         @keyframes float-up { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
-        .money-symbol:nth-child(1) { left: 20%; font-size: 3rem; animation-delay: 0.1s; }
-        .money-symbol:nth-child(2) { left: 75%; font-size: 2.5rem; animation-delay: 0.8s; }
-        .money-symbol:nth-child(3) { left: 45%; font-size: 3.5rem; animation-delay: 0.4s; }
+        .money-symbol:nth-child(1), .clapping-hands:nth-child(1) { left: 20%; font-size: 3rem; animation-delay: 0.1s; }
+        .money-symbol:nth-child(2), .clapping-hands:nth-child(2) { left: 75%; font-size: 2.5rem; animation-delay: 0.8s; }
+        .money-symbol:nth-child(3), .clapping-hands:nth-child(3) { left: 45%; font-size: 3.5rem; animation-delay: 0.4s; }
 
         #process-details-modal { position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
         .modal-content { background-color: #fefefe; margin: auto; padding: 39px; border: 1px solid #888; width: 90%; max-width: 650px; border-radius: 20px; box-shadow: 0 7px 33px rgba(0,0,0,0.2); position: relative; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -143,7 +145,6 @@
         .details-list .process-name { color: #374151; }
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 5px 13px; border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
         
-        /* --- ALTERAÇÃO SOLICITADA: Estilos para Filtros e Seções de Pagamento --- */
         .payment-filter-container { display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; flex-wrap: wrap; }
         .payment-filter-btn { padding: 10px 20px; cursor: pointer; border: 1px solid #d1d5db; background-color: #f9fafb; font-size: 1.1rem; font-weight: 600; color: #6b7280; border-radius: 20px; transition: color 0.3s, background-color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .payment-filter-btn:hover { background-color: #e8ecff; color: #6b46c1; }
@@ -164,12 +165,18 @@
 <body>
     <div class="main-container">
         <!-- Páginas do Carrossel -->
-        <div id="dashboard-view" class="carousel-page active">
+        <div id="dashboard-view" class="carousel-page active" data-name="Dashboard">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
-            <!-- ALTERAÇÃO SOLICITADA: Controles do Carrossel movidos para um grupo -->
             <div class="month-selector">
-                <div class="month-selector-group"><label for="monthFilter"><i class="fas fa-calendar"></i> Selecionar Mês:</label><select id="monthFilter" onchange="updateDashboard()"></select></div>
+                <div class="month-selector-group">
+                    <label for="monthFilter"><i class="fas fa-calendar"></i> Mês:</label>
+                    <select id="monthFilter" onchange="updateDashboard()"></select>
+                </div>
+                <div class="month-selector-group">
+                    <label for="pageSelector"><i class="fas fa-map-signs"></i> Navegar para:</label>
+                    <select id="pageSelector" onchange="jumpToPage(this.value)"></select>
+                </div>
                 <div class="carousel-controls-group">
                     <div id="carousel-nav-controls">
                         <button class="carousel-nav-btn" title="Página Anterior" onclick="manualNavigate(-1)"><i class="fas fa-chevron-left"></i></button>
@@ -185,7 +192,7 @@
             </div>
             <div class="main-content">
                 <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
-                <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo(Margem de erro de 10%) e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
+                <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
             </div>
             <div class="panel recent-sales">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
@@ -203,9 +210,9 @@
                 </table>
             </div>
         </div>
-        <div id="chart-view" class="carousel-page"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 585px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
+        <div id="chart-view" class="carousel-page" data-name="Gráficos"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 585px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
         
-        <div id="mission-view" class="carousel-page">
+        <div id="mission-view" class="carousel-page" data-name="Cultura">
             <div class="header">
                 <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
                 <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
@@ -238,8 +245,7 @@
             </div>
         </div>
         
-        <!-- ALTERAÇÃO SOLICITADA: Visão de Pagamentos Unificada com Filtros -->
-        <div id="pagamentos-view" class="carousel-page">
+        <div id="pagamentos-view" class="carousel-page" data-name="Aprovados">
             <div class="header">
                 <h1><i class="fas fa-hand-holding-usd"></i> Painel de Aprovados</h1>
                 <p class="subtitle">Acompanhamento de processos por status.</p>
@@ -284,7 +290,51 @@
             </div>
         </div>
 
-        <div id="schedule-view" class="carousel-page"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">11 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Em planejamento.</p></div></div></div></div>
+        <div id="rtm-pagamentos-view" class="carousel-page" data-name="Pagamentos RTM">
+            <div class="header">
+                <h1><i class="fas fa-receipt"></i> Pagamentos de RTM</h1>
+                <p class="subtitle">Acompanhamento de pagamentos recebidos via RTM.</p>
+            </div>
+            <div class="panel">
+                <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-history"></i> Histórico de Recebimentos</h2>
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Valor</th>
+                            <th>Cobrado por</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rtmPaymentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="acordos-view" class="carousel-page" data-name="Acordos">
+            <div class="header">
+                <h1><i class="fas fa-handshake"></i> Painel de Acordos</h1>
+                <p class="subtitle">Acompanhamento de acordos e negociações.</p>
+            </div>
+            <div class="panel">
+                <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-tasks"></i> Status dos Acordos</h2>
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Processo</th>
+                            <th>Valor</th>
+                            <th>Honorários</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="acordosTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="schedule-view" class="carousel-page" data-name="Cronograma"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">11 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Em planejamento.</p></div></div></div></div>
     </div>
 
     <!-- Container da Notificação -->
@@ -314,13 +364,18 @@
         // --- VARIÁVEIS DE CONTROLE ---
         let salesData = [];
         let paymentsData = [];
+        let rtmPaymentsData = [];
+        let acordosData = [];
         let firstLoad = true;
         let isAnimationPlaying = false;
         let carouselPaused = false;
-        let notificationQueue = []; // ALTERAÇÃO SOLICITADA: Fila de notificações
+        let notificationQueue = [];
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
         const PGTO_SHEET_GID = "1456804198"; 
+        const RTM_SHEET_GID = "422939006";
+        const ACORDOS_SHEET_ID = "1kwsL_Gkw-LC-n_E_nLUCzE9CuFtQDhRe";
+        const ACORDOS_SHEET_GID = "277487318";
         const DRA_RENATA_STRING = "DRA RENATA";
         let currentMonthCounts = {};
         let processEvolutionChartInstance = null;
@@ -334,14 +389,26 @@
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
         
-        // --- ALTERAÇÃO SOLICITADA: Lógica do Carrossel Melhorada ---
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
             if (carouselPages.length === 0) return;
+
+            const pageSelector = document.getElementById('pageSelector');
+            pageSelector.innerHTML = '';
+            carouselPages.forEach((page, index) => {
+                const pageName = page.dataset.name || `Página ${index + 1}`;
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = pageName;
+                pageSelector.appendChild(option);
+            });
+
             startCarouselInterval();
+            updatePageSelector();
         }
 
         function startCarouselInterval() {
+            clearInterval(carouselInterval);
             carouselInterval = setInterval(() => {
                 if (isAnimationPlaying || carouselPaused) return;
                 navigateCarousel(1);
@@ -353,38 +420,104 @@
             carouselPages[currentPageIndex].classList.remove('active');
             currentPageIndex = (currentPageIndex + direction + carouselPages.length) % carouselPages.length;
             carouselPages[currentPageIndex].classList.add('active');
+            updatePageSelector();
         }
 
         function manualNavigate(direction) {
-            if (!carouselPaused) return;
+            clearInterval(carouselInterval);
             navigateCarousel(direction);
+            if (!carouselPaused) {
+                startCarouselInterval();
+            }
+        }
+        
+        function jumpToPage(index) {
+            clearInterval(carouselInterval);
+            carouselPages[currentPageIndex].classList.remove('active');
+            currentPageIndex = parseInt(index, 10);
+            carouselPages[currentPageIndex].classList.add('active');
+            updatePageSelector();
+            if (!carouselPaused) {
+                startCarouselInterval();
+            }
         }
 
-        // --- ALTERAÇÃO SOLICITADA: Lógica da Fila de Notificações ---
+        function updatePageSelector() {
+            const pageSelector = document.getElementById('pageSelector');
+            if (pageSelector) {
+                pageSelector.value = currentPageIndex;
+            }
+        }
+
         function processNotificationQueue() {
             if (isAnimationPlaying || notificationQueue.length === 0) {
                 return;
             }
             isAnimationPlaying = true;
-            const notificationData = notificationQueue.shift(); // Pega o primeiro da fila
+            const notificationData = notificationQueue.shift(); 
             
             if (notificationData.type === 'sale') {
                 triggerSaleAnimation(notificationData.data);
             } else if (notificationData.type === 'payment') {
                 triggerPaymentAnimation(notificationData.data);
+            } else if (notificationData.type === 'rtmPayment') {
+                triggerRtmPaymentAnimation(notificationData.data);
+            } else if (notificationData.type === 'acordoUpdate') {
+                triggerAcordoNotification(notificationData.data);
             }
         }
 
         function onAnimationFinish() {
             document.getElementById('sale-notification-overlay').classList.remove('show');
             isAnimationPlaying = false;
-            // Atraso para evitar sobreposição visual antes de chamar a próxima
             setTimeout(processNotificationQueue, 500); 
+        }
+
+        function triggerAcordoNotification(acordo) {
+            const statusSounds = {
+                'TRATATIVA DE ACORDO': 'foguete.wav',
+                'ACORDO FECHADO': 'palmas.mp3',
+                'PAGAMENTO EFETUADO': 'dinheiro.mp3'
+            };
+            const soundFile = statusSounds[acordo.status.toUpperCase()];
+            if (soundFile) {
+                new Audio(soundFile).play().catch(e => console.error(`Erro ao tocar '${soundFile}':`, e));
+            }
+
+            const overlay = document.getElementById('sale-notification-overlay');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
+            
+            photoEl.style.display = 'none';
+            
+            const statusIcons = {
+                'TRATATIVA DE ACORDO': '<i class="fas fa-comments-dollar" style="color: #f59e0b;"></i>',
+                'ACORDO FECHADO': '<i class="fas fa-handshake" style="color: #10b981;"></i>',
+                'PAGAMENTO EFETUADO': '<i class="fas fa-dollar-sign" style="color: #22c55e;"></i>'
+            };
+            
+            const animationHtml = {
+                'TRATATIVA DE ACORDO': '<i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket" style="left: 70%; animation-delay: 0.4s;"></i>',
+                'ACORDO FECHADO': '<i class="fas fa-hand-sparkles clapping-hands"></i><i class="fas fa-hand-sparkles clapping-hands" style="left: 60%; animation-delay: 0.3s;"></i>',
+                'PAGAMENTO EFETUADO': '<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol" style="left: 80%; animation-delay: 0.2s;"></i>'
+            };
+
+            iconEl.innerHTML = statusIcons[acordo.status.toUpperCase()] || '<i class="fas fa-info-circle"></i>';
+            titleEl.textContent = 'Status de Acordo Atualizado!';
+            textEl.innerHTML = `O acordo do cliente <strong>${acordo.cliente || 'N/A'}</strong> mudou para <strong>${acordo.status}</strong>!`;
+            secondaryTextEl.textContent = `Processo: ${acordo.processo || 'N/A'} | Honorários: ${acordo.honorarios || 'N/A'}`;
+            extrasContainer.innerHTML = animationHtml[acordo.status.toUpperCase()] || '';
+
+            overlay.classList.add('show');
+            setTimeout(onAnimationFinish, 8000);
         }
 
         function triggerSaleAnimation(sale) {
             new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
-            // ... (código de configuração da notificação de venda)
             const overlay = document.getElementById('sale-notification-overlay');
             const photoEl = document.getElementById('notification-photo');
             const iconEl = document.getElementById('notification-main-icon');
@@ -406,13 +539,12 @@
             overlay.classList.add('show');
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
-            setTimeout(onAnimationFinish, 8000); // Duração da animação
+            setTimeout(onAnimationFinish, 8000);
         }
 
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
-            // ... (código de configuração da notificação de pagamento)
-             const overlay = document.getElementById('sale-notification-overlay');
+            const overlay = document.getElementById('sale-notification-overlay');
             const photoEl = document.getElementById('notification-photo');
             const iconEl = document.getElementById('notification-main-icon');
             const titleEl = document.getElementById('notification-title');
@@ -430,17 +562,49 @@
 
             overlay.classList.add('show');
             
-            setTimeout(onAnimationFinish, 8000); // Duração da animação
+            setTimeout(onAnimationFinish, 8000);
+        }
+
+        function triggerRtmPaymentAnimation(payment) {
+            new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
+
+            const overlay = document.getElementById('sale-notification-overlay');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
+
+            let cobradorName = 'Equipe';
+            let photoUrl = DEFAULT_AVATAR;
+            if (payment.cobrador && payment.cobrador.startsWith('@')) {
+                cobradorName = payment.cobrador.split(' ')[0].substring(1);
+                photoUrl = getConsultantPhotoUrl(cobradorName);
+            }
+
+            photoEl.style.display = 'block';
+            photoEl.src = photoUrl;
+            photoEl.onerror = () => { photoEl.src = DEFAULT_AVATAR; photoEl.onerror = null; };
+
+            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
+            titleEl.textContent = 'Pagamento RTM Recebido!';
+            textEl.innerHTML = `Pagamento de <strong>${payment.cliente || 'N/A'}</strong> foi registrado por <strong>${cobradorName}</strong>!`;
+            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
+            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
+
+            overlay.classList.add('show');
+            
+            setTimeout(onAnimationFinish, 8000);
         }
         
         function checkForNewSales(newSales, oldSales) {
-            if (newSales.length <= oldSales.length) return;
+            if (firstLoad || newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
 
             if (newlyAddedSales.length > 0) {
-                const latestSale = newlyAddedSales.reduce((latest, current) => (current.originalIndex > latest.originalIndex) ? current : latest);
-                notificationQueue.push({ type: 'sale', data: latestSale });
+                newlyAddedSales.forEach(sale => notificationQueue.push({ type: 'sale', data: sale }));
                 processNotificationQueue();
             }
         }
@@ -448,37 +612,62 @@
         function checkForPaidStatusChange(newPayments, oldPayments) {
             if (firstLoad || oldPayments.length === 0) return;
             const oldPaymentsMap = new Map(oldPayments.map(p => [p.uniqueId, p]));
-            let newPaidFound = false;
-
+            
             for (const newPayment of newPayments) {
                 const oldPayment = oldPaymentsMap.get(newPayment.uniqueId);
                 if (oldPayment && oldPayment.status !== 'PAGO' && newPayment.status === 'PAGO') {
                     notificationQueue.push({ type: 'payment', data: newPayment });
-                    newPaidFound = true;
                 }
             }
+            if(notificationQueue.some(n => n.type === 'payment')) processNotificationQueue();
+        }
 
-            if (newPaidFound) {
+        function checkForNewRtmPayments(newRtmData, oldRtmData) {
+            if (firstLoad || newRtmData.length <= oldRtmData.length) return;
+            
+            const oldIndices = new Set(oldRtmData.map(p => p.originalIndex));
+            const newlyAdded = newRtmData.filter(p => !oldIndices.has(p.originalIndex));
+
+            if (newlyAdded.length > 0) {
+                newlyAdded.forEach(payment => notificationQueue.push({ type: 'rtmPayment', data: payment}));
+                processNotificationQueue();
+            }
+        }
+
+        function checkForAcordoStatusChange(newAcordos, oldAcordos) {
+            if (firstLoad || oldAcordos.length === 0) return;
+
+            const oldAcordosMap = new Map(oldAcordos.map(a => [a.uniqueId, a]));
+
+            for (const newAcordo of newAcordos) {
+                const oldAcordo = oldAcordosMap.get(newAcordo.uniqueId);
+                if (oldAcordo && oldAcordo.status !== newAcordo.status) {
+                    const relevantStatus = ['TRATATIVA DE ACORDO', 'ACORDO FECHADO', 'PAGAMENTO EFETUADO'];
+                    if(relevantStatus.includes(newAcordo.status.toUpperCase())) {
+                        notificationQueue.push({ type: 'acordoUpdate', data: newAcordo });
+                    }
+                }
+            }
+            if(notificationQueue.some(n => n.type === 'acordoUpdate')) {
                 processNotificationQueue();
             }
         }
         
         async function fetchSalesData() {
-            updateConnectionStatus('loading', 'Conectando à Vendas...');
             try {
+                updateConnectionStatus('loading', 'Conectando à Vendas...');
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${SALES_SHEET_GID}&_=${new Date().getTime()}`;
-                const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
-                if (!response.ok) throw new Error(`Falha na conexão: ${response.statusText}`);
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão de Vendas: ${response.statusText}`);
                 const csvData = await response.text();
                 if (csvData && csvData.trim()) {
                     const newSalesData = await processCsvData(csvData);
-                    if (!firstLoad) checkForNewSales(newSalesData, salesData);
+                    checkForNewSales(newSalesData, salesData);
                     salesData = newSalesData;
                     if (document.getElementById('monthFilter').options.length === 0) {
                         populateMonthFilter(salesData);
                     }
                     updateDashboard();
-                    updateConnectionStatus('connected', 'Conectado');
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de vendas:", error);
@@ -487,13 +676,9 @@
         }
         
         async function fetchPaymentsData() {
-            if (!PGTO_SHEET_GID) {
-                updateProcessCounter(0); 
-                return;
-            }
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
-                const response = await fetch(csvUrl, { method: 'GET', mode: 'cors' });
+                const response = await fetch(csvUrl, { mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão com pagamentos: ${response.statusText}`);
                 const csvData = await response.text();
                 
@@ -502,15 +687,74 @@
                     checkForPaidStatusChange(newPayments, paymentsData);
                     paymentsData = newPayments;
                     updateApprovedProcessesView(paymentsData);
-                    updateProcessCounter(paymentsData.filter(p => p.status === 'PAGO').length);
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados de pagamentos:", error);
                  ['aprovadoTableBody', 'naContaTableBody', 'pagoTableBody'].forEach(id => {
                     const body = document.getElementById(id);
-                    if(body) body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>';
+                    if(body) body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>`;
                 });
             }
+        }
+        
+        async function fetchRtmPaymentsData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${RTM_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão com pagamentos RTM: ${response.statusText}`);
+                const csvData = await response.text();
+                
+                if (csvData && csvData.trim()) {
+                    const newRtmData = await processRtmCsv(csvData);
+                    checkForNewRtmPayments(newRtmData, rtmPaymentsData);
+                    rtmPaymentsData = newRtmData;
+                    updateRtmPaymentsView(rtmPaymentsData);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de pagamentos RTM:", error);
+                const body = document.getElementById('rtmPaymentsTableBody');
+                if(body) body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados de RTM.</td></tr>`;
+            }
+        }
+
+        async function fetchAcordosData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${ACORDOS_SHEET_ID}/export?format=csv&gid=${ACORDOS_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão com Acordos: ${response.statusText}`);
+                const csvData = await response.text();
+
+                if(csvData && csvData.trim()) {
+                    const newAcordos = await processAcordosCsv(csvData);
+                    checkForAcordoStatusChange(newAcordos, acordosData);
+                    acordosData = newAcordos;
+                    updateAcordosView(acordosData);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de Acordos:", error);
+                const body = document.getElementById('acordosTableBody');
+                if(body) body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Falha ao carregar dados de Acordos.</td></tr>`;
+            }
+        }
+
+        function parseCSVLine(line) {
+            const result = []; let current = ''; let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                let char = line[i];
+                if (char === '"') {
+                    if (inQuotes && i + 1 < line.length && line[i+1] === '"') { 
+                        current += '"'; i++; 
+                    } else { 
+                        inQuotes = !inQuotes; 
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current); current = '';
+                } else { 
+                    current += char; 
+                }
+            }
+            result.push(current);
+            return result.map(item => item.trim());
         }
 
         async function processCsvData(csvText) {
@@ -548,28 +792,54 @@
                         data: (columns[3] || '').trim(),
                         status: (columns[4] || 'APROVADO').trim().toUpperCase(),
                         originalIndex: i,
-                        uniqueId: `${nome}-${processo}-${i}` // ID único para rastreamento
+                        uniqueId: `${nome}-${processo}-${i}`
                     });
                 }
             }
             return data;
         }
 
-        function parseCSVLine(line) {
-            const result = []; let current = ''; let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                let char = line[i];
-                if (char === '"') {
-                    if (i + 1 < line.length && line[i+1] === '"') { if (inQuotes) current += '"'; i++; }
-                    else { inQuotes = !inQuotes; }
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current); current = '';
-                } else { current += char; }
+        async function processRtmCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 4 && columns[0]) {
+                    data.push({
+                        cliente: (columns[0] || '').trim(),
+                        valor: (columns[1] || '').trim(),
+                        data: (columns[2] || '').trim(),
+                        cobrador: (columns[3] || '').trim(),
+                        originalIndex: i
+                    });
+                }
             }
-            result.push(current);
-            return result.map(item => item.trim());
+            return data;
         }
-
+        
+        async function processAcordosCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 6 && columns[0]) {
+                    const cliente = (columns[0] || '').trim();
+                    const processo = (columns[1] || '').trim();
+                    data.push({
+                        cliente: cliente,
+                        processo: processo,
+                        valor: (columns[2] || '').trim(),
+                        honorarios: (columns[3] || '').trim(),
+                        data: (columns[4] || '').trim(),
+                        status: (columns[5] || '').trim(),
+                        originalIndex: i,
+                        uniqueId: `${cliente}-${processo}-${i}`
+                    });
+                }
+            }
+            return data;
+        }
+        
         function updateConnectionStatus(status, message) {
             const el = document.getElementById('connectionStatus');
             if (!el) return;
@@ -578,7 +848,7 @@
             const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
         }
-        
+
         function updateApprovedProcessesView(allApprovedData) {
             const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
             allApprovedData.forEach(item => {
@@ -590,6 +860,73 @@
             populatePaymentTable('aprovadoTableBody', statusMap['APROVADO']);
             populatePaymentTable('naContaTableBody', statusMap['NA CONTA']);
             populatePaymentTable('pagoTableBody', statusMap['PAGO']);
+        }
+
+        function updateRtmPaymentsView(data) {
+            const tableBody = document.getElementById('rtmPaymentsTableBody');
+            if (!tableBody) return;
+
+            const sortedData = [...data].sort((a, b) => {
+                try { return new Date(b.data) - new Date(a.data); } catch (e) { return 0; }
+            });
+
+            let html = '';
+            sortedData.forEach(payment => {
+                let formattedDate = '-';
+                try {
+                    const dateObj = new Date(payment.data);
+                    if (!isNaN(dateObj)) {
+                        const datePart = dateObj.toLocaleDateString('pt-BR');
+                        const timePart = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                        formattedDate = `${datePart} ${timePart}`;
+                    }
+                } catch(e) {}
+
+                html += `<tr>
+                    <td><span class="date-badge">${formattedDate}</span></td>
+                    <td>${payment.cliente || '-'}</td>
+                    <td><span class="process-badge">${payment.valor || '-'}</span></td>
+                    <td>${payment.cobrador || '-'}</td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum pagamento RTM registrado.</td></tr>';
+        }
+        
+        function updateAcordosView(data) {
+            const tableBody = document.getElementById('acordosTableBody');
+            if (!tableBody) return;
+
+            const statusColors = {
+                'TRATATIVA DE ACORDO': '#f59e0b',
+                'ACORDO FECHADO': '#10b981',
+                'PAGAMENTO EFETUADO': '#8b5cf6',
+                'NEGADO': '#ef4444',
+            };
+
+            const sortedData = [...data].sort((a, b) => {
+                try {
+                    const datePartsA = a.data.split('/'); const datePartsB = b.data.split('/');
+                    const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
+                    const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
+                    return dateB - dateA;
+                } catch (e) { return 0; }
+            });
+
+            let html = '';
+            sortedData.forEach(acordo => {
+                const statusUpper = (acordo.status || '').toUpperCase();
+                const bgColor = statusColors[statusUpper] || '#6b7280';
+
+                html += `<tr>
+                    <td><span class="date-badge">${acordo.data || '-'}</span></td>
+                    <td>${acordo.cliente || '-'}</td>
+                    <td>${acordo.processo || '-'}</td>
+                    <td><span class="process-badge">${acordo.valor || '-'}</span></td>
+                    <td><span class="process-badge" style="background-color: #a78bfa; color: white;">${acordo.honorarios || '-'}</span></td>
+                    <td><span class="status-badge" style="background-color: ${bgColor};">${acordo.status || '-'}</span></td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum acordo registrado.</td></tr>';
         }
 
         function populatePaymentTable(tableBodyId, data) {
@@ -624,6 +961,14 @@
             }
         }
         
+        function updateTotalFinishedCounter() {
+            const paidPaymentsCount = paymentsData.filter(p => p.status === 'PAGO').length;
+            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
+            
+            const totalPaid = paidPaymentsCount + paidAcordosCount;
+            updateProcessCounter(totalPaid);
+        }
+
         function populateMonthFilter(dataToScan) {
             const monthSet = new Set();
             (dataToScan || []).forEach(sale => {
@@ -662,8 +1007,8 @@
             const [filterMonth, filterYear] = selectedMonthYear.split('/');
             return salesData.filter(sale => {
                 if (!sale.data) return false;
-                const [saleDay, saleMonth, saleYear] = sale.data.split('/');
-                return saleMonth === filterMonth && saleYear === filterYear;
+                const parts = sale.data.split('/');
+                return parts.length === 3 && parts[1] === filterMonth && parts[2] === filterYear;
             });
         }
         
@@ -682,6 +1027,7 @@
             const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
             document.getElementById('totalMonth').textContent = totalProcessos;
             const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) return;
             const [monthStr, yearStr] = selectedMonthYear.split('/');
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
@@ -755,7 +1101,7 @@
 
         function updateProcessStats(monthSales) {
             const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0 };
+            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
             const clientesST = new Set();
             monthSales.forEach(sale => {
                 (sale.processo || '').split(',').forEach(procRaw => {
@@ -763,6 +1109,7 @@
                     if (!proc || proc === DRA_RENATA_STRING) return;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
                     else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
+                    // CORREÇÃO DO ERRO DE DIGITAÇÃO AQUI
                     else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
                     else counts.outros++;
                 });
@@ -822,16 +1169,18 @@
                 filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
             }
             const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = new Date(a.data.split('/').reverse().join('-'));
-                const dateB = new Date(b.data.split('/').reverse().join('-'));
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
+                try {
+                    const dateA = new Date(a.data.split('/').reverse().join('-'));
+                    const dateB = new Date(b.data.split('/').reverse().join('-'));
+                    if (dateB - dateA !== 0) return dateB - dateA;
+                    return b.originalIndex - a.originalIndex;
+                } catch(e) { return 0; }
             });
             let html = '';
             sortedSales.forEach(sale => {
                 html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
             });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado para os filtros selecionados.</td></tr>';
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
         }
 
         function updateProcessEvolutionChart(allSalesData) {
@@ -886,7 +1235,6 @@
             document.getElementById('process-details-modal').style.display = 'none';
         }
         
-        // --- ALTERAÇÃO SOLICITADA: Nova função para filtrar pagamentos ---
         function filterPayments(statusToShow) {
             document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
@@ -901,7 +1249,23 @@
         }
 
         async function fetchAllData() {
-            await Promise.all([fetchSalesData(), fetchPaymentsData()]);
+            // CORREÇÃO: Usar Promise.allSettled para garantir que todas as buscas terminem,
+            // mesmo que uma falhe, permitindo que a lógica de contagem e atualização de status ocorra.
+            await Promise.allSettled([
+                fetchSalesData(), 
+                fetchPaymentsData(),
+                fetchRtmPaymentsData(),
+                fetchAcordosData() 
+            ]);
+            
+            updateTotalFinishedCounter();
+            
+            // Se nenhuma das buscas de dados principais (vendas) teve sucesso, mantemos o erro.
+            // Do contrário, se pelo menos uma conectou, consideramos 'conectado'.
+            if (salesData.length > 0) {
+                 updateConnectionStatus('connected', 'Conectado');
+            }
+            
             firstLoad = false;
         }
 
@@ -919,20 +1283,18 @@
 
             const toggleBtn = document.getElementById('carousel-toggle-button');
             const icon = toggleBtn.querySelector('i');
-            const navControls = document.getElementById('carousel-nav-controls');
+            
             toggleBtn.addEventListener('click', () => {
                 carouselPaused = !carouselPaused;
                 if (carouselPaused) {
                     icon.classList.remove('fa-pause');
                     icon.classList.add('fa-play');
                     toggleBtn.title = 'Retomar Carrossel';
-                    navControls.style.display = 'flex';
                     clearInterval(carouselInterval);
                 } else {
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
                     toggleBtn.title = 'Pausar Carrossel';
-                    navControls.style.display = 'none';
                     startCarouselInterval();
                 }
             });
