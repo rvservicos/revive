@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Fluxo Seguro de Vida ADM</title>
+    <title>Dashboard ReVive - Fluxo Seguro de Vida</title>
     <style>
         * {
             margin: 0;
@@ -12,281 +12,315 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            min-height: 100vh;
-            overflow-x: auto;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8f7ff 0%, #e8e5ff 50%, #f3f1ff 100%);
+            color: #4c1d95;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .dashboard {
-            max-width: 100vw;
-            margin: 0;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-            padding: 20px 40px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+            z-index: 100;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.1);
+            padding: 4px;
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .total-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
+        .header-stats {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
             color: white;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        .stat-number {
+            font-size: 24px;
+            font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .refresh-btn {
             background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 13px;
             transition: all 0.3s ease;
         }
 
         .refresh-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .status-text {
-            font-size: 12px;
-            opacity: 0.8;
+        .main-flow {
+            flex: 1;
+            padding: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            position: relative;
         }
 
         .flow-container {
-            padding: 30px;
             display: flex;
-            flex-direction: column;
-            gap: 40px;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 30px;
+            min-width: 100%;
+            height: 100%;
+            padding: 40px 20px;
         }
 
         .flow-stage {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .stage-header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stage-number {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
+            gap: 20px;
+            min-width: 200px;
+            position: relative;
         }
 
         .stage-title {
-            font-size: 18px;
+            font-size: 12px;
             font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .stage-description {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-left: 44px;
-            margin-bottom: 20px;
-        }
-
-        .process-flow {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .process-node {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 20px;
-            min-width: 140px;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             text-align: center;
-            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .process-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(243, 241, 255, 0.8));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 16px;
+            padding: 25px 20px;
+            min-width: 160px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
         }
 
-        .process-node::before {
+        .process-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 3px;
-            background: var(--node-color);
-            opacity: 0.8;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
         }
 
-        .process-node:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.12);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        .process-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, var(--accent-color), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
-        .node-count {
-            font-size: 28px;
+        .process-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
+            border-color: var(--accent-color);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(243, 241, 255, 0.9));
+        }
+
+        .process-card:hover::after {
+            opacity: 0.05;
+        }
+
+        .card-count {
+            font-size: 36px;
             font-weight: 900;
-            color: var(--node-color);
-            margin-bottom: 5px;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
         }
 
-        .node-title {
-            font-size: 12px;
+        .card-title {
+            font-size: 13px;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #581c87;
+            line-height: 1.3;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .card-subtitle {
+            font-size: 11px;
+            color: #7c3aed;
+            margin-top: 5px;
             line-height: 1.2;
         }
 
+        /* Cores específicas */
+        .inicial { 
+            --accent-color: #8b5cf6; 
+            --accent-secondary: #7c3aed;
+            --accent-rgb: 139, 92, 246;
+        }
+        .processamento { 
+            --accent-color: #a855f7; 
+            --accent-secondary: #9333ea;
+            --accent-rgb: 168, 85, 247;
+        }
+        .aprovacao { 
+            --accent-color: #c084fc; 
+            --accent-secondary: #a855f7;
+            --accent-rgb: 192, 132, 252;
+        }
+        .decisao { 
+            --accent-color: #d8b4fe; 
+            --accent-secondary: #c084fc;
+            --accent-rgb: 216, 180, 254;
+        }
+        .finalizacao { 
+            --accent-color: #7c3aed; 
+            --accent-secondary: #6d28d9;
+            --accent-rgb: 124, 58, 237;
+        }
+        .especial { 
+            --accent-color: #9ca3af; 
+            --accent-secondary: #6b7280;
+            --accent-rgb: 156, 163, 175;
+        }
+
         .flow-arrow {
-            color: #64748b;
-            font-size: 20px;
-            opacity: 0.7;
+            font-size: 28px;
+            color: #a855f7;
+            opacity: 0.8;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .flow-arrow:hover {
+            opacity: 1;
+            transform: scale(1.2);
         }
 
         .branch-container {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 3px solid #3b82f6;
-            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 200px;
         }
 
         .branch-title {
-            font-size: 14px;
+            font-size: 11px;
             color: #94a3b8;
-            margin-bottom: 15px;
-            font-weight: 500;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
 
-        .branch-options {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .option-separator {
-            display: flex;
-            align-items: center;
-            color: #64748b;
+        .branch-separator {
+            font-size: 12px;
+            color: #a855f7;
             font-weight: 600;
-            font-size: 12px;
-            padding: 0 10px;
+            text-align: center;
+            padding: 5px;
         }
 
-        /* Cores específicas para cada tipo */
-        .inicial { --node-color: #3b82f6; }
-        .processamento { --node-color: #f59e0b; }
-        .aprovacao { --node-color: #10b981; }
-        .decisao { --node-color: #ef4444; }
-        .finalizacao { --node-color: #8b5cf6; }
-        .especial { --node-color: #6b7280; }
-
-        .connecting-line {
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            margin: 20px 0;
-            opacity: 0.5;
-        }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .summary-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 3px solid var(--card-color);
-            transition: all 0.3s ease;
-        }
-
-        .summary-card:hover {
-            background: rgba(255,255,255,0.08);
-        }
-
-        .summary-number {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--card-color);
-        }
-
-        .summary-label {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-
-        .loading {
+        .final-stage {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 60px;
-            color: #94a3b8;
+            gap: 15px;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(59, 130, 246, 0.3);
-            border-top: 3px solid #3b82f6;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(168, 85, 247, 0.3);
+            border-top: 3px solid #a855f7;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a855f7, transparent);
+            top: 50%;
+            left: 100%;
+            width: 30px;
+            z-index: 1;
+            opacity: 0.5;
         }
 
         .modal {
@@ -296,6 +330,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -303,56 +338,102 @@
         }
 
         .modal-content {
-            background: #1e293b;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 400px;
+            background: linear-gradient(145deg, #ffffff, #f3f1ff);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
             text-align: center;
-            color: #e2e8f0;
+            color: #4c1d95;
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3);
         }
 
         .modal h3 {
-            color: #3b82f6;
-            margin-bottom: 15px;
-            font-size: 20px;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
         }
 
         .modal .count {
-            font-size: 36px;
+            font-size: 48px;
             font-weight: 900;
-            color: #3b82f6;
-            margin: 15px 0;
+            color: #8b5cf6;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
 
         .modal button {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
             cursor: pointer;
-            margin-top: 20px;
-            font-weight: 500;
+            margin-top: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .modal button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .timestamp {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 11px;
+            color: #a855f7;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .flow-container {
+                gap: 20px;
+                padding: 20px 10px;
+            }
+            
+            .process-card {
+                min-width: 140px;
+                padding: 20px 15px;
+            }
+            
+            .card-count {
+                font-size: 28px;
+            }
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .header-stats {
                 gap: 15px;
-                text-align: center;
             }
             
             .flow-container {
-                padding: 20px;
+                gap: 15px;
+                padding: 15px 5px;
             }
             
-            .process-flow {
-                justify-content: center;
-            }
-            
-            .process-node {
+            .process-card {
                 min-width: 120px;
+                padding: 15px 10px;
+            }
+            
+            .card-count {
+                font-size: 24px;
+            }
+            
+            .card-title {
+                font-size: 11px;
             }
         }
     </style>
@@ -361,194 +442,162 @@
     <div class="dashboard">
         <div class="header">
             <div class="header-left">
-                <h1>🛡️ Dashboard Seguro de Vida ADM</h1>
-                <div class="total-badge">
-                    Total: <span id="totalCount">0</span> processos
-                </div>
+                <img src="revive.jpeg" alt="ReVive Logo" class="logo">
+                <h1>Dashboard Seguro de Vida ReVive</h1>
             </div>
-            <div class="header-right">
-                <div class="status-text" id="lastUpdate">Carregando...</div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="activeCount">0</div>
+                    <div class="stat-label">Ativos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completedCount">0</div>
+                    <div class="stat-label">Finalizados</div>
+                </div>
                 <button class="refresh-btn" onclick="loadData()">🔄 Atualizar</button>
             </div>
         </div>
 
-        <div class="flow-container">
+        <div class="main-flow">
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <div>Carregando dados da planilha...</div>
+                <div>Carregando fluxo...</div>
             </div>
 
-            <div id="mainContent" style="display: none;">
-                <!-- ETAPA 1: INÍCIO -->
+            <div class="flow-container" id="flowContainer" style="display: none;">
+                <!-- INÍCIO -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">1</div>
-                        <div class="stage-title">Fluxo Inicial</div>
-                    </div>
-                    <div class="stage-description">Todo processo começa aqui e segue esta sequência linear</div>
-                    
-                    <div class="process-flow">
-                        <div class="process-node inicial" data-status="completo">
-                            <div class="node-count" id="count-completo">0</div>
-                            <div class="node-title">Completo</div>
-                        </div>
-                        <div class="flow-arrow">→</div>
-                        <div class="process-node inicial" data-status="despachado">
-                            <div class="node-count" id="count-despachado">0</div>
-                            <div class="node-title">Despachado</div>
-                        </div>
-                        <div class="flow-arrow">→</div>
-                        <div class="process-node inicial" data-status="externo">
-                            <div class="node-count" id="count-externo">0</div>
-                            <div class="node-title">Externo</div>
-                        </div>
+                    <div class="stage-title">1. Início</div>
+                    <div class="process-card inicial" data-status="completo">
+                        <div class="card-count" id="count-completo">0</div>
+                        <div class="card-title">Completo</div>
+                        <div class="card-subtitle">Processo iniciado</div>
                     </div>
                 </div>
 
-                <div class="connecting-line"></div>
+                <div class="flow-arrow">→</div>
 
-                <!-- ETAPA 2: AVALIAÇÃO -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">2</div>
-                        <div class="stage-title">Avaliação e Análise</div>
+                    <div class="stage-title">2. Envio</div>
+                    <div class="process-card inicial" data-status="despachado">
+                        <div class="card-count" id="count-despachado">0</div>
+                        <div class="card-title">Despachado</div>
+                        <div class="card-subtitle">Enviado para análise</div>
                     </div>
-                    <div class="stage-description">Após externo, o processo pode seguir dois caminhos paralelos</div>
-                    
+                </div>
+
+                <div class="flow-arrow">→</div>
+
+                <div class="flow-stage">
+                    <div class="stage-title">3. Análise</div>
+                    <div class="process-card inicial" data-status="externo">
+                        <div class="card-count" id="count-externo">0</div>
+                        <div class="card-title">Externo</div>
+                        <div class="card-subtitle">Análise externa</div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">→</div>
+
+                <!-- BIFURCAÇÃO -->
+                <div class="flow-stage">
+                    <div class="stage-title">4. Avaliação</div>
                     <div class="branch-container">
-                        <div class="branch-title">🔀 Bifurcação: Escolha um dos caminhos</div>
-                        <div class="branch-options">
-                            <div class="process-node processamento" data-status="pericia">
-                                <div class="node-count" id="count-pericia">0</div>
-                                <div class="node-title">Perícia</div>
-                            </div>
-                            <div class="option-separator">OU</div>
-                            <div class="process-node processamento" data-status="pendencia-externa">
-                                <div class="node-count" id="count-pendencia-externa">0</div>
-                                <div class="node-title">Pendência Externa</div>
-                            </div>
+                        <div class="process-card processamento" data-status="pericia">
+                            <div class="card-count" id="count-pericia">0</div>
+                            <div class="card-title">Perícia</div>
+                            <div class="card-subtitle">Avaliação técnica</div>
+                        </div>
+                        <div class="branch-separator">OU</div>
+                        <div class="process-card processamento" data-status="pendencia-externa">
+                            <div class="card-count" id="count-pendencia-externa">0</div>
+                            <div class="card-title">Pendência Externa</div>
+                            <div class="card-subtitle">Aguardando docs</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="connecting-line"></div>
+                <div class="flow-arrow">→</div>
 
-                <!-- ETAPA 3: APROVAÇÃO -->
+                <!-- APROVAÇÃO -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">3</div>
-                        <div class="stage-title">Aguardando Decisão</div>
-                    </div>
-                    <div class="stage-description">Se a perícia for aprovada, o processo segue para esta etapa</div>
-                    
-                    <div class="process-flow">
-                        <div class="process-node aprovacao" data-status="aguardando-aprovacao">
-                            <div class="node-count" id="count-aguardando-aprovacao">0</div>
-                            <div class="node-title">Aguardando Aprovação</div>
-                        </div>
+                    <div class="stage-title">5. Decisão</div>
+                    <div class="process-card aprovacao" data-status="aguardando-aprovacao">
+                        <div class="card-count" id="count-aguardando-aprovacao">0</div>
+                        <div class="card-title">Aguardando Aprovação</div>
+                        <div class="card-subtitle">Análise final</div>
                     </div>
                 </div>
 
-                <div class="connecting-line"></div>
+                <div class="flow-arrow">→</div>
 
-                <!-- ETAPA 4: DECISÕES -->
+                <!-- DECISÕES -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">4</div>
-                        <div class="stage-title">Caminhos de Decisão</div>
-                    </div>
-                    <div class="stage-description">A partir da aprovação, três cenários são possíveis</div>
-                    
+                    <div class="stage-title">6. Resultados</div>
                     <div class="branch-container">
-                        <div class="branch-title">⚖️ Três possibilidades de decisão</div>
-                        <div class="branch-options">
-                            <div class="process-node decisao" data-status="negado">
-                                <div class="node-count" id="count-negado">0</div>
-                                <div class="node-title">Negado</div>
-                            </div>
-                            <div class="option-separator">OU</div>
-                            <div class="process-node decisao" data-status="em-tratamento">
-                                <div class="node-count" id="count-em-tratamento">0</div>
-                                <div class="node-title">Em Tratamento</div>
-                            </div>
-                            <div class="option-separator">OU</div>
-                            <div class="process-node aprovacao" data-status="aguardando-pagamento">
-                                <div class="node-count" id="count-aguardando-pagamento">0</div>
-                                <div class="node-title">Aguardando Pagamento</div>
-                            </div>
+                        <div class="process-card decisao" data-status="negado">
+                            <div class="card-count" id="count-negado">0</div>
+                            <div class="card-title">Negado</div>
+                            <div class="card-subtitle">Rejeitado</div>
+                        </div>
+                        <div class="branch-separator">OU</div>
+                        <div class="process-card aprovacao" data-status="em-tratamento">
+                            <div class="card-count" id="count-em-tratamento">0</div>
+                            <div class="card-title">Em Tratamento</div>
+                            <div class="card-subtitle">Processando</div>
+                        </div>
+                        <div class="branch-separator">OU</div>
+                        <div class="process-card aprovacao" data-status="aguardando-pagamento">
+                            <div class="card-count" id="count-aguardando-pagamento">0</div>
+                            <div class="card-title">Aguardando Pagamento</div>
+                            <div class="card-subtitle">Aprovado</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="connecting-line"></div>
+                <div class="flow-arrow">→</div>
 
-                <!-- ETAPA 5: FINALIZAÇÕES -->
+                <!-- FINALIZAÇÕES -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">5</div>
-                        <div class="stage-title">Resoluções Finais</div>
-                    </div>
-                    <div class="stage-description">Caminhos finais que podem levar à conclusão do processo</div>
-                    
-                    <div class="process-flow">
-                        <div class="process-node finalizacao" data-status="reanalise">
-                            <div class="node-count" id="count-reanalise">0</div>
-                            <div class="node-title">Reanálise</div>
+                    <div class="stage-title">7. Finalização</div>
+                    <div class="final-stage">
+                        <div class="process-card finalizacao" data-status="reanalise">
+                            <div class="card-count" id="count-reanalise">0</div>
+                            <div class="card-title">Reanálise</div>
+                            <div class="card-subtitle">Nova revisão</div>
                         </div>
-                        <div class="flow-arrow">→</div>
-                        <div class="process-node finalizacao" data-status="indenizado">
-                            <div class="node-count" id="count-indenizado">0</div>
-                            <div class="node-title">Indenizado</div>
+                        <div class="process-card finalizacao" data-status="indenizado">
+                            <div class="card-count" id="count-indenizado">0</div>
+                            <div class="card-title">Indenizado</div>
+                            <div class="card-subtitle">Pago</div>
                         </div>
-                        <div class="flow-arrow">→</div>
-                        <div class="process-node finalizacao" data-status="junta-medica">
-                            <div class="node-count" id="count-junta-medica">0</div>
-                            <div class="node-title">Junta Médica</div>
+                        <div class="process-card finalizacao" data-status="junta-medica">
+                            <div class="card-count" id="count-junta-medica">0</div>
+                            <div class="card-title">Junta Médica</div>
+                            <div class="card-subtitle">Avaliação especializada</div>
                         </div>
-                    </div>
-                    
-                    <div class="stage-description" style="margin-top: 15px; text-align: center;">
-                        💡 <strong>Fluxos:</strong> Negado → Reanálise | Aguardando Pagamento → Indenizado | Reanálise/Indenizado → Junta Médica
                     </div>
                 </div>
 
-                <div class="connecting-line"></div>
+                <div class="flow-arrow">│</div>
 
-                <!-- CATEGORIA ESPECIAL -->
+                <!-- ESPECIAL -->
                 <div class="flow-stage">
-                    <div class="stage-header">
-                        <div class="stage-number">📁</div>
-                        <div class="stage-title">Categoria Especial</div>
-                    </div>
-                    <div class="stage-description">Processos que podem ser arquivados em qualquer momento do fluxo</div>
-                    
-                    <div class="process-flow">
-                        <div class="process-node especial" data-status="arquivado">
-                            <div class="node-count" id="count-arquivado">0</div>
-                            <div class="node-title">Arquivado</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-cards">
-                        <div class="summary-card" style="--card-color: #3b82f6;">
-                            <div class="summary-number" id="summary-inicial">0</div>
-                            <div class="summary-label">Processos Iniciais</div>
-                        </div>
-                        <div class="summary-card" style="--card-color: #f59e0b;">
-                            <div class="summary-number" id="summary-avaliacao">0</div>
-                            <div class="summary-label">Em Avaliação</div>
-                        </div>
-                        <div class="summary-card" style="--card-color: #10b981;">
-                            <div class="summary-number" id="summary-aprovacao">0</div>
-                            <div class="summary-label">Aguardando/Aprovação</div>
-                        </div>
-                        <div class="summary-card" style="--card-color: #8b5cf6;">
-                            <div class="summary-number" id="summary-finalizacao">0</div>
-                            <div class="summary-label">Finalizações</div>
-                        </div>
+                    <div class="stage-title">Especial</div>
+                    <div class="process-card especial" data-status="arquivado">
+                        <div class="card-count" id="count-arquivado">0</div>
+                        <div class="card-title">Arquivado</div>
+                        <div class="card-subtitle">Finalizado</div>
                     </div>
                 </div>
             </div>
+
+            <div class="timestamp" id="timestamp">Última atualização: --</div>
         </div>
     </div>
 
@@ -565,7 +614,7 @@
     <script>
         // Configuração
         const SHEET_ID = '1z6ypJ_f1vIT4Z_jQjOp9qO5q1g0ygJfOhAh7Nr50eek';
-        const API_KEY = 'SUA_API_KEY_AQUI'; // Configure sua API Key
+        const API_KEY = 'SUA_API_KEY_AQUI';
         const SHEET_NAME = 'DESPACHADO';
         const RANGE = `${SHEET_NAME}!E3:F15`;
 
@@ -587,29 +636,31 @@
 
         async function loadData() {
             const loading = document.getElementById('loading');
-            const mainContent = document.getElementById('mainContent');
+            const flowContainer = document.getElementById('flowContainer');
             
             try {
                 loading.style.display = 'flex';
-                mainContent.style.display = 'none';
+                flowContainer.style.display = 'none';
                 
                 const data = await fetchData();
                 updateDashboard(data);
                 updateTimestamp();
                 
-                loading.style.display = 'none';
-                mainContent.style.display = 'block';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    flowContainer.style.display = 'flex';
+                }, 800);
                 
             } catch (error) {
                 console.error('Erro:', error);
-                loading.innerHTML = '<div>Erro ao carregar dados. Usando dados de demonstração.</div>';
+                const data = getDemoData();
+                updateDashboard(data);
+                updateTimestamp();
+                
                 setTimeout(() => {
-                    const data = getDemoData();
-                    updateDashboard(data);
-                    updateTimestamp();
                     loading.style.display = 'none';
-                    mainContent.style.display = 'block';
-                }, 2000);
+                    flowContainer.style.display = 'flex';
+                }, 800);
             }
         }
 
@@ -661,63 +712,58 @@
 
         function updateDashboard(data) {
             let total = 0;
-            let summaries = {
-                inicial: 0,
-                avaliacao: 0,
-                aprovacao: 0,
-                finalizacao: 0
-            };
+            let active = 0;
+            let completed = 0;
 
-            // Atualiza contadores individuais
             Object.keys(data).forEach(status => {
                 const count = data[status] || 0;
                 const element = document.getElementById(`count-${status}`);
+                
                 if (element) {
                     animateCount(element, count);
                     total += count;
 
-                    // Categoriza para resumos
-                    if (['completo', 'despachado', 'externo'].includes(status)) {
-                        summaries.inicial += count;
-                    } else if (['pericia', 'pendencia-externa'].includes(status)) {
-                        summaries.avaliacao += count;
-                    } else if (['aguardando-aprovacao', 'aguardando-pagamento'].includes(status)) {
-                        summaries.aprovacao += count;
-                    } else if (['reanalise', 'indenizado', 'junta-medica'].includes(status)) {
-                        summaries.finalizacao += count;
+                    // Categoriza processos
+                    if (['indenizado', 'arquivado', 'junta-medica'].includes(status)) {
+                        completed += count;
+                    } else {
+                        active += count;
                     }
                 }
             });
 
-            // Atualiza totais
             animateCount(document.getElementById('totalCount'), total);
-            animateCount(document.getElementById('summary-inicial'), summaries.inicial);
-            animateCount(document.getElementById('summary-avaliacao'), summaries.avaliacao);
-            animateCount(document.getElementById('summary-aprovacao'), summaries.aprovacao);
-            animateCount(document.getElementById('summary-finalizacao'), summaries.finalizacao);
+            animateCount(document.getElementById('activeCount'), active);
+            animateCount(document.getElementById('completedCount'), completed);
         }
 
         function animateCount(element, target) {
             if (!element) return;
+            
             const current = parseInt(element.textContent) || 0;
-            const step = Math.ceil(Math.abs(target - current) / 10);
+            const increment = Math.ceil(Math.abs(target - current) / 15);
             
             if (current < target) {
-                element.textContent = Math.min(current + step, target);
-                if (current + step < target) {
-                    setTimeout(() => animateCount(element, target), 100);
+                element.textContent = Math.min(current + increment, target);
+                if (current + increment < target) {
+                    setTimeout(() => animateCount(element, target), 80);
                 }
             } else if (current > target) {
-                element.textContent = Math.max(current - step, target);
-                if (current - step > target) {
-                    setTimeout(() => animateCount(element, target), 100);
+                element.textContent = Math.max(current - increment, target);
+                if (current - increment > target) {
+                    setTimeout(() => animateCount(element, target), 80);
                 }
             }
         }
 
         function updateTimestamp() {
-            const now = new Date().toLocaleString('pt-BR');
-            document.getElementById('lastUpdate').textContent = `Atualizado: ${now}`;
+            const now = new Date().toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('timestamp').textContent = `Última atualização: ${now}`;
         }
 
         function openModal(title, count, description) {
@@ -733,11 +779,12 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.process-node').forEach(node => {
-                node.addEventListener('click', function() {
-                    const title = this.querySelector('.node-title').textContent;
-                    const count = this.querySelector('.node-count').textContent;
-                    openModal(title, count, `${count} processos em status: ${title}`);
+            document.querySelectorAll('.process-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.card-title').textContent;
+                    const count = this.querySelector('.card-count').textContent;
+                    const subtitle = this.querySelector('.card-subtitle').textContent;
+                    openModal(title, count, `${count} processos em: ${subtitle}`);
                 });
             });
 
@@ -748,8 +795,8 @@
             loadData();
         });
 
-        // Auto-refresh
-        setInterval(loadData, 5 * 60 * 1000);
+        // Auto-refresh a cada 30 segundos
+        setInterval(loadData, 30 * 1000);
     </script>
 </body>
 </html>
