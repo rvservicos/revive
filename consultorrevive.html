@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte ao Consultor - ReVive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        .logo-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .logo-header img {
+            max-width: 400px;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-text h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            animation: slideUp 0.5s ease-out 0.1s both;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .nav-tab:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .nav-tab.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-tab-icon {
+            font-size: 1.25rem;
+        }
+        
+        .nav-tab.special-link {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .nav-tab.special-link:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: white;
+        }
+        
+        .dropdown {
+            position: relative;
+            flex: 1;
+        }
+        .dropdown-toggle {
+            width: 100%;
+            height: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .dropdown:hover .dropdown-toggle {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .dropdown-toggle .caret {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 240px;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            border-radius: 12px;
+            padding: 8px 0;
+            margin-top: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-item {
+            color: var(--dark);
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            white-space: nowrap;
+        }
+        .dropdown-item:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .dashboard-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-title p {
+            font-size: 1.125rem;
+            color: #6b7280;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+            box-shadow: var(--shadow);
+            aspect-ratio: 2.8/1;
+            min-height: 120px;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .dashboard-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .card-image {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 992px) {
+            .nav-tab span:not(.nav-tab-icon) {
+                font-size: 0.8rem;
+            }
+            .nav-tab {
+                padding: 0.75rem 0.5rem;
+            }
+            .dropdown-toggle {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            .header, .nav-container, .content-wrapper {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            .nav-tab span:not(.nav-tab-icon),
+            .dropdown-toggle span:not(.nav-tab-icon) {
+                display: none;
+            }
+            .nav-tab-icon {
+                display: block;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .dashboard-title h1 {
+                font-size: 2rem;
+            }
+            .dashboard-title p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo-header">
+                <img src="logosi.png" alt="Logo ReVive" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="logo" style="display: none;">
+                    <div class="logo-icon">🚀</div>
+                    <div class="logo-text">
+                        <h1>Suporte ao Consultor</h1>
+                        <p>Acesso Rápido aos Sistemas</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <nav class="nav-container">
+            <div class="nav-tabs">
+                <a href="index.html" class="nav-tab">
+                    <span class="nav-tab-icon">⚖️</span>
+                    <span>Processos</span>
+                </a>
+                <a href="index.html" class="nav-tab">
+                    <span class="nav-tab-icon">📋</span>
+                    <span>Documentos</span>
+                </a>
+                <a href="ranking.html" class="nav-tab special-link">
+                    <span class="nav-tab-icon">🌟</span>
+                    <span>Ranking Vendas</span>
+                </a>
+                <a href="https://claude.ai/public/artifacts/bf30853b-5964-4575-89b7-41a8719ee6f6" class="nav-tab special-link">
+                    <span class="nav-tab-icon">✏️</span>
+                    <span>Gerador de Mensagem</span>
+                </a>
+                <a href="analise.html" class="nav-tab special-link">
+                    <span class="nav-tab-icon">🔍</span>
+                    <span>Análise de Direitos</span>
+                </a>
+                <a href="verificacao-seguro.html" class="nav-tab special-link">
+                    <span class="nav-tab-icon">🛡️</span>
+                    <span>Verificar Seguro de Vida</span>
+                </a>
+            </div>
+        </nav>
+        
+        <main class="content-wrapper">
+            <div class="dashboard-title">
+                <h1>Acesso Rápido</h1>
+                <p>Clique nos cards abaixo para acessar rapidamente os sistemas</p>
+            </div>
+            
+            <div class="dashboard-grid">
+                <a href="https://app.zapsign.com.br/verificar/doc/9088c21f-820c-4a1f-9ea9-c5fb749579c1" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="novo contrato.png" alt="Novo Contrato" onerror="this.parentElement.innerHTML='📝'">
+                    </div>
+                    <div class="card-title">Novo Contrato</div>
+                    <div class="card-description">Documento para novos contratos</div>
+                </a>
+
+                <a href="https://app.zapsign.com.br/verificar/doc/ce1d102e-ad07-4c94-938c-85c3bfc51372" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="novo menor.png" alt="Novo Menor" onerror="this.parentElement.innerHTML='👶'">
+                    </div>
+                    <div class="card-title">Novo Menor</div>
+                    <div class="card-description">Documento para clientes menores de idade</div>
+                </a>
+
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd-MBnLLIhgIPpSSVA9e0Vnbk2qw2UZ5N_ap7xvsFYmW_gRlA/viewform" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="novo fecha.png" alt="Novo Fecha" onerror="this.parentElement.innerHTML='🆕'">
+                    </div>
+                    <div class="card-title">Novo Fechamento</div>
+                    <div class="card-description">Formulário para novo fechamento de processo</div>
+                </a>
+
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdbNodbYHu5CNR_LbtsAl50oE9RCk1WMEtEz7NTHuMij7VGBw/viewform?usp=dialog" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="envio doc.png" alt="Envio Doc" onerror="this.parentElement.innerHTML='📤'">
+                    </div>
+                    <div class="card-title">Envio de Documentos</div>
+                    <div class="card-description">Formulário para envio de documentos</div>
+                </a>
+
+                <a href="https://script.google.com/macros/s/AKfycbyQNRwBWU7G08SuzAKvnA1Gu1qDqw-7sHw8deLuBocReqV10VBe7SU3AMhNJ3UNRzUQnA/exec?page=consultor" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="controle fechamento.png" alt="Controle Fechamento" onerror="this.parentElement.innerHTML='📊'">
+                    </div>
+                    <div class="card-title">Controle de Fechamento</div>
+                    <div class="card-description">Sistema de controle de fechamentos</div>
+                </a>
+
+                <a href="https://script.google.com/macros/s/AKfycbyvrsmPV6mtDrhH3xFSyU0zPfwukmLYluB4SvxBFxPrHBvXhRfp2dMLu9l1cn5JFXbZmQ/exec?page=consulta" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="consulta doc.png" alt="Consulta Doc" onerror="this.parentElement.innerHTML='🔍'">
+                    </div>
+                    <div class="card-title">Consulta de Documentos</div>
+                    <div class="card-description">Consultar status e informações de documentos</div>
+                </a>
+
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdWwdNELtFLmMka2q_qXLTw4yy_SVuVBjkFkTz9U4mDDe7Dwg/viewform?usp=header" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="despesa.png" alt="Despesa" onerror="this.parentElement.innerHTML='💰'">
+                    </div>
+                    <div class="card-title">Envio de Despesas</div>
+                    <div class="card-description">Formulário para registrar despesas e reembolsos</div>
+                </a>
+
+                <a href="https://rvservicos.github.io/revive/" class="dashboard-card" target="_blank">
+                    <div class="card-image">
+                        <img src="suporte.png" alt="Suporte" onerror="this.parentElement.innerHTML='🛠️'">
+                    </div>
+                    <div class="card-title">Suporte</div>
+                    <div class="card-description">Central de suporte e atendimento ao colaborador</div>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
