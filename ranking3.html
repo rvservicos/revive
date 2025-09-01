@@ -294,6 +294,14 @@
             <div class="header">
                 <h1><i class="fas fa-receipt"></i> Pagamentos de RTM</h1>
                 <p class="subtitle">Acompanhamento de pagamentos recebidos via RTM.</p>
+                <!-- INÍCIO DA MODIFICAÇÃO: Contador de RTMs do dia -->
+                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
+                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">RTMs Cobrados Hoje</h3>
+                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
+                        <span id="rtmTodayCounter">0</span>
+                    </div>
+                </div>
+                <!-- FIM DA MODIFICAÇÃO -->
             </div>
             <div class="panel">
                 <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-history"></i> Histórico de Recebimentos</h2>
@@ -334,7 +342,40 @@
             </div>
         </div>
 
-        <div id="schedule-view" class="carousel-page" data-name="Cronograma"><div class="header"><h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1><p class="subtitle">Fique por dentro dos nossos próximos eventos!</p></div><div class="timeline"><div class="timeline-item"><div class="content"><span class="date">11 de Agosto de 2025</span><h3>Evento ReVive</h3><p>Uma grande confraternização e apresentação dos resultados do trimestre. Vamos celebrar juntos!</p></div></div><div class="timeline-item"><div class="content"><span class="date">2025</span><h3>Evento ReVive</h3><p>Em planejamento.</p></div></div></div></div>
+        <div id="schedule-view" class="carousel-page" data-name="Cronograma">
+    <div class="header">
+        <h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1>
+        <p class="subtitle">Fique por dentro dos nossos próximos eventos!</p>
+    </div>
+    <div class="timeline">
+        <!-- Evento 1 -->
+        <div class="timeline-item">
+            <div class="content">
+                <span class="date">12 de Outubro de 2025</span>
+                <h3>Dias das Crianças ReVive</h3>
+                <p>Evento planejado pelo grupo Força de Marca, dos Novos Talentos 2025.</p>
+
+                <!-- Banners empilhados -->
+                <div class="event-banners" style="margin-top: 15px;">
+                    <img src="fechamento.png" alt="Banner do evento" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 10px;">
+                    <img src="dia.png" alt="Banner do evento" style="width: 100%; height: auto; border-radius: 8px;">
+                </div>
+            </div>
+        </div>
+        <!-- Evento 2 -->
+        <div class="timeline-item">
+            <div class="content">
+                <span class="date">Dezembro</span>
+                <h3>Fim de Ano ReVive</h3>
+                <p>Evento de final de ano.</p>
+
+                <!-- Banners empilhados -->
+                <div class="event-banners" style="margin-top: 15px;">
+                    <img src="fechamento.png" alt="Banner do evento" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 10px;">
+                    <img src="dia.png" alt="Banner do evento" style="width: 100%; height: auto; border-radius: 8px;">
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Container da Notificação -->
@@ -412,7 +453,7 @@
             carouselInterval = setInterval(() => {
                 if (isAnimationPlaying || carouselPaused) return;
                 navigateCarousel(1);
-            }, 20000);
+            }, 35000);
         }
 
         function navigateCarousel(direction) {
@@ -756,6 +797,43 @@
             result.push(current);
             return result.map(item => item.trim());
         }
+        
+        /**
+         * Parses a date string in "DD/MM/YYYY" or "DD/MM/YYYY HH:mm:ss" format.
+         * @param {string} dateString The date string to parse.
+         * @returns {Date|null} A Date object or null if parsing fails.
+         */
+        function parsePtBrDate(dateString) {
+            if (!dateString || typeof dateString !== 'string') return null;
+            
+            // Try parsing with new Date() first for formats like MM/DD/YYYY or ISO
+            let date = new Date(dateString);
+            if (!isNaN(date.getTime())) {
+                // Check if it was mis-parsed (e.g., DD/MM/YYYY read as MM/DD/YYYY)
+                const parts = dateString.split(' ')[0].split('/');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    // If parsed month doesn't match original month, it was likely swapped
+                    if (date.getMonth() + 1 !== month && date.getDate() === month) {
+                         // Re-parse it correctly
+                         return new Date(parts[2], month - 1, day);
+                    }
+                }
+                return date;
+            }
+
+            // Fallback for strict "DD/MM/YYYY" format
+            const parts = dateString.split(' ')[0].split('/');
+            if (parts.length === 3) {
+                const [day, month, year] = parts.map(p => parseInt(p, 10));
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    return new Date(year, month - 1, day);
+                }
+            }
+            return null;
+        }
+
 
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
@@ -864,23 +942,42 @@
 
         function updateRtmPaymentsView(data) {
             const tableBody = document.getElementById('rtmPaymentsTableBody');
-            if (!tableBody) return;
+            const todayCounterEl = document.getElementById('rtmTodayCounter');
+            if (!tableBody || !todayCounterEl) return;
 
+            let rtmTodayCount = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // INÍCIO DA MODIFICAÇÃO: Ordenar e contar os do dia
             const sortedData = [...data].sort((a, b) => {
-                try { return new Date(b.data) - new Date(a.data); } catch (e) { return 0; }
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateB - dateA; // Mais recente primeiro
             });
-
+            
             let html = '';
             sortedData.forEach(payment => {
+                const paymentDate = parsePtBrDate(payment.data);
                 let formattedDate = '-';
-                try {
-                    const dateObj = new Date(payment.data);
-                    if (!isNaN(dateObj)) {
-                        const datePart = dateObj.toLocaleDateString('pt-BR');
-                        const timePart = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                        formattedDate = `${datePart} ${timePart}`;
+                
+                if (paymentDate) {
+                     // Verifica se é hoje para o contador
+                    const paymentDay = new Date(paymentDate);
+                    paymentDay.setHours(0, 0, 0, 0);
+                    if (paymentDay.getTime() === today.getTime()) {
+                        rtmTodayCount++;
                     }
-                } catch(e) {}
+                    
+                    // Formata data para exibição
+                    const datePart = paymentDate.toLocaleDateString('pt-BR');
+                    const timePart = paymentDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    // Se o tempo for 00:00, provavelmente não havia hora na planilha
+                    formattedDate = (timePart === '00:00') ? datePart : `${datePart} ${timePart}`;
+                }
 
                 html += `<tr>
                     <td><span class="date-badge">${formattedDate}</span></td>
@@ -889,7 +986,10 @@
                     <td>${payment.cobrador || '-'}</td>
                 </tr>`;
             });
+            
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum pagamento RTM registrado.</td></tr>';
+            todayCounterEl.textContent = rtmTodayCount;
+            // FIM DA MODIFICAÇÃO
         }
         
         function updateAcordosView(data) {
@@ -904,12 +1004,12 @@
             };
 
             const sortedData = [...data].sort((a, b) => {
-                try {
-                    const datePartsA = a.data.split('/'); const datePartsB = b.data.split('/');
-                    const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
-                    const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
-                    return dateB - dateA;
-                } catch (e) { return 0; }
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateB - dateA;
             });
 
             let html = '';
@@ -932,14 +1032,18 @@
         function populatePaymentTable(tableBodyId, data) {
             const tableBody = document.getElementById(tableBodyId);
             if (!tableBody) return;
+
+            // INÍCIO DA MODIFICAÇÃO: Garantir ordenação correta
             const sortedData = [...data].sort((a, b) => {
-                try {
-                    const datePartsA = a.data.split('/'); const datePartsB = b.data.split('/');
-                    const dateA = new Date(+datePartsA[2], datePartsA[1] - 1, +datePartsA[0]);
-                    const dateB = new Date(+datePartsB[2], datePartsB[1] - 1, +datePartsB[0]);
-                    return dateB - dateA;
-                } catch (e) { return 0; }
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return 0; // Se ambas as datas são inválidas, não muda a ordem
+                if (!dateA) return 1;  // Coloca itens sem data no final
+                if (!dateB) return -1; // Coloca itens sem data no final
+                return dateB - dateA; // Ordena do mais novo para o mais antigo
             });
+            // FIM DA MODIFICAÇÃO
+
             let html = '';
             sortedData.forEach(payment => {
                 html += `<tr>
@@ -973,12 +1077,11 @@
             const monthSet = new Set();
             (dataToScan || []).forEach(sale => {
                 if (sale.data) {
-                    const parts = sale.data.split('/');
-                    if (parts.length === 3) {
-                        const [day, month, year] = parts.map(p => parseInt(p, 10));
-                        if (!isNaN(day) && !isNaN(month) && !isNaN(year) && month >= 1 && month <= 12 && year > 1900 && year < 2100) {
-                            monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
-                        }
+                    const date = parsePtBrDate(sale.data);
+                    if (date) {
+                         const month = date.getMonth() + 1;
+                         const year = date.getFullYear();
+                         monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
                     }
                 }
             });
@@ -1004,11 +1107,10 @@
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) return [];
-            const [filterMonth, filterYear] = selectedMonthYear.split('/');
+            const [filterMonth, filterYear] = selectedMonthYear.split('/').map(Number);
             return salesData.filter(sale => {
-                if (!sale.data) return false;
-                const parts = sale.data.split('/');
-                return parts.length === 3 && parts[1] === filterMonth && parts[2] === filterYear;
+                const date = parsePtBrDate(sale.data);
+                return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
             });
         }
         
@@ -1031,11 +1133,13 @@
             const [monthStr, yearStr] = selectedMonthYear.split('/');
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
-            const maxDay = monthSalesData.reduce((max, sale) => {
-                const day = parseInt(sale.data.split('/')[0], 10);
-                return isNaN(day) ? max : Math.max(max, day);
+            
+            const maxDayInMonth = monthSalesData.reduce((max, sale) => {
+                const date = parsePtBrDate(sale.data);
+                return date ? Math.max(max, date.getDate()) : max;
             }, 0);
-            const dailyAvg = totalProcessos > 0 && maxDay > 0 ? (totalProcessos / maxDay) : 0;
+
+            const dailyAvg = totalProcessos > 0 && maxDayInMonth > 0 ? (totalProcessos / maxDayInMonth) : 0;
             document.getElementById('dailyAverage').textContent = dailyAvg.toFixed(1);
         }
 
@@ -1109,22 +1213,21 @@
                     if (!proc || proc === DRA_RENATA_STRING) return;
                     if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
                     else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
-                    // CORREÇÃO DO ERRO DE DIGITAÇÃO AQUI
                     else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
                     else counts.outros++;
                 });
             });
             counts.seguroTerceiro = clientesST.size;
             currentMonthCounts = counts;
-            const updateCard = (type, count, meta, goalEl, percentEl) => {
+            const updateCard = (type, count, meta) => {
                 document.getElementById(`${type}Count`).textContent = count;
                 const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-                document.getElementById(goalEl).textContent = `${count}/${meta}`;
-                document.getElementById(percentEl).textContent = percent;
+                document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
+                document.getElementById(`${type}Percent`).textContent = percent;
             };
-            updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS'], 'previdenciariosGoal', 'previdenciariosPercent');
-            updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO'], 'seguroTerceiroGoal', 'seguroTerceiroPercent');
-            updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA'], 'seguroVidaGoal', 'seguroVidaPercent');
+            updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+            updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+            updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
             document.getElementById('outrosCount').textContent = counts.outros;
         }
         
@@ -1169,12 +1272,13 @@
                 filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
             }
             const sortedSales = [...filteredSales].sort((a, b) => {
-                try {
-                    const dateA = new Date(a.data.split('/').reverse().join('-'));
-                    const dateB = new Date(b.data.split('/').reverse().join('-'));
-                    if (dateB - dateA !== 0) return dateB - dateA;
-                    return b.originalIndex - a.originalIndex;
-                } catch(e) { return 0; }
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
             });
             let html = '';
             sortedSales.forEach(sale => {
@@ -1185,17 +1289,18 @@
 
         function updateProcessEvolutionChart(allSalesData) {
             if (!allSalesData || allSalesData.length === 0) return;
-            const mostRecentYear = Math.max(...allSalesData.map(sale => sale.data ? parseInt(sale.data.split('/')[2], 10) : 0).filter(year => !isNaN(year) && year > 1900));
+            const mostRecentYear = Math.max(...allSalesData.map(sale => {
+                const date = parsePtBrDate(sale.data);
+                return date ? date.getFullYear() : 0;
+            }).filter(year => year > 1900));
             if (!mostRecentYear) return;
             document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
             const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
             allSalesData.forEach(sale => {
-                if (!sale.data || !sale.processo) return;
-                const parts = sale.data.split('/');
-                if (parts.length !== 3) return;
-                const year = parseInt(parts[2], 10);
-                const month = parseInt(parts[1], 10);
-                if (year === mostRecentYear && month >= 5) {
+                if (!sale.processo) return;
+                const date = parsePtBrDate(sale.data);
+                if (date && date.getFullYear() === mostRecentYear && date.getMonth() + 1 >= 5) {
+                    const month = date.getMonth() + 1;
                     const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
                     if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
                 }
@@ -1249,8 +1354,6 @@
         }
 
         async function fetchAllData() {
-            // CORREÇÃO: Usar Promise.allSettled para garantir que todas as buscas terminem,
-            // mesmo que uma falhe, permitindo que a lógica de contagem e atualização de status ocorra.
             await Promise.allSettled([
                 fetchSalesData(), 
                 fetchPaymentsData(),
@@ -1260,9 +1363,7 @@
             
             updateTotalFinishedCounter();
             
-            // Se nenhuma das buscas de dados principais (vendas) teve sucesso, mantemos o erro.
-            // Do contrário, se pelo menos uma conectou, consideramos 'conectado'.
-            if (salesData.length > 0) {
+            if (salesData.length > 0 || paymentsData.length > 0 || rtmPaymentsData.length > 0) {
                  updateConnectionStatus('connected', 'Conectado');
             }
             
