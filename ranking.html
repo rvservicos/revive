@@ -341,7 +341,25 @@
                 </table>
             </div>
         </div>
+    <div id="sale-notification-overlay">
+        <div class="notification-content">
+            <img id="notification-photo" src="" alt="Foto" class="notification-photo">
+            <div id="notification-main-icon" class="main-icon"></div>
+            <h2 id="notification-title"></h2>
+            <p id="notification-text"></p>
+            <div class="process-info" id="notification-secondary-text"></div>
+            <div id="animation-extras-container" class="animation-extras"></div>
+        </div>
+    </div>
 
+    <!-- Modal de Detalhes -->
+    <div id="process-details-modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeProcessDetails()">×</span>
+            <h2 id="modal-title">Detalhes de Processos</h2>
+            <div id="modal-details-content"></div>
+        </div>
+    </div>
         <div id="schedule-view" class="carousel-page" data-name="Cronograma">
     <div class="header">
         <h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1>
@@ -377,25 +395,7 @@
     </div>
 
     <!-- Container da Notificação -->
-    <div id="sale-notification-overlay">
-        <div class="notification-content">
-            <img id="notification-photo" src="" alt="Foto" class="notification-photo">
-            <div id="notification-main-icon" class="main-icon"></div>
-            <h2 id="notification-title"></h2>
-            <p id="notification-text"></p>
-            <div class="process-info" id="notification-secondary-text"></div>
-            <div id="animation-extras-container" class="animation-extras"></div>
-        </div>
-    </div>
 
-    <!-- Modal de Detalhes -->
-    <div id="process-details-modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeProcessDetails()">×</span>
-            <h2 id="modal-title">Detalhes de Processos</h2>
-            <div id="modal-details-content"></div>
-        </div>
-    </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -1403,3 +1403,4 @@
     </script>
 </body>
 </html>
+
