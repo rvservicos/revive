@@ -632,6 +632,24 @@
             secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
             extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
 
+            // --- CORREÇÃO ---
+            // A linha abaixo torna a notificação visível.
+            overlay.classList.add('show');
+            // --- FIM DA CORREÇÃO ---
+            
+            setTimeout(onAnimationFinish, 8000);
+        }
+
+            photoEl.style.display = 'block';
+            photoEl.src = photoUrl;
+            photoEl.onerror = () => { photoEl.src = DEFAULT_AVATAR; photoEl.onerror = null; };
+
+            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
+            titleEl.textContent = 'Pagamento RTM Recebido!';
+            textEl.innerHTML = `Pagamento de <strong>${payment.cliente || 'N/A'}</strong> foi registrado por <strong>${cobradorName}</strong>!`;
+            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
+            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
+
             overlay.classList.add('show');
             
             setTimeout(onAnimationFinish, 8000);
