@@ -42,7 +42,8 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 1.5rem;
+            /* CORRIGIDO: Reduzido o padding vertical e mantido o horizontal */
+            padding: 0.5rem 1.5rem;
             box-shadow: var(--shadow-lg);
             margin-bottom: 1.5rem;
             text-align: center;
@@ -61,13 +62,15 @@
         }
         
         .logo-container {
-            margin-bottom: 0rem;
+            margin-bottom: 0; /* Removido o espaço extra abaixo do logo */
         }
         
         .logo-container img {
-            max-width: 800px;
+            max-width: 100%; /* Ajustado para ser responsivo dentro do container */
             max-height: 320px;
             object-fit: contain;
+            display: block; /* Garante que a imagem não tenha espaço extra abaixo */
+            margin: 0 auto; /* Centraliza a imagem se o container for mais largo */
         }
         
         .system-title {
@@ -243,7 +246,7 @@
             }
             
             .header {
-                padding: 1rem;
+                padding: 0.5rem 1rem; /* Ajustado também para telas menores */
                 margin-bottom: 1rem;
             }
             
