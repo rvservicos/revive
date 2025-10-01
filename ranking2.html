@@ -402,7 +402,8 @@
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
         const PGTO_SHEET_GID = "1456804198"; 
-        const RTM_SHEET_GID = "422939006";
+        const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
+        const NEW_RTM_SHEET_GID = "485541894";
         const ACORDOS_SHEET_ID = "1kwsL_Gkw-LC-n_E_nLUCzE9CuFtQDhRe";
         const ACORDOS_SHEET_GID = "277487318";
         const DRA_RENATA_STRING = "DRA RENATA";
@@ -728,7 +729,7 @@
         
         async function fetchRtmPaymentsData() {
             try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${RTM_SHEET_GID}&_=${new Date().getTime()}`;
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${NEW_RTM_SHEET_ID}/export?format=csv&gid=${NEW_RTM_SHEET_GID}&_=${new Date().getTime()}`; // <-- ESTA É A LINHA A SER MUDADA
                 const response = await fetch(csvUrl, { mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão com pagamentos RTM: ${response.statusText}`);
                 const csvData = await response.text();
