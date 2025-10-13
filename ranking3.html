@@ -630,10 +630,10 @@
                 overlay.style.opacity = '1';
             }, 10);
             
-            confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
             setTimeout(onAnimationFinish, 8000);
-        }
+        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
 
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
@@ -658,8 +658,10 @@
             setTimeout(() => {
                 overlay.style.opacity = '1';
             }, 10);
-            setTimeout(onAnimationFinish, 8000);
-        }
+
+            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
+        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+
         function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
 
@@ -699,8 +701,10 @@
             setTimeout(() => {
                 overlay.style.opacity = '1';
             }, 10);
-            setTimeout(onAnimationFinish, 8000);
-        }
+            
+            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
+        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+        
         function checkForNewSales(newSales, oldSales, region = 'Santa Catarina') {
             if (firstLoad || newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
