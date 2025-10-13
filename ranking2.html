@@ -28,12 +28,18 @@
         .stat-value { font-size: 3.3rem; font-weight: 700; color: #8b5cf6; display: flex; align-items: center; gap: 20px; }
         .stat-label { color: #a78bfa; font-size: 1.2rem; }
         .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 39px; margin-bottom: 39px; }
+        .rankings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 26px; }
         .panel { background: white; border-radius: 26px; padding: 33px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); }
+        .panel.full-width { grid-column: 1 / -1; }
+        .panel-sc { border-top: 4px solid #8b5cf6; }
+        .panel-ce { border-top: 4px solid #10b981; }
         .panel h2 { color: #6b46c1; font-size: 2rem; margin-bottom: 26px; font-weight: 600; padding-bottom: 13px; border-bottom: 3px solid #f3f4f6; display: flex; align-items: center; gap: 13px; }
+        .panel-ce h2 { color: #10b981; }
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f3f4f6; }
         .ranking-item:last-child { border-bottom: none; }
         .consultant-info { display: flex; align-items: center; gap: 20px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 39px; height: 39px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.2rem; flex-shrink: 0; }
+        .rank-number-ce { background: linear-gradient(135deg, #10b981, #34d399); }
         .consultant-name { color: #374151; font-weight: 500; font-size: 1.2rem; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 7px 16px; border-radius: 26px; font-weight: 600; font-size: 1.2rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .sales-count:hover { background-color: #6b46c1; color: white; }
@@ -41,12 +47,28 @@
         .consultant-photo-ranking { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e8ecff; }
         #topConsultantPhoto { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid #a78bfa; margin-left: 20px; box-shadow: 0 7px 20px rgba(147, 51, 234, 0.25); background-color: #f0f2ff; transition: transform 0.3s ease; }
         .stat-card:hover #topConsultantPhoto { transform: scale(1.05); }
+        #topConsultantPhotoCE { 
+            width: 104px; 
+            height: 104px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 5px solid #10b981; 
+            margin-left: 20px; 
+            box-shadow: 0 7px 20px rgba(16, 185, 129, 0.25); 
+            background-color: #d1fae5; 
+            transition: transform 0.3s ease; 
+        }
+        .stat-card:hover #topConsultantPhotoCE { 
+            transform: scale(1.05); 
+        }
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 26px; border-radius: 20px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 1.2rem; margin-bottom: 13px; text-transform: uppercase; }
         .process-number { font-size: 2.6rem; font-weight: 700; color: #8b5cf6; }
         .process-meta { font-size: 1rem; color: #6b7280; margin-top: 7px; }
         .recent-sales { grid-column: 1 / -1; }
+
+
         
         .sales-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.2rem; }
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
@@ -154,7 +176,7 @@
         .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
-            .main-content, .mission-vision-grid { grid-template-columns: 1fr; }
+            .main-content, .mission-vision-grid, .rankings-grid { grid-template-columns: 1fr; }
             .timeline::before { left: 20px; }
             .timeline-item { width: 100%; padding-left: 65px; padding-right: 13px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -187,12 +209,16 @@
             </div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3><div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
                 <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
             </div>
+            <div class="rankings-grid">
+                <div class="panel panel-sc"><h2><i class="fas fa-trophy"></i> Ranking Santa Catarina</h2><div id="consultantRanking"></div></div>
+                <div class="panel panel-ce"><h2><i class="fas fa-trophy"></i> Ranking Ceará</h2><div id="cearaRanking"></div></div>
+            </div>
             <div class="main-content">
-                <div class="panel"><h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2><div id="consultantRanking"></div></div>
-                <div class="panel"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
+                <div class="panel full-width"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
             </div>
             <div class="panel recent-sales">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
@@ -294,14 +320,12 @@
             <div class="header">
                 <h1><i class="fas fa-receipt"></i> Pagamentos de RTM</h1>
                 <p class="subtitle">Acompanhamento de pagamentos recebidos via RTM.</p>
-                <!-- INÍCIO DA MODIFICAÇÃO: Contador de RTMs do dia -->
                 <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
                     <h3 style="font-size: 2.2rem; color: #8b5cf6;">RTMs Cobrados Hoje</h3>
                     <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
                         <span id="rtmTodayCounter">0</span>
                     </div>
                 </div>
-                <!-- FIM DA MODIFICAÇÃO -->
             </div>
             <div class="panel">
                 <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-history"></i> Histórico de Recebimentos</h2>
@@ -348,7 +372,6 @@
                 <p class="subtitle">Fique por dentro dos nossos próximos eventos!</p>
             </div>
             <div class="timeline">
-                <!-- Evento 1 -->
                 <div class="timeline-item">
                     <div class="content">
                         <span class="date">12 de Outubro de 2025</span>
@@ -356,7 +379,6 @@
                         <p>Evento planejado pelo grupo Força de Marca, dos Novos Talentos 2025.</p>
                     </div>
                 </div>
-                <!-- Evento 2 -->
                 <div class="timeline-item">
                     <div class="content">
                         <span class="date">Dezembro</span>
@@ -368,7 +390,6 @@
         </div>
     </div>
 
-    <!-- Container da Notificação -->
     <div id="sale-notification-overlay">
         <div class="notification-content">
             <img id="notification-photo" src="" alt="Foto" class="notification-photo">
@@ -380,7 +401,6 @@
         </div>
     </div>
 
-    <!-- Modal de Detalhes -->
     <div id="process-details-modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeProcessDetails()">×</span>
@@ -390,8 +410,8 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-        // --- VARIÁVEIS DE CONTROLE ---
         let salesData = [];
+        let cearaData = [];
         let paymentsData = [];
         let rtmPaymentsData = [];
         let acordosData = [];
@@ -401,6 +421,7 @@
         let notificationQueue = [];
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
+        const CEARA_SHEET_GID = "877265221";
         const PGTO_SHEET_GID = "1456804198"; 
         const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
         const NEW_RTM_SHEET_GID = "485541894";
@@ -561,7 +582,8 @@
             photoEl.onerror = () => { photoEl.src = DEFAULT_AVATAR; photoEl.onerror = null; };
             
             iconEl.innerHTML = '<i class="fas fa-trophy"></i>';
-            titleEl.textContent = 'Nova Venda!';
+            const regionText = sale.region || 'Santa Catarina';
+            titleEl.textContent = `Nova Venda - ${regionText}!`;
             textEl.innerHTML = `O consultor <strong>${sale.consultor || 'N/A'}</strong> fechou uma nova venda para o cliente <strong>${sale.cliente || 'N/A'}</strong>!`;
             secondaryTextEl.textContent = `Processos: ${sale.processo || 'N/A'}`;
             extrasContainer.innerHTML = '<i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i><i class="fas fa-rocket rocket"></i>';
@@ -608,8 +630,14 @@
 
             let cobradorName = 'Equipe';
             let photoUrl = DEFAULT_AVATAR;
-            if (payment.cobrador && payment.cobrador.startsWith('@')) {
-                cobradorName = payment.cobrador.split(' ')[0].substring(1);
+            
+            if (payment.cobrador) {
+                const cobrador = payment.cobrador.trim();
+                if (cobrador.startsWith('@')) {
+                    cobradorName = cobrador.substring(1).split(' ')[0];
+                } else if (cobrador.toLowerCase() !== 'equipe') {
+                    cobradorName = cobrador.split(' ')[0];
+                }
                 photoUrl = getConsultantPhotoUrl(cobradorName);
             }
 
@@ -628,13 +656,13 @@
             setTimeout(onAnimationFinish, 8000);
         }
         
-        function checkForNewSales(newSales, oldSales) {
+        function checkForNewSales(newSales, oldSales, region = 'Santa Catarina') {
             if (firstLoad || newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
             const newlyAddedSales = newSales.filter(s => !oldSaleIndices.has(s.originalIndex));
 
             if (newlyAddedSales.length > 0) {
-                newlyAddedSales.forEach(sale => notificationQueue.push({ type: 'sale', data: sale }));
+                newlyAddedSales.forEach(sale => notificationQueue.push({ type: 'sale', data: { ...sale, region } }));
                 processNotificationQueue();
             }
         }
@@ -692,7 +720,7 @@
                 const csvData = await response.text();
                 if (csvData && csvData.trim()) {
                     const newSalesData = await processCsvData(csvData);
-                    checkForNewSales(newSalesData, salesData);
+                    checkForNewSales(newSalesData, salesData, 'Santa Catarina');
                     salesData = newSalesData;
                     if (document.getElementById('monthFilter').options.length === 0) {
                         populateMonthFilter(salesData);
@@ -702,6 +730,23 @@
             } catch (error) {
                 console.error("Erro ao buscar dados de vendas:", error);
                 updateConnectionStatus('error', 'Falha na conexão de vendas');
+            }
+        }
+        
+        async function fetchCearaData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${CEARA_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão Ceará: ${response.statusText}`);
+                const csvData = await response.text();
+                if (csvData && csvData.trim()) {
+                    const newCearaData = await processCsvData(csvData);
+                    checkForNewSales(newCearaData, cearaData, 'Ceará');
+                    cearaData = newCearaData;
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do Ceará:", error);
             }
         }
         
@@ -729,7 +774,7 @@
         
         async function fetchRtmPaymentsData() {
             try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${NEW_RTM_SHEET_ID}/export?format=csv&gid=${NEW_RTM_SHEET_GID}&_=${new Date().getTime()}`; // <-- ESTA É A LINHA A SER MUDADA
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${NEW_RTM_SHEET_ID}/export?format=csv&gid=${NEW_RTM_SHEET_GID}&_=${new Date().getTime()}`;
                 const response = await fetch(csvUrl, { mode: 'cors' });
                 if (!response.ok) throw new Error(`Falha na conexão com pagamentos RTM: ${response.statusText}`);
                 const csvData = await response.text();
@@ -787,32 +832,22 @@
             return result.map(item => item.trim());
         }
         
-        /**
-         * Parses a date string in "DD/MM/YYYY" or "DD/MM/YYYY HH:mm:ss" format.
-         * @param {string} dateString The date string to parse.
-         * @returns {Date|null} A Date object or null if parsing fails.
-         */
         function parsePtBrDate(dateString) {
             if (!dateString || typeof dateString !== 'string') return null;
             
-            // Try parsing with new Date() first for formats like MM/DD/YYYY or ISO
             let date = new Date(dateString);
             if (!isNaN(date.getTime())) {
-                // Check if it was mis-parsed (e.g., DD/MM/YYYY read as MM/DD/YYYY)
                 const parts = dateString.split(' ')[0].split('/');
                 if (parts.length === 3) {
                     const day = parseInt(parts[0], 10);
                     const month = parseInt(parts[1], 10);
-                    // If parsed month doesn't match original month, it was likely swapped
                     if (date.getMonth() + 1 !== month && date.getDate() === month) {
-                         // Re-parse it correctly
                          return new Date(parts[2], month - 1, day);
                     }
                 }
                 return date;
             }
 
-            // Fallback for strict "DD/MM/YYYY" format
             const parts = dateString.split(' ')[0].split('/');
             if (parts.length === 3) {
                 const [day, month, year] = parts.map(p => parseInt(p, 10));
@@ -822,7 +857,6 @@
             }
             return null;
         }
-
 
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
@@ -938,14 +972,13 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // INÍCIO DA MODIFICAÇÃO: Ordenar e contar os do dia
             const sortedData = [...data].sort((a, b) => {
                 const dateA = parsePtBrDate(a.data);
                 const dateB = parsePtBrDate(b.data);
                 if (!dateA && !dateB) return 0;
                 if (!dateA) return 1;
                 if (!dateB) return -1;
-                return dateB - dateA; // Mais recente primeiro
+                return dateB - dateA;
             });
             
             let html = '';
@@ -954,31 +987,38 @@
                 let formattedDate = '-';
                 
                 if (paymentDate) {
-                     // Verifica se é hoje para o contador
                     const paymentDay = new Date(paymentDate);
                     paymentDay.setHours(0, 0, 0, 0);
                     if (paymentDay.getTime() === today.getTime()) {
                         rtmTodayCount++;
                     }
                     
-                    // Formata data para exibição
                     const datePart = paymentDate.toLocaleDateString('pt-BR');
                     const timePart = paymentDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                    // Se o tempo for 00:00, provavelmente não havia hora na planilha
                     formattedDate = (timePart === '00:00') ? datePart : `${datePart} ${timePart}`;
+                }
+                
+                let cobradorDisplay = 'Equipe';
+                if (payment.cobrador) {
+                    const cobrador = payment.cobrador.trim();
+                    if (cobrador.startsWith('@')) {
+                        cobradorDisplay = cobrador.substring(1).split(' ')[0];
+                    } else if (cobrador.toLowerCase() !== 'equipe') {
+                        cobradorDisplay = cobrador.split(' ')[0];
+                    }
+                    cobradorDisplay = cobradorDisplay.charAt(0).toUpperCase() + cobradorDisplay.slice(1).toLowerCase();
                 }
 
                 html += `<tr>
                     <td><span class="date-badge">${formattedDate}</span></td>
                     <td>${payment.cliente || '-'}</td>
                     <td><span class="process-badge">${payment.valor || '-'}</span></td>
-                    <td>${payment.cobrador || '-'}</td>
+                    <td>${cobradorDisplay}</td>
                 </tr>`;
             });
             
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum pagamento RTM registrado.</td></tr>';
             todayCounterEl.textContent = rtmTodayCount;
-            // FIM DA MODIFICAÇÃO
         }
         
         function updateAcordosView(data) {
@@ -1022,16 +1062,14 @@
             const tableBody = document.getElementById(tableBodyId);
             if (!tableBody) return;
 
-            // INÍCIO DA MODIFICAÇÃO: Garantir ordenação correta
             const sortedData = [...data].sort((a, b) => {
                 const dateA = parsePtBrDate(a.data);
                 const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return 0; // Se ambas as datas são inválidas, não muda a ordem
-                if (!dateA) return 1;  // Coloca itens sem data no final
-                if (!dateB) return -1; // Coloca itens sem data no final
-                return dateB - dateA; // Ordena do mais novo para o mais antigo
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateB - dateA;
             });
-            // FIM DA MODIFICAÇÃO
 
             let html = '';
             sortedData.forEach(payment => {
@@ -1064,7 +1102,8 @@
 
         function populateMonthFilter(dataToScan) {
             const monthSet = new Set();
-            (dataToScan || []).forEach(sale => {
+            const allData = [...dataToScan, ...cearaData];
+            (allData || []).forEach(sale => {
                 if (sale.data) {
                     const date = parsePtBrDate(sale.data);
                     if (date) {
@@ -1103,18 +1142,30 @@
             });
         }
         
+        function getMonthCeara() {
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) return [];
+            const [filterMonth, filterYear] = selectedMonthYear.split('/').map(Number);
+            return cearaData.filter(sale => {
+                const date = parsePtBrDate(sale.data);
+                return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
+            });
+        }
+        
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
             const monthSales = getMonthSales();
-            updateProcessStats(monthSales);
-            updateMainStats(monthSales);
-            updateConsultantRanking(monthSales);
+            const monthCeara = getMonthCeara();
+            updateProcessStats(monthSales, monthCeara);
+            updateMainStats(monthSales, monthCeara);
+            updateConsultantRanking(monthSales, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
+            updateConsultantRanking(monthCeara, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
             populateConsultantFilter(monthSales);
             updateMonthSales(monthSales);
             updateProcessEvolutionChart(salesData); 
         }
 
-        function updateMainStats(monthSalesData) {
+        function updateMainStats(monthSalesData, monthCearaData) {
             const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
             document.getElementById('totalMonth').textContent = totalProcessos;
             const selectedMonthYear = document.getElementById('monthFilter').value;
@@ -1123,7 +1174,8 @@
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
             
-            const maxDayInMonth = monthSalesData.reduce((max, sale) => {
+            const allSales = [...monthSalesData, ...monthCearaData];
+            const maxDayInMonth = allSales.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
             }, 0);
@@ -1143,7 +1195,7 @@
             return `${baseName}.PNG`;
         }
         
-        function updateConsultantRanking(monthSales) {
+        function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
             const stats = {};
             monthSales.forEach(sale => {
                 if (!sale.consultor) return;
@@ -1165,38 +1217,46 @@
                 });
             });
 
-            consultantDetails = stats;
+            consultantDetails = { ...consultantDetails, ...stats };
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
-            const topConsultantNameEl = document.getElementById('topConsultant');
-            const topConsultantPhotoEl = document.getElementById('topConsultantPhoto');
+            
+            if (topConsultantId && topPhotoId) {
+                const topConsultantNameEl = document.getElementById(topConsultantId);
+                const topConsultantPhotoEl = document.getElementById(topPhotoId);
 
-            if (ranking.length > 0 && ranking[0].sales > 0) {
-                const topConsultant = ranking[0];
-                const photoUrl = getConsultantPhotoUrl(topConsultant.name);
-                topConsultantNameEl.textContent = topConsultant.name;
-                topConsultantPhotoEl.src = photoUrl;
-                topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; topConsultantPhotoEl.onerror = null; };
-                topConsultantPhotoEl.style.display = 'inline-block';
-            } else {
-                topConsultantNameEl.textContent = '-';
-                topConsultantPhotoEl.style.display = 'none';
-                topConsultantPhotoEl.src = ''; 
+                if (ranking.length > 0 && ranking[0].sales > 0) {
+                    const topConsultant = ranking[0];
+                    const photoUrl = getConsultantPhotoUrl(topConsultant.name);
+                    topConsultantNameEl.textContent = topConsultant.name;
+                    topConsultantPhotoEl.src = photoUrl;
+                    topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; topConsultantPhotoEl.onerror = null; };
+                    topConsultantPhotoEl.style.display = 'inline-block';
+                } else {
+                    topConsultantNameEl.textContent = '-';
+                    topConsultantPhotoEl.style.display = 'none';
+                    topConsultantPhotoEl.src = ''; 
+                }
             }
 
+            const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
+            
             let html = '';
-            ranking.slice(0, 10).forEach((c, i) => {
+            ranking.slice(0, 5).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
-                html += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
+                html += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
-            document.getElementById('consultantRanking').innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+            document.getElementById(rankingElementId).innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
         }
 
-        function updateProcessStats(monthSales) {
+        function updateProcessStats(monthSales, monthCeara) {
             const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
             let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
             const clientesST = new Set();
-            monthSales.forEach(sale => {
+            
+            const allSales = [...monthSales, ...monthCeara];
+            
+            allSales.forEach(sale => {
                 (sale.processo || '').split(',').forEach(procRaw => {
                     const proc = procRaw.trim().toUpperCase();
                     if (!proc || proc === DRA_RENATA_STRING) return;
@@ -1269,7 +1329,7 @@
                 if (dateB - dateA !== 0) return dateB - dateA;
                 return b.originalIndex - a.originalIndex;
             });
-            let html = '';
+let html = '';
             sortedSales.forEach(sale => {
                 html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
             });
@@ -1344,7 +1404,8 @@
 
         async function fetchAllData() {
             await Promise.allSettled([
-                fetchSalesData(), 
+                fetchSalesData(),
+                fetchCearaData(),
                 fetchPaymentsData(),
                 fetchRtmPaymentsData(),
                 fetchAcordosData() 
@@ -1352,7 +1413,7 @@
             
             updateTotalFinishedCounter();
             
-            if (salesData.length > 0 || paymentsData.length > 0 || rtmPaymentsData.length > 0) {
+            if (salesData.length > 0 || cearaData.length > 0 || paymentsData.length > 0 || rtmPaymentsData.length > 0) {
                  updateConnectionStatus('connected', 'Conectado');
             }
             
@@ -1394,7 +1455,3 @@
     </script>
 </body>
 </html>
-
-
-
-
