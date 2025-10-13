@@ -47,12 +47,28 @@
         .consultant-photo-ranking { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e8ecff; }
         #topConsultantPhoto { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid #a78bfa; margin-left: 20px; box-shadow: 0 7px 20px rgba(147, 51, 234, 0.25); background-color: #f0f2ff; transition: transform 0.3s ease; }
         .stat-card:hover #topConsultantPhoto { transform: scale(1.05); }
+        #topConsultantPhotoCE { 
+            width: 104px; 
+            height: 104px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 5px solid #10b981; 
+            margin-left: 20px; 
+            box-shadow: 0 7px 20px rgba(16, 185, 129, 0.25); 
+            background-color: #d1fae5; 
+            transition: transform 0.3s ease; 
+        }
+        .stat-card:hover #topConsultantPhotoCE { 
+            transform: scale(1.05); 
+        }
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 26px; border-radius: 20px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 1.2rem; margin-bottom: 13px; text-transform: uppercase; }
         .process-number { font-size: 2.6rem; font-weight: 700; color: #8b5cf6; }
         .process-meta { font-size: 1rem; color: #6b7280; margin-top: 7px; }
         .recent-sales { grid-column: 1 / -1; }
+
+
         
         .sales-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.2rem; }
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
@@ -193,7 +209,8 @@
             </div>
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3><div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
                 <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
             </div>
             <div class="rankings-grid">
@@ -1142,7 +1159,7 @@
             updateProcessStats(monthSales, monthCeara);
             updateMainStats(monthSales, monthCeara);
             updateConsultantRanking(monthSales, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-            updateConsultantRanking(monthCeara, 'cearaRanking');
+            updateConsultantRanking(monthCeara, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
             populateConsultantFilter(monthSales);
             updateMonthSales(monthSales);
             updateProcessEvolutionChart(salesData); 
