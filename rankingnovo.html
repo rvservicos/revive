@@ -25,6 +25,15 @@
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(325px, 1fr)); gap: 26px; margin-bottom: 39px; }
         .stat-card { background: white; padding: 33px; border-radius: 20px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
         .stat-card h3 { color: #6b46c1; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .stat-card-ce h3 { 
+            color: #10b981 !important; 
+        }
+        .stat-card-ce .stat-value { 
+            color: #10b981 !important; 
+        }
+        .stat-card-ce .stat-label { 
+            color: #34d399 !important; 
+        }
         .stat-value { font-size: 3.3rem; font-weight: 700; color: #8b5cf6; display: flex; align-items: center; gap: 20px; }
         .stat-label { color: #a78bfa; font-size: 1.2rem; }
         .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 39px; margin-bottom: 39px; }
@@ -55,7 +64,7 @@
             border: 5px solid #10b981; 
             margin-left: 20px; 
             box-shadow: 0 7px 20px rgba(16, 185, 129, 0.25); 
-            background-color: #d1fae5; 
+            background-color: #10b981; 
             transition: transform 0.3s ease; 
         }
         .stat-card:hover #topConsultantPhotoCE { 
@@ -210,7 +219,7 @@
             <div class="stats-grid">
                 <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
                 <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
-                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3><div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
+                <div class="stat-card stat-card-ce"><h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3><div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
                 <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
             </div>
             <div class="rankings-grid">
