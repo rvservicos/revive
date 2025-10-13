@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITA - Visão Integrada de Trabalho e Apoio - ADM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            /* CORRIGIDO: Reduzido o padding vertical e mantido o horizontal */
+            padding: 0.1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-container {
+            margin-bottom: 0; /* Removido o espaço extra abaixo do logo */
+        }
+        
+        .logo-container img {
+            max-width: 100%; /* Ajustado para ser responsivo dentro do container */
+            max-height: 360px;
+            object-fit: contain;
+            display: block; /* Garante que a imagem não tenha espaço extra abaixo */
+            margin: 0 auto; /* Centraliza a imagem se o container for mais largo */
+        }
+        
+        .system-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .system-subtitle {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 2rem;
+        }
+        
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .category-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .category-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Button Grid */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        /* Buttons */
+        .action-button {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 80px;
+        }
+        
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .action-button:hover::before {
+            transform: translateX(0);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.3);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+        
+        .button-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        
+        .button-text {
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        
+        /* Special Buttons */
+        .action-button.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+        }
+        
+        .action-button.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+        }
+        
+        .action-button.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+            border: none;
+        }
+        
+        .action-button.warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px -4px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+        
+        .action-button.success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            border: none;
+        }
+        
+        .action-button.success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px -4px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .header {
+                padding: 0.5rem 1rem; /* Ajustado também para telas menores */
+                margin-bottom: 1rem;
+            }
+            
+            .system-title {
+                font-size: 1.25rem;
+            }
+            
+            .system-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .category-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .category-header {
+                gap: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .category-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+            
+            .category-title {
+                font-size: 1rem;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 0.5rem;
+            }
+            
+            .action-button {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+                min-height: 70px;
+            }
+            
+            .button-icon {
+                font-size: 1.25rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-container img {
+                max-width: 150px;
+                max-height: 60px;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Loading Animation */
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://rvservicos.github.io/revive/logo-vi.png" alt="VITA Logo" onerror="this.style.display='none'">
+            </div>
+
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Documentos e Contratos -->
+            <section class="category-section">
+                <div class="category-header">
+                    <div class="category-icon">📄</div>
+                    <h2 class="category-title">Documentos e Contratos</h2>
+                </div>
+                <div class="button-grid">
+                    <a href="https://app.zapsign.com.br/verificar/doc/9088c21f-820c-4a1f-9ea9-c5fb749579c1" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">📝</span>
+                        <span class="button-text">Novo Contrato</span>
+                    </a>
+                    <a href="https://app.zapsign.com.br/verificar/doc/ce1d102e-ad07-4c94-938c-85c3bfc51372" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">👶</span>
+                        <span class="button-text">Contrato Menor</span>
+                    </a>
+                    <a href="https://app.zapsign.com.br/verificar/doc/81a57629-96c9-4d0b-9704-526cf05f5e6f" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">🤵</span>
+                        <span class="button-text">Kit Maba</span>
+                    </a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdbNodbYHu5CNR_LbtsAl50oE9RCk1WMEtEz7NTHuMij7VGBw/viewform?usp=dialog" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">📤</span>
+                        <span class="button-text">Envio de Documentos</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycbzDyV-5s3GveaSauq1TPnm83ZUAGaQsgW2HBqWz6XuPtpKpZcNwO926ZaNSk5dtqQLs6g/exec?page=consulta" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">🔍</span>
+                        <span class="button-text">Consulta Documentos</span>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Gestão e Controle -->
+            <section class="category-section">
+                <div class="category-header">
+                    <div class="category-icon">📊</div>
+                    <h2 class="category-title">Gestão e Controle</h2>
+                </div>
+                <div class="button-grid">
+                    <a href="https://script.google.com/macros/s/AKfycbwDz3l7IphY0zZ3NIIVuBOthJiAuuBd3uesdILNiD25K9AvpocvrraUzjXZS7iSN8fawg/exec" 
+                       class="action-button primary" target="_blank">
+                        <span class="button-icon">💝</span>
+                        <span class="button-text">Sistema Seguro de Vida</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycbyNJVWzpMDW9ojpM-ES0pBIztv_nbv0bVzjlYPEX1QQwHdDNr8FsVK__DbxH1rd2mt8Og/exec" 
+                       class="action-button primary" target="_blank">
+                        <span class="button-icon">💊</span>
+                        <span class="button-text">Sistema Laudo RTM</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycby6Ju0ky6GgJM2mTCuRGGyLYxiT5hjhKYGMfH-lUiAhmmDuw_GsYEOOtboxpCMbJrinwQ/exec?page=auditoria" 
+                       class="action-button primary" target="_blank">
+                        <span class="button-icon">📈</span>
+                        <span class="button-text">Sistema de Auditoria</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycbyNswHlc8ne7XEEwbFvg1QhKa_lco5FvJiTgdLvj6JCQUol6WiQT9qwDjy99GcbhtrXPQ/exec?page=gestao" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">💾</span>
+                        <span class="button-text">Gestão de Documentos</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycbzSIkFh7gXSG-eBAj-zZFlQPH2zDfty6_02h4A0vEfjzKAmOLpJcSG9Qw_Akcneht06/exec" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">✅</span>
+                        <span class="button-text">Feedback Diário</span>
+                    </a>
+                    <a href="https://www.google.com" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">📋</span>
+                          <span class="button-text">Sistema de Pós-venda(em desenvolvimento)</span>
+                    </a>
+                    <a href="https://www.google.com" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">🏥</span>
+                        <span class="button-text">Sistema de Prontuário(em desenvolvimento)</span>
+                    </a>
+                    <a href="https://www.google.com" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">🏥</span>
+                          <span class="button-text">Sistema de Seguro Terceiro(em desenvolvimento)</span>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Ferramentas e Análises -->
+            <section class="category-section">
+                <div class="category-header">
+                    <div class="category-icon">🛠️</div>
+                    <h2 class="category-title">Ferramentas e Análises</h2>
+                </div>
+                <div class="button-grid">
+                    <a href="ranking.html" 
+                       class="action-button warning" target="_blank">
+                        <span class="button-icon">🏆</span>
+                        <span class="button-text">Ranking de Vendas</span>
+                    </a>
+                    <a href="https://claude.ai/public/artifacts/c4fe1983-7805-4627-9cb4-74c3b8be05c5" 
+                       class="action-button success" target="_blank">
+                        <span class="button-icon">✏️</span>
+                        <span class="button-text">Cálculo de Contribuição INSS</span>
+                    </a>
+                    <a href="analise.html" 
+                       class="action-button success" target="_blank">
+                        <span class="button-icon">⚖️</span>
+                        <span class="button-text">Análise de Direitos</span>
+                    </a>
+                    <a href="https://script.google.com/macros/s/AKfycbwMA2gdR5lNuJfEHpvQniu1veYy0EMKn8_a4rSNPWxdRRflqXQsVcHlvgF68HJbYUl3/exec" 
+                       class="action-button success" target="_blank">
+                        <span class="button-icon">🛡️</span>
+                        <span class="button-text">Empresas com Vida</span>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Suporte e Informações -->
+            <section class="category-section">
+                <div class="category-header">
+                    <div class="category-icon">💬</div>
+                    <h2 class="category-title">Suporte e Informações</h2>
+                </div>
+                <div class="button-grid">
+                    <a href="index.html" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">⚖️</span>
+                        <span class="button-text">Processos</span>
+                    </a>
+                    <a href="index.html" 
+                       class="action-button" target="_blank">
+                        <span class="button-icon">📑</span>
+                        <span class="button-text">Documentação</span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
