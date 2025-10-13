@@ -430,7 +430,7 @@
         let notificationQueue = [];
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
-        const CEARA_SHEET_GID = "877265221";
+        const CEARA_SHEET_GID = "1480007459";
         const PGTO_SHEET_GID = "1456804198"; 
         const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
         const NEW_RTM_SHEET_GID = "485541894";
@@ -1171,7 +1171,8 @@
             updateConsultantRanking(monthCeara, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
             populateConsultantFilter(monthSales);
             updateMonthSales(monthSales);
-            updateProcessEvolutionChart(salesData); 
+            updateProcessEvolutionChart(salesData, cearaData);
+
         }
 
         function updateMainStats(monthSalesData, monthCearaData) {
@@ -1345,16 +1346,17 @@ let html = '';
             document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
         }
 
-        function updateProcessEvolutionChart(allSalesData) {
-            if (!allSalesData || allSalesData.length === 0) return;
-            const mostRecentYear = Math.max(...allSalesData.map(sale => {
+        function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
+            const combinedData = [...allSalesData, ...(allCearaData || [])];
+            if (!combinedData || combinedData.length === 0) return;
+            const mostRecentYear = Math.max(...combinedData.map(sale => {
                 const date = parsePtBrDate(sale.data);
                 return date ? date.getFullYear() : 0;
             }).filter(year => year > 1900));
             if (!mostRecentYear) return;
             document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
             const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            allSalesData.forEach(sale => {
+            combinedData.forEach(sale => {
                 if (!sale.processo) return;
                 const date = parsePtBrDate(sale.data);
                 if (date && date.getFullYear() === mostRecentYear && date.getMonth() + 1 >= 5) {
@@ -1464,3 +1466,4 @@ let html = '';
     </script>
 </body>
 </html>
+
