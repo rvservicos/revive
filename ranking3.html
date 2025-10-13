@@ -633,6 +633,7 @@
             confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
             setTimeout(onAnimationFinish, 8000);
+        }
 
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
@@ -657,7 +658,8 @@
             setTimeout(() => {
                 overlay.style.opacity = '1';
             }, 10);
-
+            setTimeout(onAnimationFinish, 8000);
+        }
         function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
 
@@ -697,7 +699,8 @@
             setTimeout(() => {
                 overlay.style.opacity = '1';
             }, 10);
-        
+            setTimeout(onAnimationFinish, 8000);
+        }
         function checkForNewSales(newSales, oldSales, region = 'Santa Catarina') {
             if (firstLoad || newSales.length <= oldSales.length) return;
             const oldSaleIndices = new Set(oldSales.map(s => s.originalIndex));
