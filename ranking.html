@@ -1246,10 +1246,18 @@
         }
         
         function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
+            // Lista dos processos que devem ser contados como um único grupo
+            const processosExclusivos = [
+                'TERCEIRO DANO CORPORAL', 
+                'TERCEIRO DANO MATERIAL', 
+                'AÇÃO DE ACIDENTE DE TRÂNSITO' // Adicione outros se necessário
+            ].map(p => p.toUpperCase().trim());
+
             const stats = {};
             monthSales.forEach(sale => {
                 if (!sale.consultor) return;
                 const key = getNormalizedConsultantKey(sale.consultor);
+
                 if (!stats[key]) {
                     const displayName = sale.consultor.trim().split(' ')[0];
                     stats[key] = {
@@ -1258,11 +1266,31 @@
                         processDetails: {}
                     };
                 }
+
+                const todosProcessos = (sale.processo || '')
+                    .split(',')
+                    .map(procRaw => procRaw.trim().toUpperCase())
+                    .filter(proc => proc && proc !== DRA_RENATA_STRING);
+
+                // Separa os processos entre "exclusivos" e "outros"
+                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
                 
-                (sale.processo || '').split(',').forEach(procRaw => {
-                    const proc = procRaw.trim().toUpperCase();
-                    if (!proc || proc === DRA_RENATA_STRING) return;
-                    stats[key].sales++;
+                let contagemParaEstaVenda = 0;
+
+                // Se houver qualquer processo do grupo exclusivo, conta como 1
+                if (processosExclusivosNestaVenda.length > 0) {
+                    contagemParaEstaVenda = 1;
+                }
+
+                // Soma a contagem dos outros processos
+                contagemParaEstaVenda += outrosProcessosNestaVenda.length;
+                
+                // Adiciona o total calculado ao ranking do consultor
+                stats[key].sales += contagemParaEstaVenda;
+
+                // A lógica para detalhar os processos pode continuar a mesma
+                todosProcessos.forEach(proc => {
                     stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1;
                 });
             });
@@ -1506,6 +1534,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
