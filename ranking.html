@@ -22,7 +22,18 @@
         .status-connected { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
         .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
         .status-loading { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(325px, 1fr)); gap: 26px; margin-bottom: 39px; }
+        .stats-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Cria as duas colunas principais */
+            gap: 26px;
+            margin-bottom: 39px;
+        }
+        
+        .stats-column {
+            display: flex;
+            flex-direction: column; /* Empilha os cards verticalmente dentro de cada coluna */
+            gap: 26px;
+        }
         .stat-card { background: white; padding: 33px; border-radius: 20px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
         .stat-card h3 { color: #6b46c1; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
         .stat-card-ce h3 { 
@@ -213,9 +224,10 @@
         .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
-            .main-content, .mission-vision-grid, .two-column-layout { 
-                grid-template-columns: 1fr; 
+            .stats-grid-container {
+                grid-template-columns: 1fr; /* Faz as colunas empilharem em telas menores */
             }
+            
             .timeline::before { left: 20px; }
             .timeline-item { width: 100%; padding-left: 65px; padding-right: 13px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -248,49 +260,43 @@
                 </div>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
-                    <div class="stat-value" id="totalMonth">-</div>
-                    <div class="stat-label" id="monthLabel">-</div>
+            <div class="stats-grid-container">
+                <!-- Coluna da Esquerda: Geral e Santa Catarina -->
+                <div class="stats-column">
+                    <div class="stat-card">
+                        <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
+                        <div class="stat-value" id="totalMonth">-</div>
+                        <div class="stat-label" id="monthLabel">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
+                        <div class="stat-value" id="dailyAverageSC">-</div>
+                        <div class="stat-label">processos/dia em SC</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3>
+                        <div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div>
+                        <div class="stat-label">em processos este mês</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
-                    <div class="stat-value" id="dailyAverageSC">-</div>
-                    <div class="stat-label">processos/dia em SC</div>
-                </div>
-                <div class="stat-card stat-card-ce">
-                    <h3><i class="fas fa-chart-bar"></i> Média Diária (CE)</h3>
-                    <div class="stat-value" id="dailyAverageCE">-</div>
-                    <div class="stat-label">processos/dia no Ceará</div>
-                </div>
-                 <div class="stat-card">
-                    <h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3>
-                    <div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div>
-                    <div class="stat-label">em processos este mês</div>
-                </div>
-                <div class="stat-card stat-card-ce">
-                    <h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3>
-                    <div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div>
-                    <div class="stat-label">em processos este mês</div>
-                </div>
-                <div class="stat-card stat-card-ce">
-                    <h3><i class="fas fa-sun"></i> Total Processos (Ceará)</h3>
-                    <div class="stat-value" id="totalMonthCE">-</div>
-                    <div class="stat-label">processos no Ceará</div>
-                </div>
-            </div>
-        
-            <div class="two-column-layout">
-                <!-- Coluna da Esquerda: Santa Catarina -->
-                <div class="panel panel-sc">
-                    <h2><i class="fas fa-trophy"></i> Ranking Santa Catarina</h2>
-                    <div id="consultantRanking"></div>
-                </div>
+            
                 <!-- Coluna da Direita: Ceará -->
-                <div class="panel panel-ce">
-                    <h2><i class="fas fa-trophy"></i> Ranking Ceará</h2>
-                    <div id="cearaRanking"></div>
+                <div class="stats-column">
+                    <div class="stat-card stat-card-ce">
+                        <h3><i class="fas fa-sun"></i> Total Processos (Ceará)</h3>
+                        <div class="stat-value" id="totalMonthCE">-</div>
+                        <div class="stat-label">processos no Ceará</div>
+                    </div>
+                    <div class="stat-card stat-card-ce">
+                        <h3><i class="fas fa-chart-bar"></i> Média Diária (CE)</h3>
+                        <div class="stat-value" id="dailyAverageCE">-</div>
+                        <div class="stat-label">processos/dia no Ceará</div>
+                    </div>
+                    <div class="stat-card stat-card-ce">
+                        <h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3>
+                        <div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div>
+                        <div class="stat-label">em processos este mês</div>
+                    </div>
                 </div>
             </div>
             
@@ -1278,6 +1284,7 @@
         }
         
 // SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
+// SUBSTITUA ESTA FUNÇÃO
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
         
@@ -1287,7 +1294,9 @@
             const totalProcessosSC = countTotalProcesses(monthSalesSC);
             const totalProcessosCE = countTotalProcesses(monthSalesCE);
         
+            // CORREÇÃO: A chamada agora passa os dados de SC (monthSalesSC)
             updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesSC, monthSalesCE);
+            
             updateProcessStats(monthSalesSC, monthSalesCE); 
             
             updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
@@ -1320,6 +1329,7 @@
             return total;
         }
         
+        // SUBSTITUA ESTA FUNÇÃO
         function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
             document.getElementById('totalMonth').textContent = totalSC + totalCE;
             document.getElementById('totalMonthCE').textContent = totalCE;
@@ -1331,7 +1341,7 @@
                 document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
             }
             
-            // Média Diária SC
+            // CORREÇÃO: Lógica para a média diária de SC adicionada
             const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1339,7 +1349,7 @@
             const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
             document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
         
-            // Média Diária CE
+            // Lógica para a média diária de CE (já estava correta)
             const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1833,6 +1843,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
