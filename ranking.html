@@ -1554,19 +1554,15 @@
             return `${baseName}.PNG`;
         }
         
+        // SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' POR ESTA
         function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
-            // Lista dos processos que devem ser contados como um único grupo
-            const processosExclusivos = [
-                'TERCEIRO DANO CORPORAL', 
-                'TERCEIRO DANO MATERIAL', 
-                'AÇÃO DE ACIDENTE DE TRÂNSITO' // Adicione outros se necessário
-            ].map(p => p.toUpperCase().trim());
-
+            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
             const stats = {};
+            
             monthSales.forEach(sale => {
                 if (!sale.consultor) return;
                 const key = getNormalizedConsultantKey(sale.consultor);
-
+        
                 if (!stats[key]) {
                     const displayName = sale.consultor.trim().split(' ')[0];
                     stats[key] = {
@@ -1575,65 +1571,60 @@
                         processDetails: {}
                     };
                 }
-
-                const todosProcessos = (sale.processo || '')
-                    .split(',')
-                    .map(procRaw => procRaw.trim().toUpperCase())
-                    .filter(proc => proc && proc !== DRA_RENATA_STRING);
-
-                // Separa os processos entre "exclusivos" e "outros"
+        
+                const todosProcessos = (sale.processo || '').split(',').map(procRaw => procRaw.trim().toUpperCase()).filter(proc => proc && proc !== DRA_RENATA_STRING);
                 const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
                 const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
                 
-                let contagemParaEstaVenda = 0;
-
-                // Se houver qualquer processo do grupo exclusivo, conta como 1
+                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
                 if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda = 1;
+                    contagemParaEstaVenda += 1;
                 }
-
-                // Soma a contagem dos outros processos
-                contagemParaEstaVenda += outrosProcessosNestaVenda.length;
-                
-                // Adiciona o total calculado ao ranking do consultor
                 stats[key].sales += contagemParaEstaVenda;
-
-                // A lógica para detalhar os processos pode continuar a mesma
+        
                 todosProcessos.forEach(proc => {
                     stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1;
                 });
             });
-
+        
             consultantDetails = { ...consultantDetails, ...stats };
             const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
             
             if (topConsultantId && topPhotoId) {
                 const topConsultantNameEl = document.getElementById(topConsultantId);
                 const topConsultantPhotoEl = document.getElementById(topPhotoId);
-
                 if (ranking.length > 0 && ranking[0].sales > 0) {
                     const topConsultant = ranking[0];
-                    const photoUrl = getConsultantPhotoUrl(topConsultant.name);
                     topConsultantNameEl.textContent = topConsultant.name;
-                    topConsultantPhotoEl.src = photoUrl;
+                    topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
                     topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; topConsultantPhotoEl.onerror = null; };
                     topConsultantPhotoEl.style.display = 'inline-block';
                 } else {
                     topConsultantNameEl.textContent = '-';
                     topConsultantPhotoEl.style.display = 'none';
-                    topConsultantPhotoEl.src = ''; 
                 }
             }
-
+        
             const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-            
             let html = '';
             ranking.slice(0, 5).forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
                 html += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
-            document.getElementById(rankingElementId).innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+        
+            // *** INÍCIO DA CORREÇÃO ***
+            // Procura pelo contêiner do ranking no HTML
+            const rankingContainer = document.getElementById(rankingElementId);
+            
+            // SÓ executa o código se o contêiner for encontrado
+            if (rankingContainer) {
+                rankingContainer.innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+            } else {
+                // Se não encontrar, avisa no console em vez de quebrar o site
+                console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
+            }
+            // *** FIM DA CORREÇÃO ***
         }
 
         function updateProcessStats(monthSales, monthCeara) {
@@ -1843,6 +1834,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
