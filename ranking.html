@@ -226,6 +226,7 @@
 <body>
     <div class="main-container">
         <!-- Páginas do Carrossel -->
+        <!-- SUBSTITUA ESTE BLOCO INTEIRO -->
         <div id="dashboard-view" class="carousel-page active" data-name="Dashboard">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
@@ -246,18 +247,24 @@
                     <button id="carousel-toggle-button" title="Pausar Carrossel"><i class="fas fa-pause"></i></button>
                 </div>
             </div>
+            
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3><i class="fas fa-globe"></i> Total de Processos (Empresa)</h3>
+                    <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
                     <div class="stat-value" id="totalMonth">-</div>
                     <div class="stat-label" id="monthLabel">-</div>
                 </div>
-                <div class="stat-card stat-card-ce">
-                    <h3><i class="fas fa-sun"></i> Total de Processos (Ceará)</h3>
-                    <div class="stat-value" id="totalMonthCE">-</div>
-                    <div class="stat-label">processos no Ceará</div>
-                </div>
                 <div class="stat-card">
+                    <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
+                    <div class="stat-value" id="dailyAverageSC">-</div>
+                    <div class="stat-label">processos/dia em SC</div>
+                </div>
+                <div class="stat-card stat-card-ce">
+                    <h3><i class="fas fa-chart-bar"></i> Média Diária (CE)</h3>
+                    <div class="stat-value" id="dailyAverageCE">-</div>
+                    <div class="stat-label">processos/dia no Ceará</div>
+                </div>
+                 <div class="stat-card">
                     <h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3>
                     <div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div>
                     <div class="stat-label">em processos este mês</div>
@@ -268,11 +275,12 @@
                     <div class="stat-label">em processos este mês</div>
                 </div>
                 <div class="stat-card stat-card-ce">
-                    <h3><i class="fas fa-chart-bar"></i> Média Diária (Ceará)</h3>
-                    <div class="stat-value" id="dailyAverageCE">-</div>
-                    <div class="stat-label">processos/dia no Ceará</div>
+                    <h3><i class="fas fa-sun"></i> Total Processos (Ceará)</h3>
+                    <div class="stat-value" id="totalMonthCE">-</div>
+                    <div class="stat-label">processos no Ceará</div>
                 </div>
             </div>
+        
             <div class="two-column-layout">
                 <!-- Coluna da Esquerda: Santa Catarina -->
                 <div class="panel panel-sc">
@@ -286,6 +294,17 @@
                 </div>
             </div>
             
+            <!-- PAINEL DE METAS RESTAURADO -->
+            <div class="panel full-width" style="margin-bottom: 39px;">
+                <h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2>
+                <div class="process-stats">
+                    <div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div>
+                    <div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div>
+                    <div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div>
+                    <div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div>
+                </div>
+            </div>
+        
             <div class="two-column-layout">
                 <!-- Coluna da Esquerda: Lista de Processos SC -->
                 <div class="panel panel-sc">
@@ -319,21 +338,6 @@
                         <tbody id="recentSalesTableCE"></tbody>
                     </table>
                 </div>
-            </div>
-            <div class="panel recent-sales">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
-                    <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Linhas da Planilha do Mês</h2>
-                    <div class="consultant-filter-container">
-                        <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px; font-size: 1.2rem;">Filtrar por Consultor:</label>
-                        <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
-                    </div>
-                </div>
-                <table class="sales-table" style="font-size: 1.2rem;">
-                    <thead>
-                        <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
-                    </thead>
-                    <tbody id="recentSalesTable"></tbody>
-                </table>
             </div>
         </div>
         <div id="chart-view" class="carousel-page" data-name="Gráficos"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 585px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
@@ -1273,19 +1277,18 @@
             });
         }
         
-// SUBSTITUA ESTA FUNÇÃO
+// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
         
             const monthSalesSC = getMonthSales();
             const monthSalesCE = getMonthCeara();
         
-            // Contagem de processos para o ranking (respeitando a regra de "terceiro")
             const totalProcessosSC = countTotalProcesses(monthSalesSC);
             const totalProcessosCE = countTotalProcesses(monthSalesCE);
         
-            updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesCE);
-            updateProcessStats(monthSalesSC, monthSalesCE);
+            updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesSC, monthSalesCE);
+            updateProcessStats(monthSalesSC, monthSalesCE); 
             
             updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
             updateConsultantRanking(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
@@ -1298,7 +1301,144 @@
         
             updateProcessEvolutionChart(salesData, cearaData);
         }
-        // ADICIONE ESTAS 3 NOVAS FUNÇÕES
+        
+        function countTotalProcesses(sales) {
+            let total = 0;
+            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
+        
+            sales.forEach(sale => {
+                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
+                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
+                
+                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
+                if (processosExclusivosNestaVenda.length > 0) {
+                    contagemParaEstaVenda += 1;
+                }
+                total += contagemParaEstaVenda;
+            });
+            return total;
+        }
+        
+        function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
+            document.getElementById('totalMonth').textContent = totalSC + totalCE;
+            document.getElementById('totalMonthCE').textContent = totalCE;
+        
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (selectedMonthYear) {
+                const [monthStr, yearStr] = selectedMonthYear.split('/');
+                const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+            }
+            
+            // Média Diária SC
+            const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
+                const date = parsePtBrDate(sale.data);
+                return date ? Math.max(max, date.getDate()) : max;
+            }, 0);
+            const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
+            document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
+        
+            // Média Diária CE
+            const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
+                const date = parsePtBrDate(sale.data);
+                return date ? Math.max(max, date.getDate()) : max;
+            }, 0);
+            const dailyAvgCE = totalCE > 0 && maxDayInMonthCE > 0 ? (totalCE / maxDayInMonthCE) : 0;
+            document.getElementById('dailyAverageCE').textContent = dailyAvgCE.toFixed(1);
+        }
+        
+        // ESTA FUNÇÃO ESTAVA FALTANDO NO SEU SCRIPT
+        function updateProcessStats(monthSales, monthCeara) {
+            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
+            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
+            const clientesST = new Set();
+            
+            const allSales = [...monthSales, ...monthCeara];
+            
+            allSales.forEach(sale => {
+                (sale.processo || '').split(',').forEach(procRaw => {
+                    const proc = procRaw.trim().toUpperCase();
+                    if (!proc || proc === DRA_RENATA_STRING) return;
+                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
+                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
+                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
+                    else counts.outros++;
+                });
+            });
+            counts.seguroTerceiro = clientesST.size;
+            currentMonthCounts = counts;
+            
+            // Verifica se os elementos existem antes de tentar atualizá-los
+            if(document.getElementById('previdenciariosCount')) {
+                const updateCard = (type, count, meta) => {
+                    document.getElementById(`${type}Count`).textContent = count;
+                    const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+                    document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
+                    document.getElementById(`${type}Percent`).textContent = percent;
+                };
+                updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+                updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+                updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
+                document.getElementById('outrosCount').textContent = counts.outros;
+            }
+        }
+        
+        function populateConsultantFilter(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            if (!consultantFilterSelect) return;
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultant() {
+            const monthSales = getMonthSales();
+            updateMonthSales(monthSales);
+        }
+        
+        function updateMonthSales(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+        }
         
         function populateConsultantFilterCE(monthSales) {
             const consultantFilterSelect = document.getElementById('consultantFilterCE');
@@ -1349,14 +1489,13 @@
                 if (dateB - dateA !== 0) return dateB - dateA;
                 return b.originalIndex - a.originalIndex;
             });
-        
             let html = '';
             sortedSales.forEach(sale => {
                 html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
             });
             document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
         }
-        // SUBSTITUA ESTA FUNÇÃO
+        // FIM DA SUBSTITUIÇÃO
         function updateMainStats(totalSC, totalCE, monthCearaData) {
             const totalEmpresa = totalSC + totalCE;
             document.getElementById('totalMonth').textContent = totalEmpresa;
@@ -1694,6 +1833,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
