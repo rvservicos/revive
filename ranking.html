@@ -52,7 +52,16 @@
         .consultant-name { color: #374151; font-weight: 500; font-size: 1.2rem; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 7px 16px; border-radius: 26px; font-weight: 600; font-size: 1.2rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .sales-count:hover { background-color: #6b46c1; color: white; }
+        .two-column-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 39px; 
+            margin-bottom: 39px; 
+        }
         
+        .sales-table th.th-ce { 
+            background: linear-gradient(135deg, #10b981, #34d399); 
+        }
         .consultant-photo-ranking { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e8ecff; }
         #topConsultantPhoto { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid #a78bfa; margin-left: 20px; box-shadow: 0 7px 20px rgba(147, 51, 234, 0.25); background-color: #f0f2ff; transition: transform 0.3s ease; }
         .stat-card:hover #topConsultantPhoto { transform: scale(1.05); }
@@ -204,7 +213,9 @@
         .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
-            .main-content, .mission-vision-grid, .rankings-grid { grid-template-columns: 1fr; }
+            .main-content, .mission-vision-grid, .two-column-layout { 
+                grid-template-columns: 1fr; 
+            }
             .timeline::before { left: 20px; }
             .timeline-item { width: 100%; padding-left: 65px; padding-right: 13px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -236,17 +247,78 @@
                 </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card"><h3><i class="fas fa-sun"></i> Total de Processos no Mês</h3><div class="stat-value" id="totalMonth">-</div><div class="stat-label" id="monthLabel">-</div></div>
-                <div class="stat-card"><h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3><div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
-                <div class="stat-card stat-card-ce"><h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3><div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div><div class="stat-label">em processos este mês</div></div>
-                <div class="stat-card"><h3><i class="fas fa-chart-bar"></i> Média Diária</h3><div class="stat-value" id="dailyAverage">-</div><div class="stat-label">processos/dia</div></div>
+                <div class="stat-card">
+                    <h3><i class="fas fa-globe"></i> Total de Processos (Empresa)</h3>
+                    <div class="stat-value" id="totalMonth">-</div>
+                    <div class="stat-label" id="monthLabel">-</div>
+                </div>
+                <div class="stat-card stat-card-ce">
+                    <h3><i class="fas fa-sun"></i> Total de Processos (Ceará)</h3>
+                    <div class="stat-value" id="totalMonthCE">-</div>
+                    <div class="stat-label">processos no Ceará</div>
+                </div>
+                <div class="stat-card">
+                    <h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3>
+                    <div class="stat-value">🏆 <span id="topConsultant">-</span><img id="topConsultantPhoto" src="" alt="Foto do Melhor Consultor SC" style="display: none;"></div>
+                    <div class="stat-label">em processos este mês</div>
+                </div>
+                <div class="stat-card stat-card-ce">
+                    <h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3>
+                    <div class="stat-value">🏆 <span id="topConsultantCE">-</span><img id="topConsultantPhotoCE" src="" alt="Foto do Melhor Consultor CE" style="display: none;"></div>
+                    <div class="stat-label">em processos este mês</div>
+                </div>
+                <div class="stat-card stat-card-ce">
+                    <h3><i class="fas fa-chart-bar"></i> Média Diária (Ceará)</h3>
+                    <div class="stat-value" id="dailyAverageCE">-</div>
+                    <div class="stat-label">processos/dia no Ceará</div>
+                </div>
             </div>
-            <div class="rankings-grid">
-                <div class="panel panel-sc"><h2><i class="fas fa-trophy"></i> Ranking Santa Catarina</h2><div id="consultantRanking"></div></div>
-                <div class="panel panel-ce"><h2><i class="fas fa-trophy"></i> Ranking Ceará</h2><div id="cearaRanking"></div></div>
+            <div class="two-column-layout">
+                <!-- Coluna da Esquerda: Santa Catarina -->
+                <div class="panel panel-sc">
+                    <h2><i class="fas fa-trophy"></i> Ranking Santa Catarina</h2>
+                    <div id="consultantRanking"></div>
+                </div>
+                <!-- Coluna da Direita: Ceará -->
+                <div class="panel panel-ce">
+                    <h2><i class="fas fa-trophy"></i> Ranking Ceará</h2>
+                    <div id="cearaRanking"></div>
+                </div>
             </div>
-            <div class="main-content">
-                <div class="panel full-width"><h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2><div class="process-stats"><div class="process-card"><h4>Previdenciários</h4><div class="process-number" id="previdenciariosCount">-</div><div class="process-meta">Meta: <span id="previdenciariosGoal">-</span> (<span id="previdenciariosPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro Terceiro</h4><div class="process-number" id="seguroTerceiroCount">-</div><div class="process-meta">Meta: <span id="seguroTerceiroGoal">-</span> (<span id="seguroTerceiroPercent">-</span>%)</div></div><div class="process-card"><h4>Seguro de Vida</h4><div class="process-number" id="seguroVidaCount">-</div><div class="process-meta">Meta: <span id="seguroVidaGoal">-</span> (<span id="seguroVidaPercent">-</span>%)</div></div><div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div></div></div>
+            
+            <div class="two-column-layout">
+                <!-- Coluna da Esquerda: Lista de Processos SC -->
+                <div class="panel panel-sc">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos do Mês (SC)</h2>
+                        <div class="consultant-filter-container">
+                            <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px; font-size: 1.2rem;">Filtrar:</label>
+                            <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
+                        </div>
+                    </div>
+                    <table class="sales-table" style="font-size: 1.2rem;">
+                        <thead>
+                            <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
+                        </thead>
+                        <tbody id="recentSalesTable"></tbody>
+                    </table>
+                </div>
+                <!-- Coluna da Direita: Lista de Processos CE -->
+                <div class="panel panel-ce">
+                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos do Mês (CE)</h2>
+                        <div class="consultant-filter-container">
+                            <label for="consultantFilterCE" style="font-weight: 600; color: #10b981; margin-right: 10px; font-size: 1.2rem;">Filtrar:</label>
+                            <select id="consultantFilterCE" onchange="filterSalesByConsultantCE()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
+                        </div>
+                    </div>
+                    <table class="sales-table" style="font-size: 1.2rem;">
+                        <thead>
+                            <tr><th class="th-ce">Data</th><th class="th-ce">Cliente</th><th class="th-ce">Processo</th><th class="th-ce">Consultor</th></tr>
+                        </thead>
+                        <tbody id="recentSalesTableCE"></tbody>
+                    </table>
+                </div>
             </div>
             <div class="panel recent-sales">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
@@ -1201,39 +1273,127 @@
             });
         }
         
+// SUBSTITUA ESTA FUNÇÃO
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
-            const monthSales = getMonthSales();
-            const monthCeara = getMonthCeara();
-            updateProcessStats(monthSales, monthCeara);
-            updateMainStats(monthSales, monthCeara);
-            updateConsultantRanking(monthSales, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-            updateConsultantRanking(monthCeara, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-            populateConsultantFilter(monthSales);
-            updateMonthSales(monthSales);
+        
+            const monthSalesSC = getMonthSales();
+            const monthSalesCE = getMonthCeara();
+        
+            // Contagem de processos para o ranking (respeitando a regra de "terceiro")
+            const totalProcessosSC = countTotalProcesses(monthSalesSC);
+            const totalProcessosCE = countTotalProcesses(monthSalesCE);
+        
+            updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesCE);
+            updateProcessStats(monthSalesSC, monthSalesCE);
+            
+            updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
+            updateConsultantRanking(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
+            
+            populateConsultantFilter(monthSalesSC);
+            updateMonthSales(monthSalesSC);
+        
+            populateConsultantFilterCE(monthSalesCE);
+            updateMonthSalesCE(monthSalesCE);
+        
             updateProcessEvolutionChart(salesData, cearaData);
-
         }
-
-        function updateMainStats(monthSalesData, monthCearaData) {
-            const totalProcessos = Object.values(currentMonthCounts).reduce((a, b) => a + b, 0);
-            document.getElementById('totalMonth').textContent = totalProcessos;
+        // ADICIONE ESTAS 3 NOVAS FUNÇÕES
+        
+        function populateConsultantFilterCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            if (!consultantFilterSelect) return;
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultantCE() {
+            const monthSales = getMonthCeara();
+            updateMonthSalesCE(monthSales);
+        }
+        
+        function updateMonthSalesCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+        
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+        }
+        // SUBSTITUA ESTA FUNÇÃO
+        function updateMainStats(totalSC, totalCE, monthCearaData) {
+            const totalEmpresa = totalSC + totalCE;
+            document.getElementById('totalMonth').textContent = totalEmpresa;
+            document.getElementById('totalMonthCE').textContent = totalCE;
+        
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (!selectedMonthYear) return;
             const [monthStr, yearStr] = selectedMonthYear.split('/');
             const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
             document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
             
-            const allSales = [...monthSalesData, ...monthCearaData];
-            const maxDayInMonth = allSales.reduce((max, sale) => {
+            const maxDayInMonthCE = monthCearaData.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
             }, 0);
-
-            const dailyAvg = totalProcessos > 0 && maxDayInMonth > 0 ? (totalProcessos / maxDayInMonth) : 0;
-            document.getElementById('dailyAverage').textContent = dailyAvg.toFixed(1);
+        
+            const dailyAvgCE = totalCE > 0 && maxDayInMonthCE > 0 ? (totalCE / maxDayInMonthCE) : 0;
+            document.getElementById('dailyAverageCE').textContent = dailyAvgCE.toFixed(1);
         }
-
+        // ADICIONE ESTA NOVA FUNÇÃO
+        function countTotalProcesses(sales) {
+            let total = 0;
+            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
+        
+            sales.forEach(sale => {
+                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
+                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
+                
+                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
+                if (processosExclusivosNestaVenda.length > 0) {
+                    contagemParaEstaVenda += 1;
+                }
+                total += contagemParaEstaVenda;
+            });
+            return total;
+        }
         function getNormalizedConsultantKey(fullName) {
             if (!fullName || typeof fullName !== 'string') return 'desconhecido';
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
@@ -1534,6 +1694,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
