@@ -1564,25 +1564,6 @@
             document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
         }
         // FIM DA SUBSTITUIÇÃO
-        function updateMainStats(totalSC, totalCE, monthCearaData) {
-            const totalEmpresa = totalSC + totalCE;
-            document.getElementById('totalMonth').textContent = totalEmpresa;
-            document.getElementById('totalMonthCE').textContent = totalCE;
-        
-            const selectedMonthYear = document.getElementById('monthFilter').value;
-            if (!selectedMonthYear) return;
-            const [monthStr, yearStr] = selectedMonthYear.split('/');
-            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
-            
-            const maxDayInMonthCE = monthCearaData.reduce((max, sale) => {
-                const date = parsePtBrDate(sale.data);
-                return date ? Math.max(max, date.getDate()) : max;
-            }, 0);
-        
-            const dailyAvgCE = totalCE > 0 && maxDayInMonthCE > 0 ? (totalCE / maxDayInMonthCE) : 0;
-            document.getElementById('dailyAverageCE').textContent = dailyAvgCE.toFixed(1);
-        }
         // ADICIONE ESTA NOVA FUNÇÃO
         function countTotalProcesses(sales) {
             let total = 0;
