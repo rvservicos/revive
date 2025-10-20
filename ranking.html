@@ -260,13 +260,21 @@
                 </div>
             </div>
             
+<!-- CARD DE TOTAL GLOBAL (NOVO) -->
+            <div class="stat-card" style="margin-bottom: 26px; text-align: center; border-top: 4px solid #6b46c1;">
+                <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
+                <div class="stat-value" id="totalMonthGlobal" style="justify-content: center;">-</div>
+                <div class="stat-label" id="monthLabelGlobal">-</div>
+            </div>
+
             <div class="stats-grid-container">
-                <!-- Coluna da Esquerda: Geral e Santa Catarina -->
+                <!-- Coluna da Esquerda: Santa Catarina -->
                 <div class="stats-column">
+                    <!-- CARD DE SC (MODIFICADO) -->
                     <div class="stat-card">
-                        <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
-                        <div class="stat-value" id="totalMonth">-</div>
-                        <div class="stat-label" id="monthLabel">-</div>
+                        <h3><i class="fas fa-map-marker-alt"></i> Total Processos (SC)</h3>
+                        <div class="stat-value" id="totalMonthSC">-</div>
+                        <div class="stat-label" id="monthLabelSC">-</div>
                     </div>
                     <div class="stat-card">
                         <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
@@ -1348,18 +1356,25 @@
         }
         
         // SUBSTITUA ESTA FUNÇÃO
+// SUBSTITUA ESTA FUNÇÃO
         function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
-            document.getElementById('totalMonth').textContent = totalSC + totalCE;
-            document.getElementById('totalMonthCE').textContent = totalCE;
+            // Popula os novos cards com os valores corretos
+            document.getElementById('totalMonthGlobal').textContent = totalSC + totalCE; // Total da empresa
+            document.getElementById('totalMonthSC').textContent = totalSC; // Apenas SC
+            document.getElementById('totalMonthCE').textContent = totalCE; // Apenas CE
         
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (selectedMonthYear) {
                 const [monthStr, yearStr] = selectedMonthYear.split('/');
                 const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-                document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+                const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+                
+                // Atualiza o rótulo do mês em todos os cards
+                document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+                document.getElementById('monthLabelSC').textContent = monthLabelText;
             }
             
-            // CORREÇÃO: Lógica para a média diária de SC adicionada
+            // Calcula e exibe a média diária de SC
             const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1367,7 +1382,7 @@
             const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
             document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
         
-            // Lógica para a média diária de CE (já estava correta)
+            // Calcula e exibe a média diária de CE
             const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1889,4 +1904,5 @@ let html = '';
     </script>
 </body>
 </html>
+
 
