@@ -299,19 +299,7 @@
                     </div>
                 </div>
             </div>
-            <!-- COLE ESTE BLOCO DE RANKINGS NO SEU HTML -->
-            <div class="two-column-layout">
-                <!-- Coluna da Esquerda: Ranking Santa Catarina -->
-                <div class="panel panel-sc">
-                    <h2><i class="fas fa-trophy"></i> Ranking Santa Catarina</h2>
-                    <div id="consultantRanking"></div>
-                </div>
-                <!-- Coluna da Direita: Ranking Ceará -->
-                <div class="panel panel-ce">
-                    <h2><i class="fas fa-trophy"></i> Ranking Ceará</h2>
-                    <div id="cearaRanking"></div>
-                </div>
-            </div>
+            
             <!-- PAINEL DE METAS RESTAURADO -->
             <div class="panel full-width" style="margin-bottom: 39px;">
                 <h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2>
@@ -1295,9 +1283,10 @@
             });
         }
         
-        // SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
-        // SUBSTITUA ESTA FUNÇÃO
-        // SUBSTITUA TODAS AS FUNÇÕES DESDE 'updateDashboard' ATÉ 'updateConsultantRanking' POR ESTE BLOCO
+// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
+// SUBSTITUA ESTA FUNÇÃO
+// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
+// SUBSTITUA ESTA FUNÇÃO
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
         
@@ -1307,7 +1296,9 @@
             const totalProcessosSC = countTotalProcesses(monthSalesSC);
             const totalProcessosCE = countTotalProcesses(monthSalesCE);
         
+            // CORREÇÃO: A chamada agora passa os dados de SC (monthSalesSC) e CE (monthSalesCE) corretamente
             updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesSC, monthSalesCE);
+            
             updateProcessStats(monthSalesSC, monthSalesCE); 
             
             updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
@@ -1340,6 +1331,7 @@
             return total;
         }
         
+        // SUBSTITUA ESTA FUNÇÃO
         function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
             document.getElementById('totalMonth').textContent = totalSC + totalCE;
             document.getElementById('totalMonthCE').textContent = totalCE;
@@ -1351,6 +1343,7 @@
                 document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
             }
             
+            // CORREÇÃO: Lógica para a média diária de SC adicionada
             const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1358,6 +1351,7 @@
             const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
             document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
         
+            // Lógica para a média diária de CE (já estava correta)
             const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1366,17 +1360,240 @@
             document.getElementById('dailyAverageCE').textContent = dailyAvgCE.toFixed(1);
         }
         
+        // ESTA FUNÇÃO ESTAVA FALTANDO NO SEU SCRIPT
+        function updateProcessStats(monthSales, monthCeara) {
+            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
+            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
+            const clientesST = new Set();
+            
+            const allSales = [...monthSales, ...monthCeara];
+            
+            allSales.forEach(sale => {
+                (sale.processo || '').split(',').forEach(procRaw => {
+                    const proc = procRaw.trim().toUpperCase();
+                    if (!proc || proc === DRA_RENATA_STRING) return;
+                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
+                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
+                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
+                    else counts.outros++;
+                });
+            });
+            counts.seguroTerceiro = clientesST.size;
+            currentMonthCounts = counts;
+            
+            // Verifica se os elementos existem antes de tentar atualizá-los
+            if(document.getElementById('previdenciariosCount')) {
+                const updateCard = (type, count, meta) => {
+                    document.getElementById(`${type}Count`).textContent = count;
+                    const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+                    document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
+                    document.getElementById(`${type}Percent`).textContent = percent;
+                };
+                updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+                updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+                updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
+                document.getElementById('outrosCount').textContent = counts.outros;
+            }
+        }
+        
+        function populateConsultantFilter(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            if (!consultantFilterSelect) return;
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultant() {
+            const monthSales = getMonthSales();
+            updateMonthSales(monthSales);
+        }
+        
+        function updateMonthSales(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+        }
+        
+        function populateConsultantFilterCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            if (!consultantFilterSelect) return;
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultantCE() {
+            const monthSales = getMonthCeara();
+            updateMonthSalesCE(monthSales);
+        }
+        
+        function updateMonthSalesCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+        }
+        
+        function populateConsultantFilterCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            if (!consultantFilterSelect) return;
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
+        function filterSalesByConsultantCE() {
+            const monthSales = getMonthCeara();
+            updateMonthSalesCE(monthSales);
+        }
+        
+        function updateMonthSalesCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return b.originalIndex - a.originalIndex;
+            });
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
+            });
+            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+        }
+        // FIM DA SUBSTITUIÇÃO
+        // ADICIONE ESTA NOVA FUNÇÃO
+        function countTotalProcesses(sales) {
+            let total = 0;
+            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
+        
+            sales.forEach(sale => {
+                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
+                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
+                
+                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
+                if (processosExclusivosNestaVenda.length > 0) {
+                    contagemParaEstaVenda += 1;
+                }
+                total += contagemParaEstaVenda;
+            });
+            return total;
+        }
         function getNormalizedConsultantKey(fullName) {
             if (!fullName || typeof fullName !== 'string') return 'desconhecido';
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
-        
+
         function getConsultantPhotoUrl(consultantName) {
             if (!consultantName) return DEFAULT_AVATAR;
             const baseName = getNormalizedConsultantKey(consultantName);
             return `${baseName}.PNG`;
         }
         
+        // SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' POR ESTA
         function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
             const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
             const stats = {};
@@ -1435,14 +1652,19 @@
                 html += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
         
+            // *** INÍCIO DA CORREÇÃO ***
+            // Procura pelo contêiner do ranking no HTML
             const rankingContainer = document.getElementById(rankingElementId);
+            
+            // SÓ executa o código se o contêiner for encontrado
             if (rankingContainer) {
                 rankingContainer.innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
             } else {
+                // Se não encontrar, avisa no console em vez de quebrar o site
                 console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
             }
+            // *** FIM DA CORREÇÃO ***
         }
-        // FIM DO BLOCO PARA SUBSTITUIR
 
         function updateProcessStats(monthSales, monthCeara) {
             const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
@@ -1651,12 +1873,3 @@ let html = '';
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
