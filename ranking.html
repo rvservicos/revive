@@ -57,6 +57,48 @@
         .panel-ce h2 { color: #10b981; }
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f3f4f6; }
         .ranking-item:last-child { border-bottom: none; }
+        /* --- ESTILOS PARA O RANKING EXPANSÍVEL --- */
+        .ranking-list-container {
+            transition: max-height 0.7s ease-in-out;
+            overflow: hidden;
+        }
+
+        .ranking-list-container.collapsed {
+            /* Ajuste este valor se a altura dos 5 primeiros itens for diferente */
+            max-height: 400px; 
+        }
+
+        .expand-ranking-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #e8ecff;
+            background-color: #f8f9ff;
+            color: #6b46c1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .expand-ranking-btn:hover {
+            background-color: #e8ecff;
+            border-color: #dadaff;
+        }
+
+        .expand-ranking-btn.btn-ce {
+            color: #10b981;
+            border-color: #d1fae5;
+            background-color: #f0fdf4;
+        }
+
+        .expand-ranking-btn.btn-ce:hover {
+            background-color: #d1fae5;
+            border-color: #a7f3d0;
+        }
         .consultant-info { display: flex; align-items: center; gap: 20px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 39px; height: 39px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.2rem; flex-shrink: 0; }
         .rank-number-ce { background: linear-gradient(135deg, #10b981, #34d399); }
@@ -1625,6 +1667,7 @@
         }
         
         // SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' POR ESTA
+// SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' ANTIGA POR ESTA VERSÃO COMPLETA
         function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
             const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
             const stats = {};
@@ -1676,25 +1719,34 @@
             }
         
             const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-            let html = '';
-            ranking.slice(0, 5).forEach((c, i) => {
+            const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
+
+            let listHtml = '';
+            // Gera o HTML para TODOS os consultores no ranking
+            ranking.forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
-                html += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
+                listHtml += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
-        
-            // *** INÍCIO DA CORREÇÃO ***
-            // Procura pelo contêiner do ranking no HTML
+            
+            let finalHtml = '';
+            // Cria o contêiner da lista, aplicando a classe 'collapsed' se houver mais de 5 itens
+            finalHtml += `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+
+            // Adiciona o botão "Ver Ranking Completo" apenas se houver mais de 5 itens
+            if (ranking.length > 5) {
+                const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
+                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
+            }
+
             const rankingContainer = document.getElementById(rankingElementId);
             
-            // SÓ executa o código se o contêiner for encontrado
             if (rankingContainer) {
-                rankingContainer.innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+                // Insere a lista e o botão (se houver) no painel
+                rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
             } else {
-                // Se não encontrar, avisa no console em vez de quebrar o site
                 console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
             }
-            // *** FIM DA CORREÇÃO ***
         }
 
         function updateProcessStats(monthSales, monthCeara) {
@@ -1901,8 +1953,22 @@ let html = '';
 
             filterPayments('all');
         });
+        function toggleRanking(stateSuffix) {
+            const list = document.getElementById(`ranking-list-${stateSuffix}`);
+            const button = document.getElementById(`expand-btn-${stateSuffix}`);
+
+            if (list && button) {
+                list.classList.toggle('collapsed');
+                if (list.classList.contains('collapsed')) {
+                    button.textContent = 'Ver Ranking Completo';
+                } else {
+                    button.textContent = 'Mostrar Menos';
+                }
+            }
+        }
     </script>
 </body>
 </html>
+
 
 
