@@ -743,7 +743,8 @@
                 overlay.style.opacity = '1';
             }, 10);
         }
-
+            setTimeout(onAnimationFinish, 8000); 
+        }
         function triggerSaleAnimation(sale) {
             new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
             const overlay = document.getElementById('sale-notification-overlay');
@@ -1962,6 +1963,7 @@ let html = '';
     </script>
 </body>
 </html>
+
 
 
 
