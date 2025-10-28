@@ -57,6 +57,48 @@
         .panel-ce h2 { color: #10b981; }
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f3f4f6; }
         .ranking-item:last-child { border-bottom: none; }
+        /* --- ESTILOS PARA O RANKING EXPANSÍVEL --- */
+        .ranking-list-container {
+            transition: max-height 0.7s ease-in-out;
+            overflow: hidden;
+        }
+
+        .ranking-list-container.collapsed {
+            /* Ajuste este valor se a altura dos 5 primeiros itens for diferente */
+            max-height: 400px; 
+        }
+
+        .expand-ranking-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #e8ecff;
+            background-color: #f8f9ff;
+            color: #6b46c1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .expand-ranking-btn:hover {
+            background-color: #e8ecff;
+            border-color: #dadaff;
+        }
+
+        .expand-ranking-btn.btn-ce {
+            color: #10b981;
+            border-color: #d1fae5;
+            background-color: #f0fdf4;
+        }
+
+        .expand-ranking-btn.btn-ce:hover {
+            background-color: #d1fae5;
+            border-color: #a7f3d0;
+        }
         .consultant-info { display: flex; align-items: center; gap: 20px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 39px; height: 39px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.2rem; flex-shrink: 0; }
         .rank-number-ce { background: linear-gradient(135deg, #10b981, #34d399); }
@@ -260,13 +302,21 @@
                 </div>
             </div>
             
+<!-- CARD DE TOTAL GLOBAL (NOVO) -->
+            <div class="stat-card" style="margin-bottom: 26px; text-align: center; border-top: 4px solid #6b46c1;">
+                <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
+                <div class="stat-value" id="totalMonthGlobal" style="justify-content: center;">-</div>
+                <div class="stat-label" id="monthLabelGlobal">-</div>
+            </div>
+
             <div class="stats-grid-container">
-                <!-- Coluna da Esquerda: Geral e Santa Catarina -->
+                <!-- Coluna da Esquerda: Santa Catarina -->
                 <div class="stats-column">
+                    <!-- CARD DE SC (MODIFICADO) -->
                     <div class="stat-card">
-                        <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
-                        <div class="stat-value" id="totalMonth">-</div>
-                        <div class="stat-label" id="monthLabel">-</div>
+                        <h3><i class="fas fa-map-marker-alt"></i> Total Processos (SC)</h3>
+                        <div class="stat-value" id="totalMonthSC">-</div>
+                        <div class="stat-label" id="monthLabelSC">-</div>
                     </div>
                     <div class="stat-card">
                         <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
@@ -310,7 +360,23 @@
                     <div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div>
                 </div>
             </div>
-        
+            <!-- PAINEL DE RANKINGS (RESTAURAR ESTE BLOCO) -->
+            <div class="rankings-grid" style="margin-bottom: 39px;">
+                <!-- Ranking de Santa Catarina -->
+                <div class="panel panel-sc">
+                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (SC)</h2>
+                    <div id="consultantRanking">
+                        <!-- O JavaScript vai preencher este espaço -->
+                    </div>
+                </div>
+                <!-- Ranking do Ceará -->
+                <div class="panel panel-ce">
+                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (CE)</h2>
+                    <div id="cearaRanking">
+                        <!-- O JavaScript vai preencher este espaço -->
+                    </div>
+                </div>
+            </div>
             <div class="two-column-layout">
                 <!-- Coluna da Esquerda: Lista de Processos SC -->
                 <div class="panel panel-sc">
@@ -484,16 +550,9 @@
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="content">
-                        <span class="date">12 de Outubro de 2025</span>
-                        <h3>Dias das Crianças ReVive</h3>
-                        <p>Evento planejado pelo grupo Força de Marca, dos Novos Talentos 2025.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="content">
-                        <span class="date">Dezembro</span>
-                        <h3>Fim de Ano ReVive</h3>
-                        <p>Evento de final de ano.</p>
+                        <span class="date">20 de Dezembro de 2025</span>
+                        <h3>Evento de Final de Ano - ReVive</h3>
+                        <p>O maior evento já realizado pela ReVive, com música ao vivo, apresentação de resultados e o novidades incríveis.</p>
                     </div>
                 </div>
             </div>
@@ -684,7 +743,8 @@
                 overlay.style.opacity = '1';
             }, 10);
         }
-
+            setTimeout(onAnimationFinish, 8000); 
+        }
         function triggerSaleAnimation(sale) {
             new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
             const overlay = document.getElementById('sale-notification-overlay');
@@ -1332,18 +1392,25 @@
         }
         
         // SUBSTITUA ESTA FUNÇÃO
+// SUBSTITUA ESTA FUNÇÃO
         function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
-            document.getElementById('totalMonth').textContent = totalSC + totalCE;
-            document.getElementById('totalMonthCE').textContent = totalCE;
+            // Popula os novos cards com os valores corretos
+            document.getElementById('totalMonthGlobal').textContent = totalSC + totalCE; // Total da empresa
+            document.getElementById('totalMonthSC').textContent = totalSC; // Apenas SC
+            document.getElementById('totalMonthCE').textContent = totalCE; // Apenas CE
         
             const selectedMonthYear = document.getElementById('monthFilter').value;
             if (selectedMonthYear) {
                 const [monthStr, yearStr] = selectedMonthYear.split('/');
                 const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-                document.getElementById('monthLabel').textContent = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+                const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+                
+                // Atualiza o rótulo do mês em todos os cards
+                document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+                document.getElementById('monthLabelSC').textContent = monthLabelText;
             }
             
-            // CORREÇÃO: Lógica para a média diária de SC adicionada
+            // Calcula e exibe a média diária de SC
             const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1351,7 +1418,7 @@
             const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
             document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
         
-            // Lógica para a média diária de CE (já estava correta)
+            // Calcula e exibe a média diária de CE
             const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
                 const date = parsePtBrDate(sale.data);
                 return date ? Math.max(max, date.getDate()) : max;
@@ -1594,6 +1661,7 @@
         }
         
         // SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' POR ESTA
+// SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' ANTIGA POR ESTA VERSÃO COMPLETA
         function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
             const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
             const stats = {};
@@ -1645,25 +1713,34 @@
             }
         
             const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-            let html = '';
-            ranking.slice(0, 5).forEach((c, i) => {
+            const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
+
+            let listHtml = '';
+            // Gera o HTML para TODOS os consultores no ranking
+            ranking.forEach((c, i) => {
                 const photoUrl = getConsultantPhotoUrl(c.name);
                 const consultantKey = getNormalizedConsultantKey(c.name);
-                html += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
+                listHtml += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
             });
-        
-            // *** INÍCIO DA CORREÇÃO ***
-            // Procura pelo contêiner do ranking no HTML
+            
+            let finalHtml = '';
+            // Cria o contêiner da lista, aplicando a classe 'collapsed' se houver mais de 5 itens
+            finalHtml += `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+
+            // Adiciona o botão "Ver Ranking Completo" apenas se houver mais de 5 itens
+            if (ranking.length > 5) {
+                const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
+                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
+            }
+
             const rankingContainer = document.getElementById(rankingElementId);
             
-            // SÓ executa o código se o contêiner for encontrado
             if (rankingContainer) {
-                rankingContainer.innerHTML = html || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+                // Insere a lista e o botão (se houver) no painel
+                rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
             } else {
-                // Se não encontrar, avisa no console em vez de quebrar o site
                 console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
             }
-            // *** FIM DA CORREÇÃO ***
         }
 
         function updateProcessStats(monthSales, monthCeara) {
@@ -1870,6 +1947,25 @@ let html = '';
 
             filterPayments('all');
         });
+        function toggleRanking(stateSuffix) {
+            const list = document.getElementById(`ranking-list-${stateSuffix}`);
+            const button = document.getElementById(`expand-btn-${stateSuffix}`);
+
+            if (list && button) {
+                list.classList.toggle('collapsed');
+                if (list.classList.contains('collapsed')) {
+                    button.textContent = 'Ver Ranking Completo';
+                } else {
+                    button.textContent = 'Mostrar Menos';
+                }
+            }
+        }
     </script>
 </body>
 </html>
+
+
+
+
+
+
