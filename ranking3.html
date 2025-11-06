@@ -584,44 +584,35 @@
         // ==================================================================
         let salesData = []; // Armazenará dados de SC
         let cearaData = []; // Armazenará dados de CE
-        let paymentsData = [];
-        let rtmPaymentsData = [];
-        let acordosData = [];
         let firstLoad = true;
-        let isAnimationPlaying = false;
         let carouselPaused = false;
-        let notificationQueue = [];
-        let currentMonthCounts = {};
-        let processEvolutionChartInstance = null;
         let consultantDetails = {};
         let carouselInterval;
         let carouselPages = [];
         let currentPageIndex = 0;
 
         // ==================================================================
-        // CONFIGURAÇÕES PRINCIPAIS - APONTE PARA AS PLANILHAS CORRETAS
+        // CONFIGURAÇÕES PRINCIPAIS
         // ==================================================================
         const FIXED_SHEET_ID = "1YyyXkC2f3PU7_-IsO0ZgyusKVelyweZ301p63XFDrJ8";
         const SALES_SHEET_GID = "28186636";
-
         const CEARA_CONSULTANTS = new Set(['weslley', 'sabrina', 'livia', 'vanessa', 'lucas']);
+        
+        // Mapeamento de processos e regras (espelhado do seu script .gs)
+        const PROCESS_MAP_AUDIT = {
+          'DPVAT': 'DPVAT', 'Vida': 'VIDA', 'Terceiro': 'TERCEIRO',
+          'Ação de Acidente de Trânsito': 'AAT', 'Auxílio-Doença': 'AUX_DOENCA',
+          'Auxílio-Acidente': 'AUX_ACIDENTE', 'Auxílio-Maternidade': 'AUX_MATERNIDADE',
+          'Aposentadoria': 'APOSENTADORIA', 'LOAS': 'LOAS', 'Outros Processos': 'OUTROS'
+        };
+        const PROCESSOS_MULTIPLOS = { 'Vida': 3, 'Aposentadoria': 3, 'Auxílio-Maternidade': 5 };
 
-        const PGTO_SHEET_GID = "1456804198";
-        const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
-        const NEW_RTM_SHEET_GID = "485541894";
-        const ACORDOS_SHEET_ID = "1kwsL_Gkw-LC-n_E_nLUCzE9CuFtQDhRe";
-        const ACORDOS_SHEET_GID = "277487318";
         // ==================================================================
 
-        const DRA_RENATA_STRING = "DRA RENATA";
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
 
-        const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
-        const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
-        const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
-
         // ==================================================================
-        // FUNÇÕES DO CARROSSEL E UI (RESTAURADAS E COMPLETAS)
+        // FUNÇÕES DO CARROSSEL E UI
         // ==================================================================
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
@@ -629,10 +620,9 @@
             const pageSelector = document.getElementById('pageSelector');
             pageSelector.innerHTML = '';
             carouselPages.forEach((page, index) => {
-                const pageName = page.dataset.name || `Página ${index + 1}`;
                 const option = document.createElement('option');
                 option.value = index;
-                option.textContent = pageName;
+                option.textContent = page.dataset.name || `Página ${index + 1}`;
                 pageSelector.appendChild(option);
             });
             startCarouselInterval();
@@ -642,7 +632,7 @@
         function startCarouselInterval() {
             clearInterval(carouselInterval);
             carouselInterval = setInterval(() => {
-                if (isAnimationPlaying || carouselPaused) return;
+                if (carouselPaused) return;
                 navigateCarousel(1);
             }, 35000);
         }
@@ -663,9 +653,9 @@
         
         function jumpToPage(index) {
             clearInterval(carouselInterval);
-            carouselPages[currentPageIndex].classList.remove('active');
+            if(carouselPages[currentPageIndex]) carouselPages[currentPageIndex].classList.remove('active');
             currentPageIndex = parseInt(index, 10);
-            carouselPages[currentPageIndex].classList.add('active');
+            if(carouselPages[currentPageIndex]) carouselPages[currentPageIndex].classList.add('active');
             updatePageSelector();
             if (!carouselPaused) startCarouselInterval();
         }
@@ -675,7 +665,6 @@
             if (pageSelector) pageSelector.value = currentPageIndex;
         }
         
-        // FUNÇÃO QUE ESTAVA FALTANDO
         function updateConnectionStatus(status, message) {
             const el = document.getElementById('connectionStatus');
             if (!el) return;
@@ -693,17 +682,12 @@
             const contentEl = document.getElementById('modal-details-content');
             titleEl.textContent = `Detalhes de ${details.name}`;
             const sortedProcesses = Object.entries(details.processDetails).sort((a, b) => b[1] - a[1]);
-            if (sortedProcesses.length === 0) {
-                contentEl.innerHTML = '<p>Nenhum detalhe de processo encontrado.</p>';
-            } else {
-                let listHtml = '<ul class="details-list">';
-                sortedProcesses.forEach(([processName, count]) => {
-                    const formattedName = processName.charAt(0).toUpperCase() + processName.slice(1).toLowerCase();
-                    listHtml += `<li><span class="process-name">${formattedName}</span> <span class="process-count-badge">${count}</span></li>`;
-                });
-                listHtml += '</ul>';
-                contentEl.innerHTML = listHtml;
-            }
+            let listHtml = sortedProcesses.length > 0 ? '<ul class="details-list">' : '<p>Nenhum detalhe de processo encontrado.</p>';
+            sortedProcesses.forEach(([name, count]) => {
+                listHtml += `<li><span class="process-name">${name}</span> <span class="process-count-badge">${count}</span></li>`;
+            });
+            if (sortedProcesses.length > 0) listHtml += '</ul>';
+            contentEl.innerHTML = listHtml;
             modal.style.display = 'flex';
         }
 
@@ -720,8 +704,6 @@
             }
         }
         
-        function filterPayments(status) { /* ... */ }
-
         // ==================================================================
         // FUNÇÕES DE BUSCA E PROCESSAMENTO DE DADOS
         // ==================================================================
@@ -732,11 +714,11 @@
                 if (char === '"') {
                     if (inQuotes && i + 1 < line.length && line[i+1] === '"') { current += '"'; i++; } else { inQuotes = !inQuotes; }
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current); current = '';
+                    result.push(current.trim()); current = '';
                 } else { current += char; }
             }
-            result.push(current);
-            return result.map(item => item.trim());
+            result.push(current.trim());
+            return result;
         }
         
         function parsePtBrDate(dateString) {
@@ -745,28 +727,25 @@
             if (parts.length === 3) {
                 const [day, month, year] = parts.map(p => parseInt(p, 10));
                 if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                    const fullYear = year < 100 ? 2000 + year : year;
-                    return new Date(fullYear, month - 1, day);
+                    return new Date(year < 100 ? 2000 + year : year, month - 1, day);
                 }
             }
-            const genericDate = new Date(dateString);
-            if (!isNaN(genericDate.getTime())) return genericDate;
             return null;
         }
 
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             if (lines.length < 2) return [];
-            const headers = parseCSVLine(lines[0]).map(h => h.trim());
+            const headers = parseCSVLine(lines[0]);
             const data = [];
             for (let i = 1; i < lines.length; i++) {
                 const columns = parseCSVLine(lines[i]);
                 const rowData = { originalIndex: i + 1 };
                 headers.forEach((header, index) => {
-                    if (header) rowData[header] = (columns[index] || '').trim();
+                    if (header) rowData[header] = columns[index] || '';
                 });
                 rowData.Consultor = rowData.Consultor || rowData.consultor;
-                if ((rowData['Processo'] || '').toUpperCase() === 'CANCELADO' || !rowData.Consultor) continue;
+                if (!rowData.Consultor) continue;
                 data.push(rowData);
             }
             return data;
@@ -781,11 +760,8 @@
                 if (CEARA_CONSULTANTS.has(normalizedConsultant)) {
                     if (normalizedConsultant === 'sabrina') {
                         const saleDate = parsePtBrDate(sale.Data);
-                        if (saleDate && saleDate >= cutoffDateSabrina) {
-                            ce.push(sale);
-                        } else {
-                            sc.push(sale);
-                        }
+                        if (saleDate && saleDate >= cutoffDateSabrina) ce.push(sale);
+                        else sc.push(sale);
                     } else {
                         ce.push(sale);
                     }
@@ -799,47 +775,35 @@
 
         async function fetchMainSalesData() {
             try {
-                updateConnectionStatus('loading', 'Conectando à Planilha...');
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${SALES_SHEET_GID}&_=${new Date().getTime()}`;
-                const response = await fetch(csvUrl, { mode: 'cors' });
+                updateConnectionStatus('loading', 'Conectando...');
+                const url = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${SALES_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(url);
                 if (!response.ok) throw new Error(`Falha na conexão: ${response.statusText}`);
                 const csvData = await response.text();
-                if (csvData && csvData.trim()) {
+                if (csvData) {
                     const combinedData = await processCsvData(csvData);
                     splitDataByRegion(combinedData);
-                    if (firstLoad) {
-                        populateMonthFilter(combinedData);
-                    }
+                    if (firstLoad) populateMonthFilter(combinedData);
                     updateDashboard();
                     updateConnectionStatus('connected', 'Conectado');
                 }
             } catch (error) {
-                console.error("Erro ao buscar dados de fechamentos:", error);
-                updateConnectionStatus('error', 'Falha na conexão principal');
+                console.error("Erro ao buscar dados:", error);
+                updateConnectionStatus('error', 'Falha na conexão');
             }
         }
         
-        // As funções para buscar dados de Pagamentos, RTM, etc. podem ser adicionadas aqui se necessário
-        
         async function fetchAllData() {
             await fetchMainSalesData();
-            // Descomente as linhas abaixo se precisar buscar outros dados
-            // await Promise.allSettled([
-            //     fetchPaymentsData(),
-            //     fetchRtmPaymentsData(),
-            //     fetchAcordosData() 
-            // ]);
             firstLoad = false;
         }
 
         // ==================================================================
-        // FUNÇÕES DE CONTAGEM E RANKING
+        // FUNÇÕES DE CONTAGEM E RANKING (LÓGICA INTELIGENTE)
         // ==================================================================
-        function countTotalProcesses(sales) {
-            const PROCESS_MAP_AUDIT = { 'DPVAT': 'DPVAT', 'Vida': 'VIDA', 'Terceiro': 'TERCEIRO', 'Ação de Acidente de Trânsito': 'AAT', 'Auxílio-Doença': 'AUX_DOENCA', 'Auxílio-Acidente': 'AUX_ACIDENTE', 'Auxílio-Maternidade': 'AUX_MATERNIDADE', 'Aposentadoria': 'APOSENTADORIA', 'LOAS': 'LOAS', 'Outros Processos': 'OUTROS' };
-            const PROCESSOS_MULTIPLOS = { 'Vida': 3, 'Aposentadoria': 3, 'Auxílio-Maternidade': 5 };
+        function countValidProcesses(salesList) {
             let totalValido = 0;
-            sales.forEach(sale => {
+            salesList.forEach(sale => {
                 for (const nomeProcesso in PROCESS_MAP_AUDIT) {
                     const chaveBase = PROCESS_MAP_AUDIT[nomeProcesso];
                     if (PROCESSOS_MULTIPLOS[nomeProcesso]) {
@@ -860,16 +824,14 @@
             return totalValido;
         }
 
-        function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
-            const PROCESS_MAP_AUDIT = { 'DPVAT': 'DPVAT', 'Vida': 'VIDA', 'Terceiro': 'TERCEIRO', 'Ação de Acidente de Trânsito': 'AAT', 'Auxílio-Doença': 'AUX_DOENCA', 'Auxílio-Acidente': 'AUX_ACIDENTE', 'Auxílio-Maternidade': 'AUX_MATERNIDADE', 'Aposentadoria': 'APOSENTADORIA', 'LOAS': 'LOAS', 'Outros Processos': 'OUTROS' };
-            const PROCESSOS_MULTIPLOS = { 'Vida': 3, 'Aposentadoria': 3, 'Auxílio-Maternidade': 5 };
+        function calculateRanking(salesList) {
             const stats = {};
-            monthSales.forEach(sale => {
+            salesList.forEach(sale => {
                 if (!sale.Consultor) return;
                 const key = getNormalizedConsultantKey(sale.Consultor);
                 if (!stats[key]) {
-                    const displayName = sale.Consultor.trim().split(' ')[0];
-                    stats[key] = { name: displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(), sales: 0, processDetails: {} };
+                    const name = sale.Consultor.trim().split(' ')[0];
+                    stats[key] = { name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(), sales: 0, processDetails: {} };
                 }
                 let processosValidos = 0;
                 for (const nomeProcesso in PROCESS_MAP_AUDIT) {
@@ -896,70 +858,26 @@
                 }
                 stats[key].sales += processosValidos;
             });
-            consultantDetails = { ...consultantDetails, ...stats };
-            const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
-            if (topConsultantId && topPhotoId) {
-                const topNameEl = document.getElementById(topConsultantId);
-                const topPhotoEl = document.getElementById(topPhotoId);
-                if (ranking.length > 0 && ranking[0].sales > 0) {
-                    const top = ranking[0];
-                    topNameEl.textContent = top.name;
-                    topPhotoEl.src = getConsultantPhotoUrl(top.name);
-                    topPhotoEl.onerror = () => { topPhotoEl.src = DEFAULT_AVATAR; topPhotoEl.onerror = null; };
-                    topPhotoEl.style.display = 'inline-block';
-                } else {
-                    topNameEl.textContent = '-';
-                    topPhotoEl.style.display = 'none';
-                }
-            }
-            const rankNumClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-            const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
-            let listHtml = '';
-            ranking.forEach((c, i) => {
-                const photoUrl = getConsultantPhotoUrl(c.name);
-                const consultantKey = getNormalizedConsultantKey(c.name);
-                listHtml += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
-            });
-            let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
-            if (ranking.length > 5) {
-                const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
-                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
-            }
-            const container = document.getElementById(rankingElementId);
-            if (container) {
-                container.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo válido para o mês.</p>';
-            }
+            return Object.values(stats).sort((a, b) => b.sales - a.sales);
         }
         
         // ==================================================================
         // FUNÇÕES DE ATUALIZAÇÃO DA INTERFACE (UI)
         // ==================================================================
         function getNormalizedConsultantKey(fullName) {
-            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
+            if (!fullName) return 'desconhecido';
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
 
         function getConsultantPhotoUrl(consultantName) {
-            if (!consultantName) return DEFAULT_AVATAR;
-            const baseName = getNormalizedConsultantKey(consultantName);
-            return `${baseName}.PNG`;
+            return `${getNormalizedConsultantKey(consultantName)}.PNG`;
         }
 
-        function getMonthSales() {
+        function getMonthData(fullData) {
             const selected = document.getElementById('monthFilter').value;
             if (!selected) return [];
             const [month, year] = selected.split('/').map(Number);
-            return salesData.filter(sale => {
-                const date = parsePtBrDate(sale.Data);
-                return date && date.getMonth() + 1 === month && date.getFullYear() == year;
-            });
-        }
-        
-        function getMonthCeara() {
-            const selected = document.getElementById('monthFilter').value;
-            if (!selected) return [];
-            const [month, year] = selected.split('/').map(Number);
-            return cearaData.filter(sale => {
+            return fullData.filter(sale => {
                 const date = parsePtBrDate(sale.Data);
                 return date && date.getMonth() + 1 === month && date.getFullYear() == year;
             });
@@ -967,21 +885,20 @@
 
         function updateDashboard() {
             if (document.getElementById('monthFilter').options.length === 0) return;
-            const monthSalesSC = getMonthSales();
-            const monthSalesCE = getMonthCeara();
-            const totalSC = countTotalProcesses(monthSalesSC);
-            const totalCE = countTotalProcesses(monthSalesCE);
+            const monthSalesSC = getMonthData(salesData);
+            const monthSalesCE = getMonthData(cearaData);
+            const totalSC = countValidProcesses(monthSalesSC);
+            const totalCE = countValidProcesses(monthSalesCE);
             updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE);
-            // updateProcessStats(monthSalesSC, monthSalesCE); 
-            updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-            updateConsultantRanking(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-            populateConsultantFilter(monthSalesSC, 'consultantFilter', filterSalesByConsultant);
-            populateConsultantFilter(monthSalesCE, 'consultantFilterCE', filterSalesByConsultantCE);
-            updateMonthSales(monthSalesSC, 'consultantFilter', 'recentSalesTable');
-            updateMonthSales(monthSalesCE, 'consultantFilterCE', 'recentSalesTableCE');
+            updateRankingUI(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
+            updateRankingUI(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
+            populateConsultantFilter(monthSalesSC, 'consultantFilter', () => updateMonthSalesTable(monthSalesSC, 'consultantFilter', 'recentSalesTable'));
+            populateConsultantFilter(monthSalesCE, 'consultantFilterCE', () => updateMonthSalesTable(monthSalesCE, 'consultantFilterCE', 'recentSalesTableCE'));
+            updateMonthSalesTable(monthSalesSC, 'consultantFilter', 'recentSalesTable');
+            updateMonthSalesTable(monthSalesCE, 'consultantFilterCE', 'recentSalesTableCE');
         }
 
-        function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
+        function updateMainStats(totalSC, totalCE, salesSC, salesCE) {
             document.getElementById('totalMonthGlobal').textContent = totalSC + totalCE;
             document.getElementById('totalMonthSC').textContent = totalSC;
             document.getElementById('totalMonthCE').textContent = totalCE;
@@ -993,48 +910,70 @@
                 document.getElementById('monthLabelGlobal').textContent = label;
                 document.getElementById('monthLabelSC').textContent = label;
             }
-            const maxDaySC = monthSalesSC.reduce((max, sale) => { const d = parsePtBrDate(sale.Data); return d ? Math.max(max, d.getDate()) : max; }, 0);
+            const maxDaySC = salesSC.reduce((max, s) => Math.max(max, (parsePtBrDate(s.Data) || new Date(0)).getDate()), 0);
             document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && maxDaySC > 0 ? (totalSC / maxDaySC) : 0).toFixed(1);
-            const maxDayCE = monthSalesCE.reduce((max, sale) => { const d = parsePtBrDate(sale.Data); return d ? Math.max(max, d.getDate()) : max; }, 0);
+            const maxDayCE = salesCE.reduce((max, s) => Math.max(max, (parsePtBrDate(s.Data) || new Date(0)).getDate()), 0);
             document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && maxDayCE > 0 ? (totalCE / maxDayCE) : 0).toFixed(1);
         }
         
-        function populateConsultantFilter(monthSales, filterId, onChangeFunction) {
+        function updateRankingUI(sales, rankId, topId, topPhotoId) {
+            const ranking = calculateRanking(sales);
+            consultantDetails = { ...consultantDetails, ...Object.fromEntries(ranking.map(c => [getNormalizedConsultantKey(c.name), c])) };
+
+            const topNameEl = document.getElementById(topId);
+            const topPhotoEl = document.getElementById(topPhotoId);
+            if (ranking.length > 0 && ranking[0].sales > 0) {
+                topNameEl.textContent = ranking[0].name;
+                topPhotoEl.src = getConsultantPhotoUrl(ranking[0].name);
+                topPhotoEl.onerror = () => { topPhotoEl.src = DEFAULT_AVATAR; topPhotoEl.onerror = null; };
+                topPhotoEl.style.display = 'inline-block';
+            } else {
+                topNameEl.textContent = '-';
+                topPhotoEl.style.display = 'none';
+            }
+
+            const isCE = rankId === 'cearaRanking';
+            let listHtml = '';
+            ranking.forEach((c, i) => {
+                listHtml += `<div class="ranking-item"><div class="consultant-info"><div class="rank-number ${isCE ? 'rank-number-ce' : ''}">${i + 1}</div><img src="${getConsultantPhotoUrl(c.name)}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${getNormalizedConsultantKey(c.name)}')">${c.sales}</div></div>`;
+            });
+            
+            const state = isCE ? 'CE' : 'SC';
+            let finalHtml = `<div id="ranking-list-${state}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+            if (ranking.length > 5) {
+                finalHtml += `<button id="expand-btn-${state}" class="expand-ranking-btn ${isCE ? 'btn-ce' : ''}" onclick="toggleRanking('${state}')">Ver Ranking Completo</button>`;
+            }
+            document.getElementById(rankId).innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo válido.</p>';
+        }
+
+        function populateConsultantFilter(sales, filterId, onChange) {
             const select = document.getElementById(filterId);
             if (!select) return;
             const current = select.value;
             const map = new Map();
-            monthSales.forEach(sale => {
-                if (sale.Consultor && sale.Consultor.trim() !== "") {
-                    const key = getNormalizedConsultantKey(sale.Consultor);
-                    if (!map.has(key)) {
-                        const name = sale.Consultor.trim().split(' ')[0];
-                        map.set(key, name.charAt(0).toUpperCase() + name.slice(1).toLowerCase());
-                    }
+            sales.forEach(s => {
+                if (s.Consultor) {
+                    const key = getNormalizedConsultantKey(s.Consultor);
+                    if (!map.has(key)) map.set(key, s.Consultor.trim().split(' ')[0]);
                 }
             });
             const sorted = Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
             select.innerHTML = '<option value="all">Todos</option>';
             sorted.forEach(([key, name]) => select.add(new Option(name, key)));
-            if (Array.from(select.options).some(opt => opt.value === current)) select.value = current;
-            select.onchange = onChangeFunction;
+            select.value = Array.from(select.options).some(o => o.value === current) ? current : 'all';
+            select.onchange = onChange;
         }
 
-        function filterSalesByConsultant() { updateMonthSales(getMonthSales(), 'consultantFilter', 'recentSalesTable'); }
-        function filterSalesByConsultantCE() { updateMonthSales(getMonthCeara(), 'consultantFilterCE', 'recentSalesTableCE'); }
-
-        function updateMonthSales(sales, filterId, tableId) {
+        function updateMonthSalesTable(sales, filterId, tableId) {
             const select = document.getElementById(filterId);
             const key = select ? select.value : 'all';
-            let filtered = sales;
-            if (key !== 'all') {
-                filtered = sales.filter(s => s.Consultor && getNormalizedConsultantKey(s.Consultor) === key);
-            }
+            const filtered = key === 'all' ? sales : sales.filter(s => getNormalizedConsultantKey(s.Consultor) === key);
             const sorted = [...filtered].sort((a, b) => (parsePtBrDate(b.Data) - parsePtBrDate(a.Data)) || b.originalIndex - a.originalIndex);
+            
             let html = '';
             sorted.forEach(s => {
-                // Tenta encontrar uma coluna de processo principal para exibição
-                const processoDisplay = s.Processo || s['Outros Processos'] || s['Ação de Acidente de Trânsito'] || 'N/A';
+                // Lógica simples para encontrar o nome de um processo para exibir na tabela
+                const processoDisplay = s['Processo'] || s['Outros Processos'] || s['Ação de Acidente de Trânsito'] || Object.keys(PROCESS_MAP_AUDIT).find(p => s[p] === 'SIM') || 'N/A';
                 html += `<tr><td><span class="date-badge">${s.Data || '-'}</span></td><td>${s['Nome do Cliente'] || '-'}</td><td><span class="process-badge">${processoDisplay}</span></td><td>${s.Consultor || '-'}</td></tr>`;
             });
             document.getElementById(tableId).innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
@@ -1056,8 +995,7 @@
             });
             select.innerHTML = '';
             allMonths.forEach(m => select.add(new Option(m, m)));
-            if (allMonths.includes(current)) select.value = current;
-            else if (allMonths.length > 0) select.value = allMonths[0];
+            select.value = allMonths.includes(current) ? current : (allMonths[0] || '');
         }
         
         // ==================================================================
@@ -1068,22 +1006,18 @@
             fetchAllData(); 
             setInterval(fetchAllData, 30000);
 
-            const modal = document.getElementById('process-details-modal');
-            window.onclick = function(event) { if (event.target == modal) closeProcessDetails(); }
+            window.onclick = function(event) { 
+                if (event.target == document.getElementById('process-details-modal')) closeProcessDetails(); 
+            }
 
             const toggleBtn = document.getElementById('carousel-toggle-button');
-            const icon = toggleBtn.querySelector('i');
             toggleBtn.addEventListener('click', () => {
                 carouselPaused = !carouselPaused;
-                if (carouselPaused) {
-                    icon.className = 'fas fa-play';
-                    toggleBtn.title = 'Retomar Carrossel';
-                    clearInterval(carouselInterval);
-                } else {
-                    icon.className = 'fas fa-pause';
-                    toggleBtn.title = 'Pausar Carrossel';
-                    startCarouselInterval();
-                }
+                const icon = toggleBtn.querySelector('i');
+                icon.className = carouselPaused ? 'fas fa-play' : 'fas fa-pause';
+                toggleBtn.title = carouselPaused ? 'Retomar Carrossel' : 'Pausar Carrossel';
+                if (!carouselPaused) startCarouselInterval();
+                else clearInterval(carouselInterval);
             });
         });
     </script>
