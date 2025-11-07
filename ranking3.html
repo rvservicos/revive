@@ -735,29 +735,28 @@ function getNormalizedConsultantKey(fullName) {
         }
 // ADICIONE ESTA FUNÇÃO COMPLETA
 
+// SUBSTITUA A FUNÇÃO ANTIGA POR ESTA VERSÃO CORRIGIDA
 function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
-    const combinedData = [...allSalesData, ...(allCearaData || [])];
-    if (!combinedData || combinedData.length === 0) return;
+    const combinedData = [...(allSalesData || []), ...(allCearaData || [])];
+    if (combinedData.length === 0) return;
 
-    // Encontra o ano mais recente nos dados para focar o gráfico nele
-    const mostRecentYear = Math.max(...combinedData.map(sale => {
-        const date = parsePtBrDate(sale.data);
-        return date ? date.getFullYear() : 0;
-    }).filter(year => year > 1900));
+    // --- INÍCIO DA CORREÇÃO ---
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthIndex = now.getMonth(); // Janeiro = 0, Fevereiro = 1, ..., Novembro = 10
 
-    if (!mostRecentYear) return;
-
-    document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
+    document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${currentYear}`;
     
-    // Inicia a contagem para os meses do ano
+    // Inicia a contagem para todos os meses
     const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
 
     combinedData.forEach(sale => {
         if (!sale.processo) return;
         const date = parsePtBrDate(sale.data);
-        if (date && date.getFullYear() === mostRecentYear) {
+        
+        // Filtra os dados para considerar apenas os do ano corrente
+        if (date && date.getFullYear() === currentYear) {
             const month = date.getMonth() + 1; // getMonth() é 0-11, então +1 para ser 1-12
-            // Conta quantos processos existem em uma única venda (separados por vírgula)
             const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
             if (monthlyCounts.hasOwnProperty(month)) {
                 monthlyCounts[month] += numProcessos;
@@ -767,22 +766,29 @@ function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
 
     const dataPoints = Object.values(monthlyCounts);
     
+    // Lógica corrigida: Mostra dados até o mês atual e define os meses futuros como nulos.
+    // O gráfico para de desenhar a linha quando encontra "null".
+    const finalDataPoints = dataPoints.map((point, index) => {
+        return index <= currentMonthIndex ? point : null;
+    });
+    // --- FIM DA CORREÇÃO ---
+
     const ctx = document.getElementById('processEvolutionChart').getContext('2d');
     const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     
-    // Destrói o gráfico antigo se ele já existir, para evitar sobreposição
+    // Destrói o gráfico antigo, se existir, para evitar sobreposição
     if (processEvolutionChartInstance) {
         processEvolutionChartInstance.destroy();
     }
     
-    // Cria o novo gráfico
+    // Cria o novo gráfico com os dados corrigidos
     processEvolutionChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
                 label: 'Número de Processos',
-                data: dataPoints,
+                data: finalDataPoints, // Usa os pontos de dados corrigidos
                 backgroundColor: 'rgba(139, 92, 246, 0.2)',
                 borderColor: '#8b5cf6',
                 borderWidth: 3,
@@ -931,48 +937,50 @@ function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
         } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
 
 // SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
+// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
 async function fetchAllData() {
     updateConnectionStatus('loading', 'Atualizando dados...');
 
     // Executa todas as buscas de dados em paralelo
-    const [
-        rankingData, // Nova busca
-        salesResult, 
-        cearaResult, 
-        paymentsResult, 
-        rtmResult, 
-        acordosResult
-    ] = await Promise.allSettled([
-        fetchRankingData(), // <--- NOVA
-        fetchSalesData(),   // <--- ANTIGA (mantida para as tabelas)
-        fetchCearaData(),   // <--- ANTIGA (mantida para as tabelas)
+    const [rankingResult, salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
+        fetchRankingData(),
+        fetchSalesData(),
+        fetchCearaData(),
         fetchPaymentsData(),
         fetchRtmPaymentsData(),
-        fetchAcordosData() 
+        fetchAcordosData()
     ]);
 
-    // Se a busca do ranking foi bem-sucedida, usa esses dados para os cards e rankings
-    if (rankingData.status === 'fulfilled' && rankingData.value) {
-        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingData.value;
+    // Lógica para os Rankings e Cards de Estatísticas (da planilha de auditoria)
+    if (rankingResult.status === 'fulfilled' && rankingResult.value) {
+        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingResult.value;
         updateMainStats(totalSC, totalCE, totalGlobal);
         updateProcessStats(processCounts);
         updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
         updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
         updateConnectionStatus('connected', 'Conectado');
     } else {
-        // Fallback: se a busca do ranking falhar, tenta calcular com os dados antigos
-        console.warn("Falha ao buscar ranking da auditoria, usando dados de notificação como fallback.");
-        updateDashboard(); 
+        console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
+        updateConnectionStatus('error', 'Falha no Ranking');
     }
     
-    // Atualiza o resto da página que ainda depende das fontes antigas
+    // Lógica para as Tabelas de Detalhes e Gráfico (das planilhas antigas)
+    // Isso continua como antes para garantir que as notificações e detalhes funcionem.
+    if (salesResult.status === 'fulfilled') {
+        // (O processamento e atribuição a `salesData` já acontece dentro de fetchSalesData)
+    }
+    if (cearaResult.status === 'fulfilled') {
+        // (O processamento e atribuição a `cearaData` já acontece dentro de fetchCearaData)
+    }
+
+    // Após todos os dados serem carregados, atualiza as partes restantes da UI
     updateTotalFinishedCounter();
     if (firstLoad) {
-        populateMonthFilter(salesData);
+        populateMonthFilter(salesData, cearaData); // Popula o filtro de mês
     }
-    updateMonthSales(getMonthSales());
-    updateMonthSalesCE(getMonthCeara());
-    updateProcessEvolutionChart(salesData, cearaData);
+    
+    // Chama updateDashboard para filtrar e exibir os dados nas tabelas pela primeira vez
+    updateDashboard(); 
     
     firstLoad = false;
 }
@@ -1217,18 +1225,26 @@ function updateMonthSalesCE(monthSales) {
         tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
     }
 }
+// SUBSTITUA A FUNÇÃO updateDashboard PELA VERSÃO ABAIXO
 function updateDashboard() {
-    // Esta função agora é chamada apenas quando o filtro de mês muda.
-    // Ela NÃO busca novos dados de ranking. Apenas filtra as tabelas de detalhes que já temos em memória.
-    if (firstLoad) return; // Não faz nada na primeira carga, pois fetchAllData já cuida disso.
+    if (document.getElementById('monthFilter').options.length === 0 && !firstLoad) {
+        // Se não há meses para filtrar (e não é a primeira carga), não faz nada.
+        return;
+    }
 
+    // Pega os dados filtrados pelo mês selecionado
     const monthSalesSC = getMonthSales();
     const monthSalesCE = getMonthCeara();
     
-    // Apenas atualiza as tabelas de detalhes e o gráfico de evolução.
-    // Os cards de ranking e estatísticas NÃO são mais atualizados por aqui.
+    // Popula os filtros de consultor com base nos dados do mês
+    populateConsultantFilter(monthSalesSC);
+    populateConsultantFilterCE(monthSalesCE);
+    
+    // Atualiza as tabelas de detalhes com os dados filtrados
     updateMonthSales(monthSalesSC);
     updateMonthSalesCE(monthSalesCE);
+    
+    // Atualiza o gráfico com todos os dados (não apenas do mês)
     updateProcessEvolutionChart(salesData, cearaData);
 }
 
@@ -1689,37 +1705,42 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             updateProcessCounter(totalPaid);
         }
 
-        function populateMonthFilter(dataToScan) {
-            const monthSet = new Set();
-            const allData = [...dataToScan, ...cearaData];
-            (allData || []).forEach(sale => {
-                if (sale.data) {
-                    const date = parsePtBrDate(sale.data);
-                    if (date) {
-                         const month = date.getMonth() + 1;
-                         const year = date.getFullYear();
-                         monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
-                    }
-                }
-            });
-            const monthSelect = document.getElementById('monthFilter');
-            const currentVal = monthSelect.value;
-            const allMonths = Array.from(monthSet).sort((a, b) => {
-                const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
-                return new Date(yb, mb - 1) - new Date(ya, ma - 1);
-            });
-            monthSelect.innerHTML = '';
-            allMonths.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month; option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-            if (allMonths.includes(currentVal)) {
-                monthSelect.value = currentVal;
-            } else if (allMonths.length > 0) {
-                monthSelect.value = allMonths[0];
+function populateMonthFilter(dataSC, dataCE) {
+    const monthSet = new Set();
+    const allData = [...(dataSC || []), ...(dataCE || [])]; // Combina os dados de SC e CE
+    
+    allData.forEach(sale => {
+        if (sale.data) {
+            const date = parsePtBrDate(sale.data);
+            if (date) {
+                 const month = date.getMonth() + 1;
+                 const year = date.getFullYear();
+                 monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
             }
         }
+    });
+
+    const monthSelect = document.getElementById('monthFilter');
+    const currentVal = monthSelect.value;
+    const allMonths = Array.from(monthSet).sort((a, b) => {
+        const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
+        return new Date(yb, mb - 1) - new Date(ya, ma - 1);
+    });
+
+    monthSelect.innerHTML = '';
+    allMonths.forEach(month => {
+        const option = document.createElement('option');
+        option.value = month; 
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    if (allMonths.includes(currentVal)) {
+        monthSelect.value = currentVal;
+    } else if (allMonths.length > 0) {
+        monthSelect.value = allMonths[0]; // Seleciona o mês mais recente por padrão
+    }
+}
         
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
