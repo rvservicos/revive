@@ -1591,7 +1591,23 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                 return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
             });
         }
-
+        function filterPayments(statusToShow) {
+            document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.payment-status-section').forEach(section => {
+                if (statusToShow === 'all') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = section.id === `section-${statusToShow}` ? 'block' : 'none';
+                }
+            });
+        }
+        function getConsultantPhotoUrl(consultantName) {
+            if (!consultantName) return DEFAULT_AVATAR;
+            const baseName = getNormalizedConsultantKey(consultantName);
+            return `${baseName}.PNG`;
+        }
         function toggleRanking(stateSuffix) {
             const list = document.getElementById(`ranking-list-${stateSuffix}`);
             const button = document.getElementById(`expand-btn-${stateSuffix}`);
