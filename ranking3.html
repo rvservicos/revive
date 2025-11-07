@@ -1008,6 +1008,7 @@ function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
 
 // SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
 // SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
 async function fetchAllData() {
     updateConnectionStatus('loading', 'Atualizando dados...');
 
@@ -1023,33 +1024,35 @@ async function fetchAllData() {
 
     // Lógica para os Rankings e Cards de Estatísticas (da planilha de auditoria)
     if (rankingResult.status === 'fulfilled' && rankingResult.value) {
-        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingResult.value;
+        // --- INÍCIO DA CORREÇÃO ---
+        // Extrai todas as propriedades do objeto retornado para variáveis locais.
+        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, allConsultantData } = rankingResult.value;
+
+        // Agora, passa essas variáveis locais para as funções.
         updateMainStats(totalSC, totalCE, totalGlobal);
-        updateProcessStats(allConsultantData);
+        updateProcessStats(allConsultantData); // <-- CORRIGIDO
         updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
         updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
+        // --- FIM DA CORREÇÃO ---
+        
         updateConnectionStatus('connected', 'Conectado');
     } else {
         console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
         updateConnectionStatus('error', 'Falha no Ranking');
+        // Fallback: se a busca do ranking principal falhar, chamamos a lógica antiga
+        updateDashboard(); 
     }
     
     // Lógica para as Tabelas de Detalhes e Gráfico (das planilhas antigas)
-    // Isso continua como antes para garantir que as notificações e detalhes funcionem.
-    if (salesResult.status === 'fulfilled') {
-        // (O processamento e atribuição a `salesData` já acontece dentro de fetchSalesData)
-    }
-    if (cearaResult.status === 'fulfilled') {
-        // (O processamento e atribuição a `cearaData` já acontece dentro de fetchCearaData)
-    }
-
+    // (A atribuição a `salesData` e `cearaData` já acontece dentro das suas respectivas funções fetch)
+    
     // Após todos os dados serem carregados, atualiza as partes restantes da UI
     updateTotalFinishedCounter();
     if (firstLoad) {
-        populateMonthFilter(salesData, cearaData); // Popula o filtro de mês
+        populateMonthFilter(salesData, cearaData);
     }
     
-    // Chama updateDashboard para filtrar e exibir os dados nas tabelas pela primeira vez
+    // Chama updateDashboard para filtrar e exibir os dados nas tabelas com base nos dados antigos
     updateDashboard(); 
     
     firstLoad = false;
