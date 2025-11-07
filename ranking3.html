@@ -1073,7 +1073,79 @@ function countTotalProcesses(sales) {
     });
     return total;
 }
-// SUBSTITUA PELA VERSÃO ABAIXO
+// ADICIONE ESTAS DUAS FUNÇÕES COMPLETAS
+
+function updateMonthSales(monthSales) {
+    if (!monthSales) return; // Garante que não quebre se os dados não existirem
+    const consultantFilterSelect = document.getElementById('consultantFilter');
+    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+    
+    let filteredSales = monthSales;
+    if (selectedConsultantKey !== 'all') {
+        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+    }
+    
+    const sortedSales = [...filteredSales].sort((a, b) => {
+        const dateA = parsePtBrDate(a.data);
+        const dateB = parsePtBrDate(b.data);
+        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        if (dateB - dateA !== 0) return dateB - dateA;
+        return (b.originalIndex || 0) - (a.originalIndex || 0);
+    });
+
+    let html = '';
+    sortedSales.forEach(sale => {
+        html += `<tr>
+                    <td><span class="date-badge">${sale.data || '-'}</span></td>
+                    <td>${sale.cliente || '-'}</td>
+                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                    <td>${sale.consultor || '-'}</td>
+                </tr>`;
+    });
+    
+    const tableBody = document.getElementById('recentSalesTable');
+    if(tableBody) {
+        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+    }
+}
+
+function updateMonthSalesCE(monthSales) {
+    if (!monthSales) return; // Garante que não quebre se os dados não existirem
+    const consultantFilterSelect = document.getElementById('consultantFilterCE');
+    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+
+    let filteredSales = monthSales;
+    if (selectedConsultantKey !== 'all') {
+        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+    }
+
+    const sortedSales = [...filteredSales].sort((a, b) => {
+        const dateA = parsePtBrDate(a.data);
+        const dateB = parsePtBrDate(b.data);
+        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        if (dateB - dateA !== 0) return dateB - dateA;
+        return (b.originalIndex || 0) - (a.originalIndex || 0);
+    });
+
+    let html = '';
+    sortedSales.forEach(sale => {
+        html += `<tr>
+                    <td><span class="date-badge">${sale.data || '-'}</span></td>
+                    <td>${sale.cliente || '-'}</td>
+                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                    <td>${sale.consultor || '-'}</td>
+                </tr>`;
+    });
+    
+    const tableBody = document.getElementById('recentSalesTableCE');
+    if(tableBody) {
+        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+    }
+}
 function updateDashboard() {
     // Esta função agora é chamada apenas quando o filtro de mês muda.
     // Ela NÃO busca novos dados de ranking. Apenas filtra as tabelas de detalhes que já temos em memória.
