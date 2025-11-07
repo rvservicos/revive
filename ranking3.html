@@ -733,7 +733,78 @@ function getNormalizedConsultantKey(fullName) {
                 startCarouselInterval();
             }
         }
-        
+// ADICIONE ESTA FUNÇÃO COMPLETA
+
+function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
+    const combinedData = [...allSalesData, ...(allCearaData || [])];
+    if (!combinedData || combinedData.length === 0) return;
+
+    // Encontra o ano mais recente nos dados para focar o gráfico nele
+    const mostRecentYear = Math.max(...combinedData.map(sale => {
+        const date = parsePtBrDate(sale.data);
+        return date ? date.getFullYear() : 0;
+    }).filter(year => year > 1900));
+
+    if (!mostRecentYear) return;
+
+    document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
+    
+    // Inicia a contagem para os meses do ano
+    const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
+
+    combinedData.forEach(sale => {
+        if (!sale.processo) return;
+        const date = parsePtBrDate(sale.data);
+        if (date && date.getFullYear() === mostRecentYear) {
+            const month = date.getMonth() + 1; // getMonth() é 0-11, então +1 para ser 1-12
+            // Conta quantos processos existem em uma única venda (separados por vírgula)
+            const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
+            if (monthlyCounts.hasOwnProperty(month)) {
+                monthlyCounts[month] += numProcessos;
+            }
+        }
+    });
+
+    const dataPoints = Object.values(monthlyCounts);
+    
+    const ctx = document.getElementById('processEvolutionChart').getContext('2d');
+    const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    // Destrói o gráfico antigo se ele já existir, para evitar sobreposição
+    if (processEvolutionChartInstance) {
+        processEvolutionChartInstance.destroy();
+    }
+    
+    // Cria o novo gráfico
+    processEvolutionChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Número de Processos',
+                data: dataPoints,
+                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                borderColor: '#8b5cf6',
+                borderWidth: 3,
+                pointBackgroundColor: '#6b46c1',
+                pointRadius: 5,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } },
+                x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 }
+            }
+        }
+    });
+}
         function jumpToPage(index) {
             clearInterval(carouselInterval);
             carouselPages[currentPageIndex].classList.remove('active');
