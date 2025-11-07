@@ -633,65 +633,81 @@ function getNormalizedConsultantKey(fullName) {
             }
         }
         // ADICIONE ESTA FUNÇÃO COMPLETA
-        async function processRankingCsv(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length < 2) return null;
-        
-            const headers = parseCSVLine(lines[0]);
-            const consultorIndex = headers.indexOf('Consultor');
-            const totalIndex = headers.indexOf('Total de Processos');
-            
-            if (consultorIndex === -1 || totalIndex === -1) {
-                console.error('Colunas "Consultor" ou "Total de Processos" não encontradas no CSV do ranking.');
-                return null;
+// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
+async function processRankingCsv(csvText) {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return null;
+
+    const headers = parseCSVLine(lines[0]);
+    const consultorIndex = headers.indexOf('Consultor');
+    const totalIndex = headers.indexOf('Total de Processos');
+    
+    if (consultorIndex === -1 || totalIndex === -1) {
+        console.error('Colunas "Consultor" ou "Total de Processos" não encontradas no CSV do ranking.');
+        return null;
+    }
+
+    const CONSULTORES_CEARA = ['WESLLEY', 'LÍVIA', 'LUCAS', 'VANESSA'];
+    const rankingSC = [];
+    const rankingCE = [];
+    const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
+    
+    // --- INÍCIO DA CORREÇÃO ---
+    // Ajustamos os nomes para corresponderem EXATAMENTE ao que está na sua planilha de ranking
+    const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
+    const SEGURO_TERCEIRO_COLS = ['Terceiro', 'Ação de Acidente de Trânsito']; // Adicionado "Ação de Acidente de Trânsito" que também pode ser considerado
+    const SEGURO_VIDA_COLS = ['Vida'];
+    const DPVAT_COL = 'DPVAT'; // DPVAT agora será somado em "Outros"
+    // --- FIM DA CORREÇÃO ---
+
+    const rows = lines.slice(1);
+    rows.forEach(line => {
+        const row = parseCSVLine(line);
+        const consultorName = (row[consultorIndex] || '').toUpperCase();
+        const totalVendas = parseInt(row[totalIndex], 10) || 0;
+
+        if (consultorName && totalVendas > 0) {
+            const consultorData = {
+                name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
+                sales: totalVendas
+            };
+            if (CONSULTORES_CEARA.includes(consultorName)) {
+                rankingCE.push(consultorData);
+            } else {
+                rankingSC.push(consultorData);
             }
-        
-            const CONSULTORES_CEARA = ['WESLLEY', 'LÍVIA', 'LUCAS', 'VANESSA'];
-            const rankingSC = [];
-            const rankingCE = [];
-            const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
-            
-            const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
-            const SEGURO_TERCEIRO_COLS = ['Terceiro', 'Ação de Acidente de Trânsito'];
-            const SEGURO_VIDA_COLS = ['Vida'];
-        
-            const rows = lines.slice(1);
-            rows.forEach(line => {
-                const row = parseCSVLine(line);
-                const consultorName = (row[consultorIndex] || '').toUpperCase();
-                const totalVendas = parseInt(row[totalIndex], 10) || 0;
-        
-                if (consultorName && totalVendas > 0) {
-                    const consultorData = {
-                        name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
-                        sales: totalVendas
-                    };
-                    if (CONSULTORES_CEARA.includes(consultorName)) {
-                        rankingCE.push(consultorData);
-                    } else {
-                        rankingSC.push(consultorData);
-                    }
-                }
-                
-                // Soma os totais de tipos de processo
-                headers.forEach((header, index) => {
-                    const count = parseInt(row[index], 10) || 0;
-                    if (PREVIDENCIARIO_COLS.includes(header)) processCounts.previdenciarios += count;
-                    else if (SEGURO_TERCEIRO_COLS.includes(header)) processCounts.seguroTerceiro += count;
-                    else if (SEGURO_VIDA_COLS.includes(header)) processCounts.seguroVida += count;
-                    else if (header !== 'Consultor' && header !== 'Total de Processos' && !PREVIDENCIARIO_COLS.includes(header) && !SEGURO_TERCEIRO_COLS.includes(header) && !SEGURO_VIDA_COLS.includes(header)) {
-                        processCounts.outros += count;
-                    }
-                });
-            });
-        
-            rankingSC.sort((a, b) => b.sales - a.sales);
-            rankingCE.sort((a, b) => b.sales - a.sales);
-            const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
-            const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
-        
-            return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, processCounts };
         }
+    });
+
+    // --- LÓGICA DE SOMA CORRIGIDA ---
+    // A soma dos totais deve ser feita uma única vez, não dentro do loop de consultores.
+    // Usaremos a última linha da planilha (que geralmente é a de totais) se ela existir, ou somaremos as linhas.
+    // Para simplificar e garantir, vamos somar todas as linhas de dados.
+    rows.forEach(line => {
+        const rowData = parseCSVLine(line);
+        headers.forEach((header, index) => {
+            const count = parseInt(rowData[index], 10) || 0;
+            if (PREVIDENCIARIO_COLS.includes(header)) {
+                processCounts.previdenciarios += count;
+            } else if (SEGURO_TERCEIRO_COLS.includes(header)) {
+                processCounts.seguroTerceiro += count;
+            } else if (SEGURO_VIDA_COLS.includes(header)) {
+                processCounts.seguroVida += count;
+            } else if (header !== 'Consultor' && header !== 'Total de Processos') {
+                // Todos os outros tipos de processo (incluindo DPVAT e "Outros Processos") vão para a categoria "Outros"
+                processCounts.outros += count;
+            }
+        });
+    });
+    // --- FIM DA LÓGICA DE SOMA CORRIGIDA ---
+
+    rankingSC.sort((a, b) => b.sales - a.sales);
+    rankingCE.sort((a, b) => b.sales - a.sales);
+    const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
+    const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
+
+    return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, processCounts };
+}
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
             if (carouselPages.length === 0) return;
