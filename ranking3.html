@@ -899,7 +899,32 @@ async function fetchAllData() {
     
     firstLoad = false;
 }
-        
+function updateProcessStats(counts) {
+    if(!counts) return;
+    const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
+    
+    const updateCard = (type, count, meta) => {
+        const typeCamelCase = type.toLowerCase().replace(/\s/g, '');
+        const countEl = document.getElementById(`${typeCamelCase}Count`);
+        const goalEl = document.getElementById(`${typeCamelCase}Goal`);
+        const percentEl = document.getElementById(`${typeCamelCase}Percent`);
+
+        if (countEl) countEl.textContent = count;
+        if (goalEl && percentEl) {
+             const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+             goalEl.textContent = `${count}/${meta}`;
+             percentEl.textContent = percent;
+        }
+    };
+
+    updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+    updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+    updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
+    
+    const outrosEl = document.getElementById('outrosCount');
+    if(outrosEl) outrosEl.textContent = counts.outros;
+}
+
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
             const overlay = document.getElementById('sale-notification-overlay');
