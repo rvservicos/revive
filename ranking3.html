@@ -717,7 +717,75 @@ function getNormalizedConsultantKey(fullName) {
                 navigateCarousel(1);
             }, 35000);
         }
+// ADICIONE ESTE BLOCO DE CÓDIGO COMPLETO
 
+function populateConsultantFilter(monthSales) {
+    const consultantFilterSelect = document.getElementById('consultantFilter');
+    if (!consultantFilterSelect || !monthSales) return;
+    
+    const currentSelection = consultantFilterSelect.value;
+    const consultantsMap = new Map();
+
+    monthSales.forEach(sale => {
+        if (sale.consultor && sale.consultor.trim() !== "") {
+            const rawName = sale.consultor.trim();
+            const key = getNormalizedConsultantKey(rawName);
+            if (!consultantsMap.has(key)) {
+                const displayName = rawName.split(' ')[0];
+                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                consultantsMap.set(key, formattedName);
+            }
+        }
+    });
+
+    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+    
+    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+    sortedConsultants.forEach(([key, displayName]) => {
+        const option = document.createElement('option');
+        option.value = key; 
+        option.textContent = displayName;
+        consultantFilterSelect.appendChild(option);
+    });
+
+    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+        consultantFilterSelect.value = currentSelection;
+    }
+}
+
+function populateConsultantFilterCE(monthSales) {
+    const consultantFilterSelect = document.getElementById('consultantFilterCE');
+    if (!consultantFilterSelect || !monthSales) return;
+    
+    const currentSelection = consultantFilterSelect.value;
+    const consultantsMap = new Map();
+
+    monthSales.forEach(sale => {
+        if (sale.consultor && sale.consultor.trim() !== "") {
+            const rawName = sale.consultor.trim();
+            const key = getNormalizedConsultantKey(rawName);
+            if (!consultantsMap.has(key)) {
+                const displayName = rawName.split(' ')[0];
+                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                consultantsMap.set(key, formattedName);
+            }
+        }
+    });
+
+    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+    
+    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+    sortedConsultants.forEach(([key, displayName]) => {
+        const option = document.createElement('option');
+        option.value = key; 
+        option.textContent = displayName;
+        consultantFilterSelect.appendChild(option);
+    });
+
+    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+        consultantFilterSelect.value = currentSelection;
+    }
+}
         function navigateCarousel(direction) {
             if (carouselPages.length === 0) return;
             carouselPages[currentPageIndex].classList.remove('active');
