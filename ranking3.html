@@ -977,7 +977,108 @@
                 processNotificationQueue();
             }
         }
+// APAGUE ESTA FUNÇÃO INTEIRA
+function countTotalProcesses(sales) {
+    let total = 0;
+    const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
+
+    sales.forEach(sale => {
+        const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
+        const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+        const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
         
+        let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
+        if (processosExclusivosNestaVenda.length > 0) {
+            contagemParaEstaVenda += 1;
+        }
+        total += contagemParaEstaVenda;
+    });
+    return total;
+}
+// SUBSTITUA PELA VERSÃO ABAIXO
+function updateDashboard() {
+    // Esta função agora é chamada apenas quando o filtro de mês muda.
+    // Ela NÃO busca novos dados de ranking. Apenas filtra as tabelas de detalhes que já temos em memória.
+    if (firstLoad) return; // Não faz nada na primeira carga, pois fetchAllData já cuida disso.
+
+    const monthSalesSC = getMonthSales();
+    const monthSalesCE = getMonthCeara();
+    
+    // Apenas atualiza as tabelas de detalhes e o gráfico de evolução.
+    // Os cards de ranking e estatísticas NÃO são mais atualizados por aqui.
+    updateMonthSales(monthSalesSC);
+    updateMonthSalesCE(monthSalesCE);
+    updateProcessEvolutionChart(salesData, cearaData);
+}
+
+// SUBSTITUA PELA VERSÃO ABAIXO
+function updateMainStats(totalSC, totalCE, totalGlobal) {
+    document.getElementById('totalMonthGlobal').textContent = totalGlobal;
+    document.getElementById('totalMonthSC').textContent = totalSC;
+    document.getElementById('totalMonthCE').textContent = totalCE;
+
+    // A média diária agora é uma estimativa simples baseada no dia atual do mês.
+    const dayOfMonth = new Date().getDate();
+    document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && dayOfMonth > 0) ? (totalSC / dayOfMonth).toFixed(1) : '0.0';
+    document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && dayOfMonth > 0) ? (totalCE / dayOfMonth).toFixed(1) : '0.0';
+
+    // Atualiza o rótulo do mês nos cards
+    const selectedMonthYear = document.getElementById('monthFilter').value;
+    if (selectedMonthYear) {
+        const [monthStr, yearStr] = selectedMonthYear.split('/');
+        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+        
+        document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+        document.getElementById('monthLabelSC').textContent = monthLabelText;
+    }
+}
+// SUBSTITUA PELA VERSÃO ABAIXO
+function updateConsultantRanking(ranking, rankingElementId, topConsultantId, topPhotoId) {
+    const topConsultantNameEl = document.getElementById(topConsultantId);
+    const topConsultantPhotoEl = document.getElementById(topPhotoId);
+    
+    // Atualiza o card de "Melhor Consultor"
+    if (ranking && ranking.length > 0 && ranking[0].sales > 0) {
+        const topConsultant = ranking[0];
+        topConsultantNameEl.textContent = topConsultant.name;
+        topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
+        topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; };
+        topConsultantPhotoEl.style.display = 'inline-block';
+    } else {
+        topConsultantNameEl.textContent = '-';
+        topConsultantPhotoEl.style.display = 'none';
+    }
+
+    const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
+    const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
+    
+    // Constrói a lista de ranking a partir dos dados recebidos
+    let listHtml = (ranking || []).map((consultor, index) => {
+        const photoUrl = getConsultantPhotoUrl(consultor.name);
+        // O modal de detalhes não funciona com esta fonte, então o onclick é removido
+        return `<div class="ranking-item">
+                    <div class="consultant-info">
+                        <div class="${rankNumberClass}">${index + 1}</div>
+                        <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}';">
+                        <div class="consultant-name">${consultor.name}</div>
+                    </div>
+                    <div class="sales-count">${consultor.sales}</div>
+                </div>`;
+    }).join('');
+
+    // Monta o HTML final com a lista e o botão de expandir (se necessário)
+    let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+    if (ranking.length > 5) {
+        const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
+        finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
+    }
+
+    const rankingContainer = document.getElementById(rankingElementId);
+    if (rankingContainer) {
+        rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+    }
+}
         async function fetchSalesData() {
             try {
                 updateConnectionStatus('loading', 'Conectando à Vendas...');
@@ -1418,518 +1519,7 @@
                 return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
             });
         }
-        
-// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
-// SUBSTITUA ESTA FUNÇÃO
-// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
-// SUBSTITUA ESTA FUNÇÃO
-        function updateDashboard() {
-            if (document.getElementById('monthFilter').options.length === 0) return;
-        
-            const monthSalesSC = getMonthSales();
-            const monthSalesCE = getMonthCeara();
-        
-            const totalProcessosSC = countTotalProcesses(monthSalesSC);
-            const totalProcessosCE = countTotalProcesses(monthSalesCE);
-        
-            // CORREÇÃO: A chamada agora passa os dados de SC (monthSalesSC) e CE (monthSalesCE) corretamente
-            updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesSC, monthSalesCE);
-            
-            updateProcessStats(monthSalesSC, monthSalesCE); 
-            
-            updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-            updateConsultantRanking(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-            
-            populateConsultantFilter(monthSalesSC);
-            updateMonthSales(monthSalesSC);
-        
-            populateConsultantFilterCE(monthSalesCE);
-            updateMonthSalesCE(monthSalesCE);
-        
-            updateProcessEvolutionChart(salesData, cearaData);
-        }
-        
-        function countTotalProcesses(sales) {
-            let total = 0;
-            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
-        
-            sales.forEach(sale => {
-                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
-                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-                
-                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-                if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda += 1;
-                }
-                total += contagemParaEstaVenda;
-            });
-            return total;
-        }
-function updateConsultantRanking(ranking, rankingElementId, topConsultantId, topPhotoId) {
-    const topConsultantNameEl = document.getElementById(topConsultantId);
-    const topConsultantPhotoEl = document.getElementById(topPhotoId);
-    if (ranking && ranking.length > 0 && ranking[0].sales > 0) {
-        const topConsultant = ranking[0];
-        topConsultantNameEl.textContent = topConsultant.name;
-        topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
-        topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; };
-        topConsultantPhotoEl.style.display = 'inline-block';
-    } else {
-        topConsultantNameEl.textContent = '-';
-        topConsultantPhotoEl.style.display = 'none';
-    }
 
-    const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-    const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
-    
-    let listHtml = (ranking || []).map((c, i) => {
-        const photoUrl = getConsultantPhotoUrl(c.name);
-        return `<div class="ranking-item">
-                    <div class="consultant-info">
-                        <div class="${rankNumberClass}">${i + 1}</div>
-                        <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}';">
-                        <div class="consultant-name">${c.name}</div>
-                    </div>
-                    <div class="sales-count">${c.sales}</div>
-                </div>`;
-    }).join('');
-
-    let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
-    if (ranking.length > 5) {
-        const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
-        finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
-    }
-
-    const rankingContainer = document.getElementById(rankingElementId);
-    if (rankingContainer) {
-        rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
-    }
-} 
-        // SUBSTITUA ESTA FUNÇÃO
-function updateMainStats(totalSC, totalCE, totalGlobal) {
-    document.getElementById('totalMonthGlobal').textContent = totalGlobal;
-    document.getElementById('totalMonthSC').textContent = totalSC;
-    document.getElementById('totalMonthCE').textContent = totalCE;
-
-    const dayOfMonth = new Date().getDate();
-    document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && dayOfMonth > 0) ? (totalSC / dayOfMonth).toFixed(1) : '0.0';
-    document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && dayOfMonth > 0) ? (totalCE / dayOfMonth).toFixed(1) : '0.0';
-}
-
-        function populateConsultantFilter(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultant() {
-            const monthSales = getMonthSales();
-            updateMonthSales(monthSales);
-        }
-        
-        function updateMonthSales(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        
-        function populateConsultantFilterCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultantCE() {
-            const monthSales = getMonthCeara();
-            updateMonthSalesCE(monthSales);
-        }
-        
-        function updateMonthSalesCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        
-        function populateConsultantFilterCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultantCE() {
-            const monthSales = getMonthCeara();
-            updateMonthSalesCE(monthSales);
-        }
-        
-        function updateMonthSalesCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        // FIM DA SUBSTITUIÇÃO
-        // ADICIONE ESTA NOVA FUNÇÃO
-        function countTotalProcesses(sales) {
-            let total = 0;
-            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
-        
-            sales.forEach(sale => {
-                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
-                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-                
-                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-                if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda += 1;
-                }
-                total += contagemParaEstaVenda;
-            });
-            return total;
-        }
-        function getNormalizedConsultantKey(fullName) {
-            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
-            return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
-        }
-
-        function getConsultantPhotoUrl(consultantName) {
-            if (!consultantName) return DEFAULT_AVATAR;
-            const baseName = getNormalizedConsultantKey(consultantName);
-            return `${baseName}.PNG`;
-        }
-        
-
-            
-            let finalHtml = '';
-            // Cria o contêiner da lista, aplicando a classe 'collapsed' se houver mais de 5 itens
-            finalHtml += `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
-
-            // Adiciona o botão "Ver Ranking Completo" apenas se houver mais de 5 itens
-            if (ranking.length > 5) {
-                const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
-                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
-            }
-
-            const rankingContainer = document.getElementById(rankingElementId);
-            
-            if (rankingContainer) {
-                // Insere a lista e o botão (se houver) no painel
-                rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
-            } else {
-                console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
-            }
-        }
-function updateProcessStats(counts) {
-    if(!counts) return;
-    const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-    
-    const updateCard = (type, count, meta) => {
-        const typeCamelCase = type.toLowerCase().replace(/\s/g, '');
-        const countEl = document.getElementById(`${typeCamelCase}Count`);
-        const goalEl = document.getElementById(`${typeCamelCase}Goal`);
-        const percentEl = document.getElementById(`${typeCamelCase}Percent`);
-
-        if (countEl) countEl.textContent = count;
-        if (goalEl && percentEl) {
-             const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-             goalEl.textContent = `${count}/${meta}`;
-             percentEl.textContent = percent;
-        }
-    };
-
-    updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
-    updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
-    updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
-    
-    const outrosEl = document.getElementById('outrosCount');
-    if(outrosEl) outrosEl.textContent = counts.outros;
-}
-        
-        function populateConsultantFilter(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultant() {
-            const monthSales = getMonthSales();
-            updateMonthSales(monthSales);
-        }
-
-        function updateMonthSales(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-
-        function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
-            const combinedData = [...allSalesData, ...(allCearaData || [])];
-            if (!combinedData || combinedData.length === 0) return;
-            const mostRecentYear = Math.max(...combinedData.map(sale => {
-                const date = parsePtBrDate(sale.data);
-                return date ? date.getFullYear() : 0;
-            }).filter(year => year > 1900));
-            if (!mostRecentYear) return;
-            document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
-            const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            combinedData.forEach(sale => {
-                if (!sale.processo) return;
-                const date = parsePtBrDate(sale.data);
-                if (date && date.getFullYear() === mostRecentYear && date.getMonth() + 1 >= 5) {
-                    const month = date.getMonth() + 1;
-                    const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
-                    if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
-                }
-            });
-            const dataPoints = Object.values(monthlyCounts);
-            const lastDataIndex = dataPoints.findLastIndex(d => d > 0);
-            const finalDataPoints = dataPoints.map((point, index) => (lastDataIndex === -1 || index <= lastDataIndex) ? point : null);
-            const ctx = document.getElementById('processEvolutionChart').getContext('2d');
-            const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            if (processEvolutionChartInstance) { processEvolutionChartInstance.destroy(); }
-            processEvolutionChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Número de Processos', data: finalDataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#6b46c1', pointRadius: 5, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } } } });
-        }
-
-        function showProcessDetails(consultantKey) {
-            const details = consultantDetails[consultantKey];
-            if (!details) return;
-            const modal = document.getElementById('process-details-modal');
-            const titleEl = document.getElementById('modal-title');
-            const contentEl = document.getElementById('modal-details-content');
-            titleEl.textContent = `Detalhes de ${details.name}`;
-            const sortedProcesses = Object.entries(details.processDetails).sort((a, b) => b[1] - a[1]);
-            if (sortedProcesses.length === 0) {
-                contentEl.innerHTML = '<p>Nenhum detalhe de processo encontrado.</p>';
-            } else {
-                let listHtml = '<ul class="details-list">';
-                sortedProcesses.forEach(([processName, count]) => {
-                    const formattedName = processName.charAt(0).toUpperCase() + processName.slice(1).toLowerCase();
-                    listHtml += `<li><span class="process-name">${formattedName}</span> <span class="process-count-badge">${count}</span></li>`;
-                });
-                listHtml += '</ul>';
-                contentEl.innerHTML = listHtml;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function closeProcessDetails() {
-            document.getElementById('process-details-modal').style.display = 'none';
-        }
-        
-        function filterPayments(statusToShow) {
-            document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
-            
-            document.querySelectorAll('.payment-status-section').forEach(section => {
-                if (statusToShow === 'all') {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = section.id === `section-${statusToShow}` ? 'block' : 'none';
-                }
-            });
-        }
-
-        // SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
-        async function fetchAllData() {
-            updateConnectionStatus('loading', 'Atualizando dados...');
-        
-            // Executa todas as buscas de dados em paralelo
-            const [
-                rankingData, // Nova busca
-                salesResult, 
-                cearaResult, 
-                paymentsResult, 
-                rtmResult, 
-                acordosResult
-            ] = await Promise.allSettled([
-                fetchRankingData(), // <--- NOVA
-                fetchSalesData(),   // <--- ANTIGA (mantida para as tabelas)
-                fetchCearaData(),   // <--- ANTIGA (mantida para as tabelas)
-                fetchPaymentsData(),
-                fetchRtmPaymentsData(),
-                fetchAcordosData() 
-            ]);
-        
-            // Se a busca do ranking foi bem-sucedida, usa esses dados para os cards e rankings
-            if (rankingData.status === 'fulfilled' && rankingData.value) {
-                const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingData.value;
-                updateMainStats(totalSC, totalCE, totalGlobal);
-                updateProcessStats(processCounts);
-                updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-                updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-                updateConnectionStatus('connected', 'Conectado');
-            } else {
-                // Fallback: se a busca do ranking falhar, tenta calcular com os dados antigos
-                console.warn("Falha ao buscar ranking da auditoria, usando dados de notificação como fallback.");
-                updateDashboard(); 
-            }
-            
-            // Atualiza o resto da página que ainda depende das fontes antigas
-            updateTotalFinishedCounter();
-            if (firstLoad) {
-                populateMonthFilter(salesData);
-            }
-            updateMonthSales(getMonthSales());
-            updateMonthSalesCE(getMonthCeara());
-            updateProcessEvolutionChart(salesData, cearaData);
-            
-            firstLoad = false;
-        }
         function toggleRanking(stateSuffix) {
             const list = document.getElementById(`ranking-list-${stateSuffix}`);
             const button = document.getElementById(`expand-btn-${stateSuffix}`);
