@@ -1058,9 +1058,10 @@ async function fetchAllData() {
     firstLoad = false;
 }
 // SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
 function updateProcessStats(allConsultantData) {
     if (!allConsultantData || allConsultantData.length === 0) {
-        // Se não houver dados, zera os contadores para limpar a tela
+        // Zera os contadores para limpar a tela se não houver dados
         document.getElementById('previdenciariosCount').textContent = '0';
         document.getElementById('seguroTerceiroCount').textContent = '0';
         document.getElementById('seguroVidaCount').textContent = '0';
@@ -1073,17 +1074,9 @@ function updateProcessStats(allConsultantData) {
     const SEGURO_TERCEIRO_COLS = ['Terceiro', 'Ação de Acidente de Trânsito'];
     const SEGURO_VIDA_COLS = ['Vida'];
 
-    // --- LÓGICA DE SOMA CORRIGIDA E SIMPLIFICADA ---
-    // Itera sobre cada consultor na lista
     allConsultantData.forEach(consultor => {
-        // O objeto 'consultor.details' contém os nomes das colunas e os valores
-        // Ex: { "Consultor": 0, "Total de Processos": 5, "Vida": 1, "LOAS": 4 }
-        
-        // Percorre cada tipo de processo (cada coluna) nos detalhes do consultor
         for (const processName in consultor.details) {
             const count = consultor.details[processName] || 0;
-
-            // Soma o valor na categoria correta
             if (PREVIDENCIARIO_COLS.includes(processName)) {
                 processCounts.previdenciarios += count;
             } else if (SEGURO_TERCEIRO_COLS.includes(processName)) {
@@ -1091,29 +1084,36 @@ function updateProcessStats(allConsultantData) {
             } else if (SEGURO_VIDA_COLS.includes(processName)) {
                 processCounts.seguroVida += count;
             } else if (processName !== 'Consultor' && processName !== 'Total de Processos') {
-                // Soma todo o resto na categoria "Outros"
                 processCounts.outros += count;
             }
         }
     });
-    // --- FIM DA CORREÇÃO ---
 
     const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
     
     const updateCard = (type, count, meta) => {
-        // Converte o nome para o formato usado nos IDs (ex: "seguroTerceiro")
-        const typeCamelCase = type.toLowerCase().replace(/\s/g, '');
+        // --- INÍCIO DA CORREÇÃO ---
+        // A linha abaixo foi o problema. Removemos a conversão para minúsculas.
+        // O nome 'type' que recebemos (ex: "seguroTerceiro") já está no formato correto.
+        const typeCamelCase = type;
+        // --- FIM DA CORREÇÃO ---
         
         const countEl = document.getElementById(`${typeCamelCase}Count`);
         const goalEl = document.getElementById(`${typeCamelCase}Goal`);
         const percentEl = document.getElementById(`${typeCamelCase}Percent`);
 
-        if (countEl) countEl.textContent = count; // 'count' agora é um número válido
+        if (countEl) {
+            countEl.textContent = count;
+        }
 
         if (goalEl && percentEl) {
              const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
              goalEl.textContent = `${count}/${meta}`;
              percentEl.textContent = percent;
+        } else if (count === 0 && goalEl) {
+            // Limpa os campos de meta se a contagem for zero
+            goalEl.textContent = '-';
+            if (percentEl) percentEl.textContent = '-';
         }
     };
 
