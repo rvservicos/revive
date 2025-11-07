@@ -610,6 +610,12 @@
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
         // ADICIONE ESTA FUNÇÃO COMPLETA
+// ADICIONE ESTA FUNÇÃO COMPLETA
+function getNormalizedConsultantKey(fullName) {
+    if (!fullName || typeof fullName !== 'string') return 'desconhecido';
+    // Remove acentos, converte para minúsculas e pega o primeiro nome
+    return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+}
         async function fetchRankingData() {
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&gid=${RANKING_AUDITORIA_GID}&_=${new Date().getTime()}`;
