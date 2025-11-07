@@ -634,6 +634,7 @@ function getNormalizedConsultantKey(fullName) {
         }
         // ADICIONE ESTA FUNÇÃO COMPLETA
 // SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
 async function processRankingCsv(csvText) {
     const lines = csvText.split('\n').filter(line => line.trim());
     if (lines.length < 2) return null;
@@ -643,70 +644,55 @@ async function processRankingCsv(csvText) {
     const totalIndex = headers.indexOf('Total de Processos');
     
     if (consultorIndex === -1 || totalIndex === -1) {
-        console.error('Colunas "Consultor" ou "Total de Processos" não encontradas no CSV do ranking.');
+        console.error('Colunas "Consultor" ou "Total de Processos" não encontradas.');
         return null;
     }
 
     const CONSULTORES_CEARA = ['WESLLEY', 'LÍVIA', 'LUCAS', 'VANESSA'];
-    const rankingSC = [];
-    const rankingCE = [];
-    const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
-    
-    // --- INÍCIO DA CORREÇÃO ---
-    // Ajustamos os nomes para corresponderem EXATAMENTE ao que está na sua planilha de ranking
-    const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
-    const SEGURO_TERCEIRO_COLS = ['Terceiro', 'Ação de Acidente de Trânsito']; // Adicionado "Ação de Acidente de Trânsito" que também pode ser considerado
-    const SEGURO_VIDA_COLS = ['Vida'];
-    const DPVAT_COL = 'DPVAT'; // DPVAT agora será somado em "Outros"
-    // --- FIM DA CORREÇÃO ---
+    const rankingSC_raw = [];
+    const rankingCE_raw = [];
 
     const rows = lines.slice(1);
     rows.forEach(line => {
-        const row = parseCSVLine(line);
-        const consultorName = (row[consultorIndex] || '').toUpperCase();
-        const totalVendas = parseInt(row[totalIndex], 10) || 0;
+        const rowData = parseCSVLine(line);
+        const consultorName = (rowData[consultorIndex] || '').toUpperCase();
+        
+        // Ignora linhas de total ou vazias
+        if (!consultorName || consultorName === 'TOTAIS') return;
+        
+        const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
 
-        if (consultorName && totalVendas > 0) {
-            const consultorData = {
-                name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
-                sales: totalVendas
-            };
-            if (CONSULTORES_CEARA.includes(consultorName)) {
-                rankingCE.push(consultorData);
-            } else {
-                rankingSC.push(consultorData);
-            }
+        // Cria um objeto para o consultor, mapeando cada header para seu valor
+        const consultorDataObject = {
+            name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
+            sales: totalVendas,
+            details: {}
+        };
+
+        headers.forEach((header, index) => {
+            consultorDataObject.details[header] = parseInt(rowData[index], 10) || 0;
+        });
+
+        if (CONSULTORES_CEARA.includes(consultorName)) {
+            rankingCE_raw.push(consultorDataObject);
+        } else {
+            rankingSC_raw.push(consultorDataObject);
         }
     });
+    
+    // Ordena os rankings
+    rankingSC_raw.sort((a, b) => b.sales - a.sales);
+    rankingCE_raw.sort((a, b) => b.sales - a.sales);
 
-    // --- LÓGICA DE SOMA CORRIGIDA ---
-    // A soma dos totais deve ser feita uma única vez, não dentro do loop de consultores.
-    // Usaremos a última linha da planilha (que geralmente é a de totais) se ela existir, ou somaremos as linhas.
-    // Para simplificar e garantir, vamos somar todas as linhas de dados.
-    rows.forEach(line => {
-        const rowData = parseCSVLine(line);
-        headers.forEach((header, index) => {
-            const count = parseInt(rowData[index], 10) || 0;
-            if (PREVIDENCIARIO_COLS.includes(header)) {
-                processCounts.previdenciarios += count;
-            } else if (SEGURO_TERCEIRO_COLS.includes(header)) {
-                processCounts.seguroTerceiro += count;
-            } else if (SEGURO_VIDA_COLS.includes(header)) {
-                processCounts.seguroVida += count;
-            } else if (header !== 'Consultor' && header !== 'Total de Processos') {
-                // Todos os outros tipos de processo (incluindo DPVAT e "Outros Processos") vão para a categoria "Outros"
-                processCounts.outros += count;
-            }
-        });
-    });
-    // --- FIM DA LÓGICA DE SOMA CORRIGIDA ---
-
-    rankingSC.sort((a, b) => b.sales - a.sales);
-    rankingCE.sort((a, b) => b.sales - a.sales);
+    // Simplifica para o formato que a função de ranking espera (nome e vendas)
+    const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
+    const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
+    
     const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
     const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
 
-    return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, processCounts };
+    // Retorna os dados brutos também, para que possamos calcular os totais de processo
+    return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, allConsultantData: [...rankingSC_raw, ...rankingCE_raw] };
 }
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
@@ -1039,7 +1025,7 @@ async function fetchAllData() {
     if (rankingResult.status === 'fulfilled' && rankingResult.value) {
         const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingResult.value;
         updateMainStats(totalSC, totalCE, totalGlobal);
-        updateProcessStats(processCounts);
+        updateProcessStats(allConsultantData);
         updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
         updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
         updateConnectionStatus('connected', 'Conectado');
