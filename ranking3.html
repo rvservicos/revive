@@ -1533,6 +1533,46 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                 }
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Prepara a navegação do carrossel
+            setupCarousel();
+
+            // 2. Busca todos os dados pela primeira vez (esta é a linha que liga tudo)
+            fetchAllData(); 
+
+            // 3. Configura a atualização automática a cada 30 segundos (30000 milissegundos)
+            setInterval(fetchAllData, 30000);
+
+            // Configura o fechamento do modal ao clicar fora dele
+            const modal = document.getElementById('process-details-modal');
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    closeProcessDetails();
+                }
+            }
+
+            // Configura o botão de pausar/retomar o carrossel
+            const toggleBtn = document.getElementById('carousel-toggle-button');
+            const icon = toggleBtn.querySelector('i');
+            
+            toggleBtn.addEventListener('click', () => {
+                carouselPaused = !carouselPaused;
+                if (carouselPaused) {
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                    toggleBtn.title = 'Retomar Carrossel';
+                    clearInterval(carouselInterval);
+                } else {
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                    toggleBtn.title = 'Pausar Carrossel';
+                    startCarouselInterval();
+                }
+            });
+
+            // Garante que o filtro de pagamentos comece mostrando tudo
+            filterPayments('all');
+        });
     </script>
 </body>
 </html>
