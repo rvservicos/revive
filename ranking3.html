@@ -853,6 +853,53 @@
             setTimeout(onAnimationFinish, 8000);
         } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
 
+// SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
+async function fetchAllData() {
+    updateConnectionStatus('loading', 'Atualizando dados...');
+
+    // Executa todas as buscas de dados em paralelo
+    const [
+        rankingData, // Nova busca
+        salesResult, 
+        cearaResult, 
+        paymentsResult, 
+        rtmResult, 
+        acordosResult
+    ] = await Promise.allSettled([
+        fetchRankingData(), // <--- NOVA
+        fetchSalesData(),   // <--- ANTIGA (mantida para as tabelas)
+        fetchCearaData(),   // <--- ANTIGA (mantida para as tabelas)
+        fetchPaymentsData(),
+        fetchRtmPaymentsData(),
+        fetchAcordosData() 
+    ]);
+
+    // Se a busca do ranking foi bem-sucedida, usa esses dados para os cards e rankings
+    if (rankingData.status === 'fulfilled' && rankingData.value) {
+        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, processCounts } = rankingData.value;
+        updateMainStats(totalSC, totalCE, totalGlobal);
+        updateProcessStats(processCounts);
+        updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
+        updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
+        updateConnectionStatus('connected', 'Conectado');
+    } else {
+        // Fallback: se a busca do ranking falhar, tenta calcular com os dados antigos
+        console.warn("Falha ao buscar ranking da auditoria, usando dados de notificação como fallback.");
+        updateDashboard(); 
+    }
+    
+    // Atualiza o resto da página que ainda depende das fontes antigas
+    updateTotalFinishedCounter();
+    if (firstLoad) {
+        populateMonthFilter(salesData);
+    }
+    updateMonthSales(getMonthSales());
+    updateMonthSalesCE(getMonthCeara());
+    updateProcessEvolutionChart(salesData, cearaData);
+    
+    firstLoad = false;
+}
+        
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
             const overlay = document.getElementById('sale-notification-overlay');
