@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Médico - Perícias RTM Revive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --white: #ffffff;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        /* Card Principal */
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Logo */
+        .logo-container {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .logo-container img {
+            max-width: 100%;
+            max-height: 120px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* Título */
+        .title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+        
+        /* Ícone Médico */
+        .medical-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 1.5rem;
+            animation: scaleIn 0.6s ease-out 0.5s both;
+            box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4);
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Botão de Acesso */
+        .access-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1.25rem 3rem;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4);
+            animation: fadeIn 0.8s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .access-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .access-button:hover::before {
+            left: 100%;
+        }
+        
+        .access-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.5);
+        }
+        
+        .access-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .button-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        /* Informação Adicional */
+        .info-text {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            animation: fadeIn 0.8s ease-out 0.7s both;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .medical-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 35px;
+            }
+            
+            .access-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .logo-container img {
+                max-height: 100px;
+            }
+        }
+        
+        /* Pulse Animation para o ícone */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 30px -4px rgba(99, 102, 241, 0.6);
+            }
+        }
+        
+        .medical-icon {
+            animation: scaleIn 0.6s ease-out 0.5s both, pulse 3s ease-in-out 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Logo -->
+            <div class="logo-container">
+                <img src="https://rvservicos.github.io/revive/logo-vi.png" alt="Revive Logo" onerror="this.style.display='none'">
+            </div>
+            
+            <!-- Título -->
+            <h1 class="title">Portal Médico - @ReVive</h1>
+            <p class="subtitle">Sistema de Perícias RTM</p>
+            
+            <!-- Ícone -->
+            <div class="medical-icon">
+                💊
+            </div>
+            
+            <!-- Botão de Acesso -->
+            <a href="https://script.google.com/macros/s/AKfycbyEbnkD4zQfARuVu39J8N2r_BcU1o_njph5BqX968xFOE8Yhfjev25vkkjJ3zDS9cTO3w/exec?page=medico" 
+               class="access-button" 
+               target="_blank">
+                <span class="button-icon">🏥</span>
+                Acessar Portal de Perícias
+            </a>
+            
+            <!-- Informação Adicional -->
+            <div class="info-text">
+                <strong>Acesso exclusivo para médicos credenciados</strong><br>
+                Realize laudos e perícias médicas de forma rápida e segura.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
