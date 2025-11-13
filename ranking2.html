@@ -256,6 +256,14 @@
         .details-list li:last-child { border-bottom: none; }
         .details-list .process-name { color: #374151; }
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 5px 13px; border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
+        
+        .payment-filter-container { display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; flex-wrap: wrap; }
+        .payment-filter-btn { padding: 10px 20px; cursor: pointer; border: 1px solid #d1d5db; background-color: #f9fafb; font-size: 1.1rem; font-weight: 600; color: #6b7280; border-radius: 20px; transition: color 0.3s, background-color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .payment-filter-btn:hover { background-color: #e8ecff; color: #6b46c1; }
+        .payment-filter-btn.active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
+        .payment-status-section { display: block; animation: fadeIn 0.5s; }
+        .payment-status-section h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 15px; margin-top: 25px; justify-content: flex-start; }
+        .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
             .stats-grid-container {
@@ -410,12 +418,6 @@
             <div class="header">
                 <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
                 <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
-                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
-                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
-                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
-                        <span id="finishedProcesses">20.000</span> / 100.000
-                    </div>
-                </div>
             </div>
             <div class="culture-section">
                 <div class="mission-vision-grid">
@@ -442,8 +444,15 @@
                         <span class="value-tag"><i class="fas fa-search"></i> Atenção aos Detalhes</span>
                     </div>
                 </div>
+                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
+                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
+                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
+                        <span id="finishedProcesses">20.000</span> / 100.000
+                    </div>
+                </div>
             </div>
         </div>
+        
 
         <div id="rtm-pagamentos-view" class="carousel-page" data-name="Pagamentos RTM">
             <div class="header">
@@ -472,29 +481,6 @@
             </div>
         </div>
 
-        <div id="acordos-view" class="carousel-page" data-name="Acordos">
-            <div class="header">
-                <h1><i class="fas fa-handshake"></i> Painel de Acordos</h1>
-                <p class="subtitle">Acompanhamento de acordos e negociações.</p>
-            </div>
-            <div class="panel">
-                <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-tasks"></i> Status dos Acordos</h2>
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Processo</th>
-                            <th>Valor</th>
-                            <th>Honorários</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="acordosTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    
         <div id="schedule-view" class="carousel-page" data-name="Cronograma">
             <div class="header">
                 <h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1>
@@ -534,6 +520,7 @@
     <script>
         let salesData = [];
         let cearaData = [];
+        let paymentsData = [];
         let rtmPaymentsData = [];
         let acordosData = [];
         let firstLoad = true;
@@ -543,6 +530,7 @@
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
         const CEARA_SHEET_GID = "1480007459";
+        const PGTO_SHEET_GID = "1456804198"; 
         const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
         const NEW_RTM_SHEET_GID = "485541894";
         const ACORDOS_SHEET_ID = "1kwsL_Gkw-LC-n_E_nLUCzE9CuFtQDhRe";
@@ -964,10 +952,11 @@ async function fetchAllData() {
     updateConnectionStatus('loading', 'Atualizando dados...');
 
     // Executa todas as buscas de dados em paralelo
-    const [rankingResult, salesResult, cearaResult, rtmResult, acordosResult] = await Promise.allSettled([
+    const [rankingResult, salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
         fetchRankingData(),
         fetchSalesData(),
         fetchCearaData(),
+        fetchPaymentsData(),
         fetchRtmPaymentsData(),
         fetchAcordosData()
     ]);
@@ -1075,6 +1064,33 @@ function updateProcessStats(allConsultantData) {
     if (outrosEl) outrosEl.textContent = processCounts.outros;
 }
 
+        function triggerPaymentAnimation(payment) {
+            new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
+            const overlay = document.getElementById('sale-notification-overlay');
+            const photoEl = document.getElementById('notification-photo');
+            const iconEl = document.getElementById('notification-main-icon');
+            const titleEl = document.getElementById('notification-title');
+            const textEl = document.getElementById('notification-text');
+            const secondaryTextEl = document.getElementById('notification-secondary-text');
+            const extrasContainer = document.getElementById('animation-extras-container');
+
+            photoEl.style.display = 'none';
+
+            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
+            titleEl.textContent = 'Pagamento Realizado!';
+            textEl.innerHTML = `O status do processo <strong>${payment.processo || 'N/A'}</strong> de <strong>${payment.nome || 'N/A'}</strong> foi atualizado para PAGO!`;
+            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
+            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
+
+            overlay.style.display = 'flex';
+            overlay.classList.add('show');
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+            }, 10);
+
+            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
+        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+
         function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
 
@@ -1127,6 +1143,19 @@ function updateProcessStats(allConsultantData) {
                 newlyAddedSales.forEach(sale => notificationQueue.push({ type: 'sale', data: { ...sale, region } }));
                 processNotificationQueue();
             }
+        }
+
+        function checkForPaidStatusChange(newPayments, oldPayments) {
+            if (firstLoad || oldPayments.length === 0) return;
+            const oldPaymentsMap = new Map(oldPayments.map(p => [p.uniqueId, p]));
+            
+            for (const newPayment of newPayments) {
+                const oldPayment = oldPaymentsMap.get(newPayment.uniqueId);
+                if (oldPayment && oldPayment.status !== 'PAGO' && newPayment.status === 'PAGO') {
+                    notificationQueue.push({ type: 'payment', data: newPayment });
+                }
+            }
+            if(notificationQueue.some(n => n.type === 'payment')) processNotificationQueue();
         }
 
         function checkForNewRtmPayments(newRtmData, oldRtmData) {
@@ -1380,6 +1409,28 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             }
         }
         
+        async function fetchPaymentsData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha na conexão com pagamentos: ${response.statusText}`);
+                const csvData = await response.text();
+                
+                if (csvData && csvData.trim()) {
+                    const newPayments = await processPaymentsCsv(csvData);
+                    checkForPaidStatusChange(newPayments, paymentsData);
+                    paymentsData = newPayments;
+                    updateApprovedProcessesView(paymentsData);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de pagamentos:", error);
+                 ['aprovadoTableBody', 'naContaTableBody', 'pagoTableBody'].forEach(id => {
+                    const body = document.getElementById(id);
+                    if(body) body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>`;
+                });
+            }
+        }
+        
         async function fetchRtmPaymentsData() {
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${NEW_RTM_SHEET_ID}/export?format=csv&gid=${NEW_RTM_SHEET_GID}&_=${new Date().getTime()}`;
@@ -1486,6 +1537,28 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             return tempData;
         }
 
+        async function processPaymentsCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const data = [];
+            for (let i = 1; i < lines.length; i++) { 
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length >= 5 && columns[0]) {
+                    const nome = (columns[0] || '').trim();
+                    const processo = (columns[1] || '').trim();
+                    data.push({
+                        nome: nome,
+                        processo: processo,
+                        valor: (columns[2] || '').trim(),
+                        data: (columns[3] || '').trim(),
+                        status: (columns[4] || 'APROVADO').trim().toUpperCase(),
+                        originalIndex: i,
+                        uniqueId: `${nome}-${processo}-${i}`
+                    });
+                }
+            }
+            return data;
+        }
+
         async function processRtmCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const data = [];
@@ -1534,6 +1607,19 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             el.classList.add(`status-${status}`);
             const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
+        }
+
+        function updateApprovedProcessesView(allApprovedData) {
+            const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
+            allApprovedData.forEach(item => {
+                const status = item.status;
+                if (statusMap.hasOwnProperty(status)) {
+                    statusMap[status].push(item);
+                }
+            });
+            populatePaymentTable('aprovadoTableBody', statusMap['APROVADO']);
+            populatePaymentTable('naContaTableBody', statusMap['NA CONTA']);
+            populatePaymentTable('pagoTableBody', statusMap['PAGO']);
         }
 
         function updateRtmPaymentsView(data) {
@@ -1634,15 +1720,47 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             tableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum acordo registrado.</td></tr>';
         }
 
-        function updateTotalFinishedCounter() {
-            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
+        function populatePaymentTable(tableBodyId, data) {
+            const tableBody = document.getElementById(tableBodyId);
+            if (!tableBody) return;
 
+            const sortedData = [...data].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateB - dateA;
+            });
+
+            let html = '';
+            sortedData.forEach(payment => {
+                html += `<tr>
+                    <td><span class="date-badge">${payment.data || '-'}</span></td>
+                    <td>${payment.nome || '-'}</td>
+                    <td><span class="process-badge">${payment.processo || '-'}</span></td>
+                    <td>--</td>
+
+                </tr>`;
+            });
+            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
+        }
+
+        function updateProcessCounter(count) {
             const counterElement = document.getElementById('finishedProcesses');
             if (counterElement) {
                 const baseCount = 20224;
-                const total = baseCount + paidAcordosCount;
+                const total = baseCount + count;
                 counterElement.textContent = total.toLocaleString('pt-BR');
             }
+        }
+        
+        function updateTotalFinishedCounter() {
+            const paidPaymentsCount = paymentsData.filter(p => p.status === 'PAGO').length;
+            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
+            
+            const totalPaid = paidPaymentsCount + paidAcordosCount;
+            updateProcessCounter(totalPaid);
         }
 
 function populateMonthFilter(dataSC, dataCE) {
@@ -1699,6 +1817,18 @@ function populateMonthFilter(dataSC, dataCE) {
             return cearaData.filter(sale => {
                 const date = parsePtBrDate(sale.data);
                 return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
+            });
+        }
+        function filterPayments(statusToShow) {
+            document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.payment-status-section').forEach(section => {
+                if (statusToShow === 'all') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = section.id === `section-${statusToShow}` ? 'block' : 'none';
+                }
             });
         }
         function getConsultantPhotoUrl(consultantName) {
