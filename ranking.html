@@ -1732,7 +1732,8 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                 html += `<tr>
                     <td><span class="date-badge">${formattedDate}</span></td>
                     <td>${payment.cliente || '-'}</td>
-                    <td><span class="process-badge">${payment.valor || '-'}</span></td>
+                    <td><span class="process-badge">--</span></td>
+
                     <td>${cobradorDisplay}</td>
                 </tr>`;
             });
@@ -1770,8 +1771,10 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                     <td><span class="date-badge">${acordo.data || '-'}</span></td>
                     <td>${acordo.cliente || '-'}</td>
                     <td>${acordo.processo || '-'}</td>
-                    <td><span class="process-badge">${acordo.valor || '-'}</span></td>
-                    <td><span class="process-badge" style="background-color: #a78bfa; color: white;">${acordo.honorarios || '-'}</span></td>
+                    <td><span class="process-badge">--</span></td>
+
+                    <td><span class="process-badge" style="background-color: #a78bfa; color: white;">--</span></td>
+
                     <td><span class="status-badge" style="background-color: ${bgColor};">${acordo.status || '-'}</span></td>
                 </tr>`;
             });
@@ -1797,7 +1800,8 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                     <td><span class="date-badge">${payment.data || '-'}</span></td>
                     <td>${payment.nome || '-'}</td>
                     <td><span class="process-badge">${payment.processo || '-'}</span></td>
-                    <td>${payment.valor || '-'}</td>
+                    <td>--</td>
+
                 </tr>`;
             });
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
