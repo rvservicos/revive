@@ -444,13 +444,6 @@
                         <span class="value-tag"><i class="fas fa-search"></i> Atenção aos Detalhes</span>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <div id="pagamentos-view" class="carousel-page" data-name="Aprovados">
-            <div class="header">
-                <h1><i class="fas fa-hand-holding-usd"></i> Painel de Aprovados</h1>
-                <p class="subtitle">Acompanhamento de processos por status.</p>
                 <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
                     <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
                     <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
@@ -458,39 +451,8 @@
                     </div>
                 </div>
             </div>
-            <div class="panel">
-                <div class="payment-filter-container">
-                    <button class="payment-filter-btn active" onclick="filterPayments('all')"><i class="fas fa-list-ul"></i> Todos</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('aprovado')"><i class="fas fa-thumbs-up"></i> Aprovado</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('na_conta')"><i class="fas fa-wallet"></i> Na Conta</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('pago')"><i class="fas fa-check-double"></i> Pago</button>
-                </div>
-        
-                <div id="section-aprovado" class="payment-status-section">
-                    <h2><i class="fas fa-thumbs-up"></i> Processos com Status 'Aprovado'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="aprovadoTableBody"></tbody>
-                    </table>
-                </div>
-        
-                <div id="section-na_conta" class="payment-status-section">
-                    <h2><i class="fas fa-wallet"></i> Processos com Status 'Na Conta'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="naContaTableBody"></tbody>
-                    </table>
-                </div>
-        
-                <div id="section-pago" class="payment-status-section">
-                    <h2><i class="fas fa-check-double"></i> Processos com Status 'Pago'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="pagoTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
+        
 
         <div id="rtm-pagamentos-view" class="carousel-page" data-name="Pagamentos RTM">
             <div class="header">
@@ -519,29 +481,6 @@
             </div>
         </div>
 
-        <div id="acordos-view" class="carousel-page" data-name="Acordos">
-            <div class="header">
-                <h1><i class="fas fa-handshake"></i> Painel de Acordos</h1>
-                <p class="subtitle">Acompanhamento de acordos e negociações.</p>
-            </div>
-            <div class="panel">
-                <h2 style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-tasks"></i> Status dos Acordos</h2>
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Processo</th>
-                            <th>Valor</th>
-                            <th>Honorários</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="acordosTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    
         <div id="schedule-view" class="carousel-page" data-name="Cronograma">
             <div class="header">
                 <h1><i class="fas fa-calendar-alt"></i> Cronograma ReVive</h1>
