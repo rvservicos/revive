@@ -256,14 +256,6 @@
         .details-list li:last-child { border-bottom: none; }
         .details-list .process-name { color: #374151; }
         .details-list .process-count-badge { background: #8b5cf6; color: white; padding: 5px 13px; border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
-        
-        .payment-filter-container { display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; flex-wrap: wrap; }
-        .payment-filter-btn { padding: 10px 20px; cursor: pointer; border: 1px solid #d1d5db; background-color: #f9fafb; font-size: 1.1rem; font-weight: 600; color: #6b7280; border-radius: 20px; transition: color 0.3s, background-color 0.3s, border-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .payment-filter-btn:hover { background-color: #e8ecff; color: #6b46c1; }
-        .payment-filter-btn.active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
-        .payment-status-section { display: block; animation: fadeIn 0.5s; }
-        .payment-status-section h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 15px; margin-top: 25px; justify-content: flex-start; }
-        .payment-status-section:first-of-type h2 { margin-top: 0; }
 
         @media (max-width: 1024px) {
             .stats-grid-container {
@@ -418,6 +410,12 @@
             <div class="header">
                 <h1><i class="fas fa-gem"></i> Nossa Cultura - ReVive</h1>
                 <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
+                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
+                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
+                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
+                        <span id="finishedProcesses">20.000</span> / 100.000
+                    </div>
+                </div>
             </div>
             <div class="culture-section">
                 <div class="mission-vision-grid">
@@ -443,51 +441,6 @@
                         <span class="value-tag"><i class="fas fa-bolt"></i> Proatividade</span>
                         <span class="value-tag"><i class="fas fa-search"></i> Atenção aos Detalhes</span>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="pagamentos-view" class="carousel-page" data-name="Aprovados">
-            <div class="header">
-                <h1><i class="fas fa-hand-holding-usd"></i> Painel de Aprovados</h1>
-                <p class="subtitle">Acompanhamento de processos por status.</p>
-                <div class="process-counter-container" style="border-top: none; padding-top: 15px; margin-top: 20px;">
-                    <h3 style="font-size: 2.2rem; color: #8b5cf6;">Processos Finalizados Rumo à Meta</h3>
-                    <div class="process-counter" style="font-size: 4.5rem; margin-top: 10px;">
-                        <span id="finishedProcesses">20.000</span> / 100.000
-                    </div>
-                </div>
-            </div>
-            <div class="panel">
-                <div class="payment-filter-container">
-                    <button class="payment-filter-btn active" onclick="filterPayments('all')"><i class="fas fa-list-ul"></i> Todos</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('aprovado')"><i class="fas fa-thumbs-up"></i> Aprovado</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('na_conta')"><i class="fas fa-wallet"></i> Na Conta</button>
-                    <button class="payment-filter-btn" onclick="filterPayments('pago')"><i class="fas fa-check-double"></i> Pago</button>
-                </div>
-        
-                <div id="section-aprovado" class="payment-status-section">
-                    <h2><i class="fas fa-thumbs-up"></i> Processos com Status 'Aprovado'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="aprovadoTableBody"></tbody>
-                    </table>
-                </div>
-        
-                <div id="section-na_conta" class="payment-status-section">
-                    <h2><i class="fas fa-wallet"></i> Processos com Status 'Na Conta'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="naContaTableBody"></tbody>
-                    </table>
-                </div>
-        
-                <div id="section-pago" class="payment-status-section">
-                    <h2><i class="fas fa-check-double"></i> Processos com Status 'Pago'</h2>
-                    <table class="sales-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Processo</th><th>Valor</th></tr></thead>
-                        <tbody id="pagoTableBody"></tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -581,7 +534,6 @@
     <script>
         let salesData = [];
         let cearaData = [];
-        let paymentsData = [];
         let rtmPaymentsData = [];
         let acordosData = [];
         let firstLoad = true;
@@ -591,7 +543,6 @@
         const FIXED_SHEET_ID = "1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms";
         const SALES_SHEET_GID = "1536647709";
         const CEARA_SHEET_GID = "1480007459";
-        const PGTO_SHEET_GID = "1456804198"; 
         const NEW_RTM_SHEET_ID = "1KcEKtzGxSGEICRw14ctfCD4sDsQJuzl3OSwVZQcHSWE";
         const NEW_RTM_SHEET_GID = "485541894";
         const ACORDOS_SHEET_ID = "1kwsL_Gkw-LC-n_E_nLUCzE9CuFtQDhRe";
@@ -604,11 +555,96 @@
         let carouselPages = [];
         let currentPageIndex = 0;
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
-
+        const RANKING_AUDITORIA_ID = "1YyyXkC2f3PU7_-IsO0ZgyusKVelyweZ301p63XFDrJ8";
+        const RANKING_AUDITORIA_GID = "1686794249"; // GID da aba "Ranking do Mês"
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
+        // ADICIONE ESTA FUNÇÃO COMPLETA
+// ADICIONE ESTA FUNÇÃO COMPLETA
+function getNormalizedConsultantKey(fullName) {
+    if (!fullName || typeof fullName !== 'string') return 'desconhecido';
+    // Remove acentos, converte para minúsculas e pega o primeiro nome
+    return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+}
+        async function fetchRankingData() {
+            try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&gid=${RANKING_AUDITORIA_GID}&_=${new Date().getTime()}`;
+                const response = await fetch(csvUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error(`Falha ao buscar ranking: ${response.statusText}`);
+                const csvData = await response.text();
+                
+                if (csvData && csvData.trim()) {
+                    return await processRankingCsv(csvData);
+                }
+                return null; // Retorna nulo se não houver dados
+            } catch (error) {
+                console.error("Erro ao buscar dados de ranking:", error);
+                return null; // Retorna nulo em caso de erro
+            }
+        }
+        // ADICIONE ESTA FUNÇÃO COMPLETA
+// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
+async function processRankingCsv(csvText) {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return null;
+
+    const headers = parseCSVLine(lines[0]);
+    const consultorIndex = headers.indexOf('Consultor');
+    const totalIndex = headers.indexOf('Total de Processos');
+    
+    if (consultorIndex === -1 || totalIndex === -1) {
+        console.error('Colunas "Consultor" ou "Total de Processos" não encontradas.');
+        return null;
+    }
+
+    const CONSULTORES_CEARA = ['WESLLEY', 'LIVIA', 'LÍVIA', 'LUCAS', 'VANESSA'];
+    const rankingSC_raw = [];
+    const rankingCE_raw = [];
+
+    const rows = lines.slice(1);
+    rows.forEach(line => {
+        const rowData = parseCSVLine(line);
+        const consultorName = (rowData[consultorIndex] || '').toUpperCase();
         
+        // Ignora linhas de total ou vazias
+        if (!consultorName || consultorName === 'TOTAIS') return;
+        
+        const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
+
+        // Cria um objeto para o consultor, mapeando cada header para seu valor
+        const consultorDataObject = {
+            name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
+            sales: totalVendas,
+            details: {}
+        };
+
+        headers.forEach((header, index) => {
+            consultorDataObject.details[header] = parseInt(rowData[index], 10) || 0;
+        });
+
+        if (CONSULTORES_CEARA.includes(consultorName)) {
+            rankingCE_raw.push(consultorDataObject);
+        } else {
+            rankingSC_raw.push(consultorDataObject);
+        }
+    });
+    
+    // Ordena os rankings
+    rankingSC_raw.sort((a, b) => b.sales - a.sales);
+    rankingCE_raw.sort((a, b) => b.sales - a.sales);
+
+    // Simplifica para o formato que a função de ranking espera (nome e vendas)
+    const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
+    const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
+    
+    const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
+    const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
+
+    // Retorna os dados brutos também, para que possamos calcular os totais de processo
+    return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, allConsultantData: [...rankingSC_raw, ...rankingCE_raw] };
+}
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
             if (carouselPages.length === 0) return;
@@ -634,7 +670,75 @@
                 navigateCarousel(1);
             }, 35000);
         }
+// ADICIONE ESTE BLOCO DE CÓDIGO COMPLETO
 
+function populateConsultantFilter(monthSales) {
+    const consultantFilterSelect = document.getElementById('consultantFilter');
+    if (!consultantFilterSelect || !monthSales) return;
+    
+    const currentSelection = consultantFilterSelect.value;
+    const consultantsMap = new Map();
+
+    monthSales.forEach(sale => {
+        if (sale.consultor && sale.consultor.trim() !== "") {
+            const rawName = sale.consultor.trim();
+            const key = getNormalizedConsultantKey(rawName);
+            if (!consultantsMap.has(key)) {
+                const displayName = rawName.split(' ')[0];
+                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                consultantsMap.set(key, formattedName);
+            }
+        }
+    });
+
+    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+    
+    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+    sortedConsultants.forEach(([key, displayName]) => {
+        const option = document.createElement('option');
+        option.value = key; 
+        option.textContent = displayName;
+        consultantFilterSelect.appendChild(option);
+    });
+
+    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+        consultantFilterSelect.value = currentSelection;
+    }
+}
+
+function populateConsultantFilterCE(monthSales) {
+    const consultantFilterSelect = document.getElementById('consultantFilterCE');
+    if (!consultantFilterSelect || !monthSales) return;
+    
+    const currentSelection = consultantFilterSelect.value;
+    const consultantsMap = new Map();
+
+    monthSales.forEach(sale => {
+        if (sale.consultor && sale.consultor.trim() !== "") {
+            const rawName = sale.consultor.trim();
+            const key = getNormalizedConsultantKey(rawName);
+            if (!consultantsMap.has(key)) {
+                const displayName = rawName.split(' ')[0];
+                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                consultantsMap.set(key, formattedName);
+            }
+        }
+    });
+
+    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+    
+    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+    sortedConsultants.forEach(([key, displayName]) => {
+        const option = document.createElement('option');
+        option.value = key; 
+        option.textContent = displayName;
+        consultantFilterSelect.appendChild(option);
+    });
+
+    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+        consultantFilterSelect.value = currentSelection;
+    }
+}
         function navigateCarousel(direction) {
             if (carouselPages.length === 0) return;
             carouselPages[currentPageIndex].classList.remove('active');
@@ -650,7 +754,84 @@
                 startCarouselInterval();
             }
         }
+// ADICIONE ESTA FUNÇÃO COMPLETA
+
+// SUBSTITUA A FUNÇÃO ANTIGA POR ESTA VERSÃO CORRIGIDA
+function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
+    const combinedData = [...(allSalesData || []), ...(allCearaData || [])];
+    if (combinedData.length === 0) return;
+
+    // --- INÍCIO DA CORREÇÃO ---
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthIndex = now.getMonth(); // Janeiro = 0, Fevereiro = 1, ..., Novembro = 10
+
+    document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${currentYear}`;
+    
+    // Inicia a contagem para todos os meses
+    const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
+
+    combinedData.forEach(sale => {
+        if (!sale.processo) return;
+        const date = parsePtBrDate(sale.data);
         
+        // Filtra os dados para considerar apenas os do ano corrente
+        if (date && date.getFullYear() === currentYear) {
+            const month = date.getMonth() + 1; // getMonth() é 0-11, então +1 para ser 1-12
+            const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
+            if (monthlyCounts.hasOwnProperty(month)) {
+                monthlyCounts[month] += numProcessos;
+            }
+        }
+    });
+
+    const dataPoints = Object.values(monthlyCounts);
+    
+    // Lógica corrigida: Mostra dados até o mês atual e define os meses futuros como nulos.
+    // O gráfico para de desenhar a linha quando encontra "null".
+    const finalDataPoints = dataPoints.map((point, index) => {
+        return index <= currentMonthIndex ? point : null;
+    });
+    // --- FIM DA CORREÇÃO ---
+
+    const ctx = document.getElementById('processEvolutionChart').getContext('2d');
+    const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    // Destrói o gráfico antigo, se existir, para evitar sobreposição
+    if (processEvolutionChartInstance) {
+        processEvolutionChartInstance.destroy();
+    }
+    
+    // Cria o novo gráfico com os dados corrigidos
+    processEvolutionChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Número de Processos',
+                data: finalDataPoints, // Usa os pontos de dados corrigidos
+                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                borderColor: '#8b5cf6',
+                borderWidth: 3,
+                pointBackgroundColor: '#6b46c1',
+                pointRadius: 5,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } },
+                x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 }
+            }
+        }
+    });
+}
         function jumpToPage(index) {
             clearInterval(carouselInterval);
             carouselPages[currentPageIndex].classList.remove('active');
@@ -776,32 +957,123 @@
             setTimeout(onAnimationFinish, 8000);
         } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
 
-        function triggerPaymentAnimation(payment) {
-            new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
-            const overlay = document.getElementById('sale-notification-overlay');
-            const photoEl = document.getElementById('notification-photo');
-            const iconEl = document.getElementById('notification-main-icon');
-            const titleEl = document.getElementById('notification-title');
-            const textEl = document.getElementById('notification-text');
-            const secondaryTextEl = document.getElementById('notification-secondary-text');
-            const extrasContainer = document.getElementById('animation-extras-container');
+// SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
+// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
+async function fetchAllData() {
+    updateConnectionStatus('loading', 'Atualizando dados...');
 
-            photoEl.style.display = 'none';
+    // Executa todas as buscas de dados em paralelo
+    const [rankingResult, salesResult, cearaResult, rtmResult, acordosResult] = await Promise.allSettled([
+        fetchRankingData(),
+        fetchSalesData(),
+        fetchCearaData(),
+        fetchRtmPaymentsData(),
+        fetchAcordosData()
+    ]);
 
-            iconEl.innerHTML = '<i class="fas fa-dollar-sign" style="color:#22c55e;"></i>';
-            titleEl.textContent = 'Pagamento Realizado!';
-            textEl.innerHTML = `O status do processo <strong>${payment.processo || 'N/A'}</strong> de <strong>${payment.nome || 'N/A'}</strong> foi atualizado para PAGO!`;
-            secondaryTextEl.textContent = `Valor: ${payment.valor || 'N/A'}`;
-            extrasContainer.innerHTML = `<i class="fas fa-dollar-sign money-symbol"></i><i class="fas fa-euro-sign money-symbol"></i><i class="fas fa-pound-sign money-symbol"></i>`;
+    // Lógica para os Rankings e Cards de Estatísticas (da planilha de auditoria)
+    if (rankingResult.status === 'fulfilled' && rankingResult.value) {
+        // --- INÍCIO DA CORREÇÃO ---
+        // Extrai todas as propriedades do objeto retornado para variáveis locais.
+        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, allConsultantData } = rankingResult.value;
 
-            overlay.style.display = 'flex';
-            overlay.classList.add('show');
-            setTimeout(() => {
-                overlay.style.opacity = '1';
-            }, 10);
+        // Agora, passa essas variáveis locais para as funções.
+        updateMainStats(totalSC, totalCE, totalGlobal);
+        updateProcessStats(allConsultantData); // <-- CORRIGIDO
+        updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
+        updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
+        // --- FIM DA CORREÇÃO ---
+        
+        updateConnectionStatus('connected', 'Conectado');
+    } else {
+        console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
+        updateConnectionStatus('error', 'Falha no Ranking');
+        // Fallback: se a busca do ranking principal falhar, chamamos a lógica antiga
+        updateDashboard(); 
+    }
+    
+    // Lógica para as Tabelas de Detalhes e Gráfico (das planilhas antigas)
+    // (A atribuição a `salesData` e `cearaData` já acontece dentro das suas respectivas funções fetch)
+    
+    // Após todos os dados serem carregados, atualiza as partes restantes da UI
+    updateTotalFinishedCounter();
+    if (firstLoad) {
+        populateMonthFilter(salesData, cearaData);
+    }
+    
+    // Chama updateDashboard para filtrar e exibir os dados nas tabelas com base nos dados antigos
+    updateDashboard(); 
+    
+    firstLoad = false;
+}
+// SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
+// SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
+function updateProcessStats(allConsultantData) {
+    if (!allConsultantData || allConsultantData.length === 0) {
+        // Zera os contadores para limpar a tela se não houver dados
+        document.getElementById('previdenciariosCount').textContent = '0';
+        document.getElementById('seguroTerceiroCount').textContent = '0';
+        document.getElementById('seguroVidaCount').textContent = '0';
+        document.getElementById('outrosCount').textContent = '0';
+        return;
+    }
 
-            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
-        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+    const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
+    const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
+    const SEGURO_TERCEIRO_COLS = ['Terceiro'];
+    const SEGURO_VIDA_COLS = ['Vida'];
+
+    allConsultantData.forEach(consultor => {
+        for (const processName in consultor.details) {
+            const count = consultor.details[processName] || 0;
+            if (PREVIDENCIARIO_COLS.includes(processName)) {
+                processCounts.previdenciarios += count;
+            } else if (SEGURO_TERCEIRO_COLS.includes(processName)) {
+                processCounts.seguroTerceiro += count;
+            } else if (SEGURO_VIDA_COLS.includes(processName)) {
+                processCounts.seguroVida += count;
+            } else if (processName !== 'Consultor' && processName !== 'Total de Processos') {
+                processCounts.outros += count;
+            }
+        }
+    });
+
+    const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
+    
+    const updateCard = (type, count, meta) => {
+        // --- INÍCIO DA CORREÇÃO ---
+        // A linha abaixo foi o problema. Removemos a conversão para minúsculas.
+        // O nome 'type' que recebemos (ex: "seguroTerceiro") já está no formato correto.
+        const typeCamelCase = type;
+        // --- FIM DA CORREÇÃO ---
+        
+        const countEl = document.getElementById(`${typeCamelCase}Count`);
+        const goalEl = document.getElementById(`${typeCamelCase}Goal`);
+        const percentEl = document.getElementById(`${typeCamelCase}Percent`);
+
+        if (countEl) {
+            countEl.textContent = count;
+        }
+
+        if (goalEl && percentEl) {
+             const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+             goalEl.textContent = `${count}/${meta}`;
+             percentEl.textContent = percent;
+        } else if (count === 0 && goalEl) {
+            // Limpa os campos de meta se a contagem for zero
+            goalEl.textContent = '-';
+            if (percentEl) percentEl.textContent = '-';
+        }
+    };
+
+    updateCard('previdenciarios', processCounts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+    updateCard('seguroTerceiro', processCounts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+    updateCard('seguroVida', processCounts.seguroVida, metas['SEGURO DE VIDA']);
+    
+    const outrosEl = document.getElementById('outrosCount');
+    if (outrosEl) outrosEl.textContent = processCounts.outros;
+}
 
         function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
@@ -857,19 +1129,6 @@
             }
         }
 
-        function checkForPaidStatusChange(newPayments, oldPayments) {
-            if (firstLoad || oldPayments.length === 0) return;
-            const oldPaymentsMap = new Map(oldPayments.map(p => [p.uniqueId, p]));
-            
-            for (const newPayment of newPayments) {
-                const oldPayment = oldPaymentsMap.get(newPayment.uniqueId);
-                if (oldPayment && oldPayment.status !== 'PAGO' && newPayment.status === 'PAGO') {
-                    notificationQueue.push({ type: 'payment', data: newPayment });
-                }
-            }
-            if(notificationQueue.some(n => n.type === 'payment')) processNotificationQueue();
-        }
-
         function checkForNewRtmPayments(newRtmData, oldRtmData) {
             if (firstLoad || newRtmData.length <= oldRtmData.length) return;
             
@@ -900,7 +1159,188 @@
                 processNotificationQueue();
             }
         }
+// APAGUE ESTA FUNÇÃO INTEIRA
+function countTotalProcesses(sales) {
+    let total = 0;
+    const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
+
+    sales.forEach(sale => {
+        const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
+        const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
+        const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
         
+        let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
+        if (processosExclusivosNestaVenda.length > 0) {
+            contagemParaEstaVenda += 1;
+        }
+        total += contagemParaEstaVenda;
+    });
+    return total;
+}
+// ADICIONE ESTAS DUAS FUNÇÕES COMPLETAS
+
+function updateMonthSales(monthSales) {
+    if (!monthSales) return; // Garante que não quebre se os dados não existirem
+    const consultantFilterSelect = document.getElementById('consultantFilter');
+    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+    
+    let filteredSales = monthSales;
+    if (selectedConsultantKey !== 'all') {
+        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+    }
+    
+    const sortedSales = [...filteredSales].sort((a, b) => {
+        const dateA = parsePtBrDate(a.data);
+        const dateB = parsePtBrDate(b.data);
+        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        if (dateB - dateA !== 0) return dateB - dateA;
+        return (b.originalIndex || 0) - (a.originalIndex || 0);
+    });
+
+    let html = '';
+    sortedSales.forEach(sale => {
+        html += `<tr>
+                    <td><span class="date-badge">${sale.data || '-'}</span></td>
+                    <td>${sale.cliente || '-'}</td>
+                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                    <td>${sale.consultor || '-'}</td>
+                </tr>`;
+    });
+    
+    const tableBody = document.getElementById('recentSalesTable');
+    if(tableBody) {
+        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+    }
+}
+
+function updateMonthSalesCE(monthSales) {
+    if (!monthSales) return; // Garante que não quebre se os dados não existirem
+    const consultantFilterSelect = document.getElementById('consultantFilterCE');
+    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+
+    let filteredSales = monthSales;
+    if (selectedConsultantKey !== 'all') {
+        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+    }
+
+    const sortedSales = [...filteredSales].sort((a, b) => {
+        const dateA = parsePtBrDate(a.data);
+        const dateB = parsePtBrDate(b.data);
+        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        if (dateB - dateA !== 0) return dateB - dateA;
+        return (b.originalIndex || 0) - (a.originalIndex || 0);
+    });
+
+    let html = '';
+    sortedSales.forEach(sale => {
+        html += `<tr>
+                    <td><span class="date-badge">${sale.data || '-'}</span></td>
+                    <td>${sale.cliente || '-'}</td>
+                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                    <td>${sale.consultor || '-'}</td>
+                </tr>`;
+    });
+    
+    const tableBody = document.getElementById('recentSalesTableCE');
+    if(tableBody) {
+        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+    }
+}
+// SUBSTITUA A FUNÇÃO updateDashboard PELA VERSÃO ABAIXO
+function updateDashboard() {
+    if (document.getElementById('monthFilter').options.length === 0 && !firstLoad) {
+        // Se não há meses para filtrar (e não é a primeira carga), não faz nada.
+        return;
+    }
+
+    // Pega os dados filtrados pelo mês selecionado
+    const monthSalesSC = getMonthSales();
+    const monthSalesCE = getMonthCeara();
+    
+    // Popula os filtros de consultor com base nos dados do mês
+    populateConsultantFilter(monthSalesSC);
+    populateConsultantFilterCE(monthSalesCE);
+    
+    // Atualiza as tabelas de detalhes com os dados filtrados
+    updateMonthSales(monthSalesSC);
+    updateMonthSalesCE(monthSalesCE);
+    
+    // Atualiza o gráfico com todos os dados (não apenas do mês)
+    updateProcessEvolutionChart(salesData, cearaData);
+}
+
+// SUBSTITUA PELA VERSÃO ABAIXO
+function updateMainStats(totalSC, totalCE, totalGlobal) {
+    document.getElementById('totalMonthGlobal').textContent = totalGlobal;
+    document.getElementById('totalMonthSC').textContent = totalSC;
+    document.getElementById('totalMonthCE').textContent = totalCE;
+
+    // A média diária agora é uma estimativa simples baseada no dia atual do mês.
+    const dayOfMonth = new Date().getDate();
+    document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && dayOfMonth > 0) ? (totalSC / dayOfMonth).toFixed(1) : '0.0';
+    document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && dayOfMonth > 0) ? (totalCE / dayOfMonth).toFixed(1) : '0.0';
+
+    // Atualiza o rótulo do mês nos cards
+    const selectedMonthYear = document.getElementById('monthFilter').value;
+    if (selectedMonthYear) {
+        const [monthStr, yearStr] = selectedMonthYear.split('/');
+        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+        
+        document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+        document.getElementById('monthLabelSC').textContent = monthLabelText;
+    }
+}
+// SUBSTITUA PELA VERSÃO ABAIXO
+function updateConsultantRanking(ranking, rankingElementId, topConsultantId, topPhotoId) {
+    const topConsultantNameEl = document.getElementById(topConsultantId);
+    const topConsultantPhotoEl = document.getElementById(topPhotoId);
+    
+    // Atualiza o card de "Melhor Consultor"
+    if (ranking && ranking.length > 0 && ranking[0].sales > 0) {
+        const topConsultant = ranking[0];
+        topConsultantNameEl.textContent = topConsultant.name;
+        topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
+        topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; };
+        topConsultantPhotoEl.style.display = 'inline-block';
+    } else {
+        topConsultantNameEl.textContent = '-';
+        topConsultantPhotoEl.style.display = 'none';
+    }
+
+    const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
+    const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
+    
+    // Constrói a lista de ranking a partir dos dados recebidos
+    let listHtml = (ranking || []).map((consultor, index) => {
+        const photoUrl = getConsultantPhotoUrl(consultor.name);
+        // O modal de detalhes não funciona com esta fonte, então o onclick é removido
+        return `<div class="ranking-item">
+                    <div class="consultant-info">
+                        <div class="${rankNumberClass}">${index + 1}</div>
+                        <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}';">
+                        <div class="consultant-name">${consultor.name}</div>
+                    </div>
+                    <div class="sales-count">${consultor.sales}</div>
+                </div>`;
+    }).join('');
+
+    // Monta o HTML final com a lista e o botão de expandir (se necessário)
+    let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+    if (ranking.length > 5) {
+        const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
+        finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
+    }
+
+    const rankingContainer = document.getElementById(rankingElementId);
+    if (rankingContainer) {
+        rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+    }
+}
         async function fetchSalesData() {
             try {
                 updateConnectionStatus('loading', 'Conectando à Vendas...');
@@ -937,28 +1377,6 @@
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados do Ceará:", error);
-            }
-        }
-        
-        async function fetchPaymentsData() {
-            try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${FIXED_SHEET_ID}/export?format=csv&gid=${PGTO_SHEET_GID}&_=${new Date().getTime()}`;
-                const response = await fetch(csvUrl, { mode: 'cors' });
-                if (!response.ok) throw new Error(`Falha na conexão com pagamentos: ${response.statusText}`);
-                const csvData = await response.text();
-                
-                if (csvData && csvData.trim()) {
-                    const newPayments = await processPaymentsCsv(csvData);
-                    checkForPaidStatusChange(newPayments, paymentsData);
-                    paymentsData = newPayments;
-                    updateApprovedProcessesView(paymentsData);
-                }
-            } catch (error) {
-                console.error("Erro ao buscar dados de pagamentos:", error);
-                 ['aprovadoTableBody', 'naContaTableBody', 'pagoTableBody'].forEach(id => {
-                    const body = document.getElementById(id);
-                    if(body) body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Falha ao carregar dados.</td></tr>`;
-                });
             }
         }
         
@@ -1068,28 +1486,6 @@
             return tempData;
         }
 
-        async function processPaymentsCsv(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            const data = [];
-            for (let i = 1; i < lines.length; i++) { 
-                const columns = parseCSVLine(lines[i]);
-                if (columns.length >= 5 && columns[0]) {
-                    const nome = (columns[0] || '').trim();
-                    const processo = (columns[1] || '').trim();
-                    data.push({
-                        nome: nome,
-                        processo: processo,
-                        valor: (columns[2] || '').trim(),
-                        data: (columns[3] || '').trim(),
-                        status: (columns[4] || 'APROVADO').trim().toUpperCase(),
-                        originalIndex: i,
-                        uniqueId: `${nome}-${processo}-${i}`
-                    });
-                }
-            }
-            return data;
-        }
-
         async function processRtmCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const data = [];
@@ -1138,19 +1534,6 @@
             el.classList.add(`status-${status}`);
             const icons = { 'connected': 'fas fa-check-circle', 'error': 'fas fa-exclamation-circle', 'loading': 'fas fa-sync fa-spin' };
             el.innerHTML = `<i class="${icons[status]}"></i> <span id="statusText">${message}</span>`;
-        }
-
-        function updateApprovedProcessesView(allApprovedData) {
-            const statusMap = { 'APROVADO': [], 'NA CONTA': [], 'PAGO': [] };
-            allApprovedData.forEach(item => {
-                const status = item.status;
-                if (statusMap.hasOwnProperty(status)) {
-                    statusMap[status].push(item);
-                }
-            });
-            populatePaymentTable('aprovadoTableBody', statusMap['APROVADO']);
-            populatePaymentTable('naContaTableBody', statusMap['NA CONTA']);
-            populatePaymentTable('pagoTableBody', statusMap['PAGO']);
         }
 
         function updateRtmPaymentsView(data) {
@@ -1202,7 +1585,8 @@
                 html += `<tr>
                     <td><span class="date-badge">${formattedDate}</span></td>
                     <td>${payment.cliente || '-'}</td>
-                    <td><span class="process-badge">${payment.valor || '-'}</span></td>
+                    <td><span class="process-badge">--</span></td>
+
                     <td>${cobradorDisplay}</td>
                 </tr>`;
             });
@@ -1240,87 +1624,63 @@
                     <td><span class="date-badge">${acordo.data || '-'}</span></td>
                     <td>${acordo.cliente || '-'}</td>
                     <td>${acordo.processo || '-'}</td>
-                    <td><span class="process-badge">${acordo.valor || '-'}</span></td>
-                    <td><span class="process-badge" style="background-color: #a78bfa; color: white;">${acordo.honorarios || '-'}</span></td>
+                    <td><span class="process-badge">--</span></td>
+
+                    <td><span class="process-badge" style="background-color: #a78bfa; color: white;">--</span></td>
+
                     <td><span class="status-badge" style="background-color: ${bgColor};">${acordo.status || '-'}</span></td>
                 </tr>`;
             });
             tableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum acordo registrado.</td></tr>';
         }
 
-        function populatePaymentTable(tableBodyId, data) {
-            const tableBody = document.getElementById(tableBodyId);
-            if (!tableBody) return;
+        function updateTotalFinishedCounter() {
+            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
 
-            const sortedData = [...data].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return 0;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                return dateB - dateA;
-            });
-
-            let html = '';
-            sortedData.forEach(payment => {
-                html += `<tr>
-                    <td><span class="date-badge">${payment.data || '-'}</span></td>
-                    <td>${payment.nome || '-'}</td>
-                    <td><span class="process-badge">${payment.processo || '-'}</span></td>
-                    <td>${payment.valor || '-'}</td>
-                </tr>`;
-            });
-            tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
-        }
-
-        function updateProcessCounter(count) {
             const counterElement = document.getElementById('finishedProcesses');
             if (counterElement) {
-                const baseCount = 20000;
-                const total = baseCount + count;
+                const baseCount = 20224;
+                const total = baseCount + paidAcordosCount;
                 counterElement.textContent = total.toLocaleString('pt-BR');
             }
         }
-        
-        function updateTotalFinishedCounter() {
-            const paidPaymentsCount = paymentsData.filter(p => p.status === 'PAGO').length;
-            const paidAcordosCount = acordosData.filter(a => (a.status || '').toUpperCase() === 'PAGAMENTO EFETUADO').length;
-            
-            const totalPaid = paidPaymentsCount + paidAcordosCount;
-            updateProcessCounter(totalPaid);
-        }
 
-        function populateMonthFilter(dataToScan) {
-            const monthSet = new Set();
-            const allData = [...dataToScan, ...cearaData];
-            (allData || []).forEach(sale => {
-                if (sale.data) {
-                    const date = parsePtBrDate(sale.data);
-                    if (date) {
-                         const month = date.getMonth() + 1;
-                         const year = date.getFullYear();
-                         monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
-                    }
-                }
-            });
-            const monthSelect = document.getElementById('monthFilter');
-            const currentVal = monthSelect.value;
-            const allMonths = Array.from(monthSet).sort((a, b) => {
-                const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
-                return new Date(yb, mb - 1) - new Date(ya, ma - 1);
-            });
-            monthSelect.innerHTML = '';
-            allMonths.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month; option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-            if (allMonths.includes(currentVal)) {
-                monthSelect.value = currentVal;
-            } else if (allMonths.length > 0) {
-                monthSelect.value = allMonths[0];
+function populateMonthFilter(dataSC, dataCE) {
+    const monthSet = new Set();
+    const allData = [...(dataSC || []), ...(dataCE || [])]; // Combina os dados de SC e CE
+    
+    allData.forEach(sale => {
+        if (sale.data) {
+            const date = parsePtBrDate(sale.data);
+            if (date) {
+                 const month = date.getMonth() + 1;
+                 const year = date.getFullYear();
+                 monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
             }
         }
+    });
+
+    const monthSelect = document.getElementById('monthFilter');
+    const currentVal = monthSelect.value;
+    const allMonths = Array.from(monthSet).sort((a, b) => {
+        const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
+        return new Date(yb, mb - 1) - new Date(ya, ma - 1);
+    });
+
+    monthSelect.innerHTML = '';
+    allMonths.forEach(month => {
+        const option = document.createElement('option');
+        option.value = month; 
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    if (allMonths.includes(currentVal)) {
+        monthSelect.value = currentVal;
+    } else if (allMonths.length > 0) {
+        monthSelect.value = allMonths[0]; // Seleciona o mês mais recente por padrão
+    }
+}
         
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
@@ -1341,584 +1701,35 @@
                 return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
             });
         }
-        
-// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
-// SUBSTITUA ESTA FUNÇÃO
-// SUBSTITUA TODAS AS FUNÇÕES DUPLICADAS POR ESTE BLOCO CORRIGIDO
-// SUBSTITUA ESTA FUNÇÃO
-        function updateDashboard() {
-            if (document.getElementById('monthFilter').options.length === 0) return;
-        
-            const monthSalesSC = getMonthSales();
-            const monthSalesCE = getMonthCeara();
-        
-            const totalProcessosSC = countTotalProcesses(monthSalesSC);
-            const totalProcessosCE = countTotalProcesses(monthSalesCE);
-        
-            // CORREÇÃO: A chamada agora passa os dados de SC (monthSalesSC) e CE (monthSalesCE) corretamente
-            updateMainStats(totalProcessosSC, totalProcessosCE, monthSalesSC, monthSalesCE);
-            
-            updateProcessStats(monthSalesSC, monthSalesCE); 
-            
-            updateConsultantRanking(monthSalesSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-            updateConsultantRanking(monthSalesCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-            
-            populateConsultantFilter(monthSalesSC);
-            updateMonthSales(monthSalesSC);
-        
-            populateConsultantFilterCE(monthSalesCE);
-            updateMonthSalesCE(monthSalesCE);
-        
-            updateProcessEvolutionChart(salesData, cearaData);
-        }
-        
-        function countTotalProcesses(sales) {
-            let total = 0;
-            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
-        
-            sales.forEach(sale => {
-                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
-                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-                
-                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-                if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda += 1;
-                }
-                total += contagemParaEstaVenda;
-            });
-            return total;
-        }
-        
-        // SUBSTITUA ESTA FUNÇÃO
-// SUBSTITUA ESTA FUNÇÃO
-        function updateMainStats(totalSC, totalCE, monthSalesSC, monthSalesCE) {
-            // Popula os novos cards com os valores corretos
-            document.getElementById('totalMonthGlobal').textContent = totalSC + totalCE; // Total da empresa
-            document.getElementById('totalMonthSC').textContent = totalSC; // Apenas SC
-            document.getElementById('totalMonthCE').textContent = totalCE; // Apenas CE
-        
-            const selectedMonthYear = document.getElementById('monthFilter').value;
-            if (selectedMonthYear) {
-                const [monthStr, yearStr] = selectedMonthYear.split('/');
-                const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-                const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
-                
-                // Atualiza o rótulo do mês em todos os cards
-                document.getElementById('monthLabelGlobal').textContent = monthLabelText;
-                document.getElementById('monthLabelSC').textContent = monthLabelText;
-            }
-            
-            // Calcula e exibe a média diária de SC
-            const maxDayInMonthSC = monthSalesSC.reduce((max, sale) => {
-                const date = parsePtBrDate(sale.data);
-                return date ? Math.max(max, date.getDate()) : max;
-            }, 0);
-            const dailyAvgSC = totalSC > 0 && maxDayInMonthSC > 0 ? (totalSC / maxDayInMonthSC) : 0;
-            document.getElementById('dailyAverageSC').textContent = dailyAvgSC.toFixed(1);
-        
-            // Calcula e exibe a média diária de CE
-            const maxDayInMonthCE = monthSalesCE.reduce((max, sale) => {
-                const date = parsePtBrDate(sale.data);
-                return date ? Math.max(max, date.getDate()) : max;
-            }, 0);
-            const dailyAvgCE = totalCE > 0 && maxDayInMonthCE > 0 ? (totalCE / maxDayInMonthCE) : 0;
-            document.getElementById('dailyAverageCE').textContent = dailyAvgCE.toFixed(1);
-        }
-        
-        // ESTA FUNÇÃO ESTAVA FALTANDO NO SEU SCRIPT
-        function updateProcessStats(monthSales, monthCeara) {
-            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
-            const clientesST = new Set();
-            
-            const allSales = [...monthSales, ...monthCeara];
-            
-            allSales.forEach(sale => {
-                (sale.processo || '').split(',').forEach(procRaw => {
-                    const proc = procRaw.trim().toUpperCase();
-                    if (!proc || proc === DRA_RENATA_STRING) return;
-                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
-                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
-                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
-                    else counts.outros++;
-                });
-            });
-            counts.seguroTerceiro = clientesST.size;
-            currentMonthCounts = counts;
-            
-            // Verifica se os elementos existem antes de tentar atualizá-los
-            if(document.getElementById('previdenciariosCount')) {
-                const updateCard = (type, count, meta) => {
-                    document.getElementById(`${type}Count`).textContent = count;
-                    const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-                    document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
-                    document.getElementById(`${type}Percent`).textContent = percent;
-                };
-                updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
-                updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
-                updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
-                document.getElementById('outrosCount').textContent = counts.outros;
-            }
-        }
-        
-        function populateConsultantFilter(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultant() {
-            const monthSales = getMonthSales();
-            updateMonthSales(monthSales);
-        }
-        
-        function updateMonthSales(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        
-        function populateConsultantFilterCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultantCE() {
-            const monthSales = getMonthCeara();
-            updateMonthSalesCE(monthSales);
-        }
-        
-        function updateMonthSalesCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        
-        function populateConsultantFilterCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultantCE() {
-            const monthSales = getMonthCeara();
-            updateMonthSalesCE(monthSales);
-        }
-        
-        function updateMonthSalesCE(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilterCE');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-            let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTableCE').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-        // FIM DA SUBSTITUIÇÃO
-        // ADICIONE ESTA NOVA FUNÇÃO
-        function countTotalProcesses(sales) {
-            let total = 0;
-            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
-        
-            sales.forEach(sale => {
-                const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
-                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-                
-                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-                if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda += 1;
-                }
-                total += contagemParaEstaVenda;
-            });
-            return total;
-        }
-        function getNormalizedConsultantKey(fullName) {
-            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
-            return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
-        }
-
         function getConsultantPhotoUrl(consultantName) {
             if (!consultantName) return DEFAULT_AVATAR;
             const baseName = getNormalizedConsultantKey(consultantName);
             return `${baseName}.PNG`;
         }
-        
-        // SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' POR ESTA
-// SUBSTITUA A SUA FUNÇÃO 'updateConsultantRanking' ANTIGA POR ESTA VERSÃO COMPLETA
-        function updateConsultantRanking(monthSales, rankingElementId, topConsultantId = null, topPhotoId = null) {
-            const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
-            const stats = {};
-            
-            monthSales.forEach(sale => {
-                if (!sale.consultor) return;
-                const key = getNormalizedConsultantKey(sale.consultor);
-        
-                if (!stats[key]) {
-                    const displayName = sale.consultor.trim().split(' ')[0];
-                    stats[key] = {
-                        name: displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase(),
-                        sales: 0,
-                        processDetails: {}
-                    };
-                }
-        
-                const todosProcessos = (sale.processo || '').split(',').map(procRaw => procRaw.trim().toUpperCase()).filter(proc => proc && proc !== DRA_RENATA_STRING);
-                const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-                const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-                
-                let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-                if (processosExclusivosNestaVenda.length > 0) {
-                    contagemParaEstaVenda += 1;
-                }
-                stats[key].sales += contagemParaEstaVenda;
-        
-                todosProcessos.forEach(proc => {
-                    stats[key].processDetails[proc] = (stats[key].processDetails[proc] || 0) + 1;
-                });
-            });
-        
-            consultantDetails = { ...consultantDetails, ...stats };
-            const ranking = Object.values(stats).sort((a, b) => b.sales - a.sales);
-            
-            if (topConsultantId && topPhotoId) {
-                const topConsultantNameEl = document.getElementById(topConsultantId);
-                const topConsultantPhotoEl = document.getElementById(topPhotoId);
-                if (ranking.length > 0 && ranking[0].sales > 0) {
-                    const topConsultant = ranking[0];
-                    topConsultantNameEl.textContent = topConsultant.name;
-                    topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
-                    topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; topConsultantPhotoEl.onerror = null; };
-                    topConsultantPhotoEl.style.display = 'inline-block';
+        function toggleRanking(stateSuffix) {
+            const list = document.getElementById(`ranking-list-${stateSuffix}`);
+            const button = document.getElementById(`expand-btn-${stateSuffix}`);
+
+            if (list && button) {
+                list.classList.toggle('collapsed');
+                if (list.classList.contains('collapsed')) {
+                    button.textContent = 'Ver Ranking Completo';
                 } else {
-                    topConsultantNameEl.textContent = '-';
-                    topConsultantPhotoEl.style.display = 'none';
+                    button.textContent = 'Mostrar Menos';
                 }
             }
-        
-            const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-            const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
-
-            let listHtml = '';
-            // Gera o HTML para TODOS os consultores no ranking
-            ranking.forEach((c, i) => {
-                const photoUrl = getConsultantPhotoUrl(c.name);
-                const consultantKey = getNormalizedConsultantKey(c.name);
-                listHtml += `<div class="ranking-item"><div class="consultant-info"><div class="${rankNumberClass}">${i + 1}</div><img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}'; this.onerror=null;"><div class="consultant-name">${c.name}</div></div><div class="sales-count" onclick="showProcessDetails('${consultantKey}')">${c.sales}</div></div>`;
-            });
-            
-            let finalHtml = '';
-            // Cria o contêiner da lista, aplicando a classe 'collapsed' se houver mais de 5 itens
-            finalHtml += `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
-
-            // Adiciona o botão "Ver Ranking Completo" apenas se houver mais de 5 itens
-            if (ranking.length > 5) {
-                const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
-                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
-            }
-
-            const rankingContainer = document.getElementById(rankingElementId);
-            
-            if (rankingContainer) {
-                // Insere a lista e o botão (se houver) no painel
-                rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
-            } else {
-                console.error(`Elemento com ID '${rankingElementId}' não foi encontrado no HTML.`);
-            }
         }
-
-        function updateProcessStats(monthSales, monthCeara) {
-            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-            let counts = { previdenciarios: 0, seguroVida: 0, outros: 0, seguroTerceiro: 0 };
-            const clientesST = new Set();
-            
-            const allSales = [...monthSales, ...monthCeara];
-            
-            allSales.forEach(sale => {
-                (sale.processo || '').split(',').forEach(procRaw => {
-                    const proc = procRaw.trim().toUpperCase();
-                    if (!proc || proc === DRA_RENATA_STRING) return;
-                    if (PREVIDENCIARIO_TYPES.includes(proc)) counts.previdenciarios++;
-                    else if (SEGURO_VIDA_TYPES.includes(proc)) counts.seguroVida++;
-                    else if (SEGURO_TERCEIRO_TYPES.includes(proc)) clientesST.add(sale.cliente);
-                    else counts.outros++;
-                });
-            });
-            counts.seguroTerceiro = clientesST.size;
-            currentMonthCounts = counts;
-            const updateCard = (type, count, meta) => {
-                document.getElementById(`${type}Count`).textContent = count;
-                const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-                document.getElementById(`${type}Goal`).textContent = `${count}/${meta}`;
-                document.getElementById(`${type}Percent`).textContent = percent;
-            };
-            updateCard('previdenciarios', counts.previdenciarios, metas['PREVIDENCIÁRIOS']);
-            updateCard('seguroTerceiro', counts.seguroTerceiro, metas['SEGURO TERCEIRO']);
-            updateCard('seguroVida', counts.seguroVida, metas['SEGURO DE VIDA']);
-            document.getElementById('outrosCount').textContent = counts.outros;
-        }
-        
-        function populateConsultantFilter(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            if (!consultantFilterSelect) return;
-            const currentSelection = consultantFilterSelect.value;
-            const consultantsMap = new Map();
-            monthSales.forEach(sale => {
-                if (sale.consultor && sale.consultor.trim() !== "") {
-                    const rawName = sale.consultor.trim();
-                    const key = getNormalizedConsultantKey(rawName);
-                    if (!consultantsMap.has(key)) {
-                        const displayName = rawName.split(' ')[0];
-                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                        consultantsMap.set(key, formattedName);
-                    }
-                }
-            });
-            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-            sortedConsultants.forEach(([key, displayName]) => {
-                const option = document.createElement('option');
-                option.value = key; option.textContent = displayName;
-                consultantFilterSelect.appendChild(option);
-            });
-            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-                consultantFilterSelect.value = currentSelection;
-            }
-        }
-        
-        function filterSalesByConsultant() {
-            const monthSales = getMonthSales();
-            updateMonthSales(monthSales);
-        }
-
-        function updateMonthSales(monthSales) {
-            const consultantFilterSelect = document.getElementById('consultantFilter');
-            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-            let filteredSales = monthSales;
-            if (selectedConsultantKey !== 'all') {
-                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-            }
-            const sortedSales = [...filteredSales].sort((a, b) => {
-                const dateA = parsePtBrDate(a.data);
-                const dateB = parsePtBrDate(b.data);
-                if (!dateA && !dateB) return b.originalIndex - a.originalIndex;
-                if (!dateA) return 1;
-                if (!dateB) return -1;
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return b.originalIndex - a.originalIndex;
-            });
-let html = '';
-            sortedSales.forEach(sale => {
-                html += `<tr><td><span class="date-badge">${sale.data || '-'}</span></td><td>${sale.cliente || '-'}</td><td><span class="process-badge">${sale.processo || '-'}</span></td><td>${sale.consultor || '-'}</td></tr>`;
-            });
-            document.getElementById('recentSalesTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-        }
-
-        function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
-            const combinedData = [...allSalesData, ...(allCearaData || [])];
-            if (!combinedData || combinedData.length === 0) return;
-            const mostRecentYear = Math.max(...combinedData.map(sale => {
-                const date = parsePtBrDate(sale.data);
-                return date ? date.getFullYear() : 0;
-            }).filter(year => year > 1900));
-            if (!mostRecentYear) return;
-            document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${mostRecentYear}`;
-            const monthlyCounts = { 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
-            combinedData.forEach(sale => {
-                if (!sale.processo) return;
-                const date = parsePtBrDate(sale.data);
-                if (date && date.getFullYear() === mostRecentYear && date.getMonth() + 1 >= 5) {
-                    const month = date.getMonth() + 1;
-                    const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
-                    if (monthlyCounts.hasOwnProperty(month)) { monthlyCounts[month] += numProcessos; }
-                }
-            });
-            const dataPoints = Object.values(monthlyCounts);
-            const lastDataIndex = dataPoints.findLastIndex(d => d > 0);
-            const finalDataPoints = dataPoints.map((point, index) => (lastDataIndex === -1 || index <= lastDataIndex) ? point : null);
-            const ctx = document.getElementById('processEvolutionChart').getContext('2d');
-            const labels = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            if (processEvolutionChartInstance) { processEvolutionChartInstance.destroy(); }
-            processEvolutionChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Número de Processos', data: finalDataPoints, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 3, pointBackgroundColor: '#6b46c1', pointRadius: 5, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } }, x: { ticks: { color: '#6b7280' }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 } } } });
-        }
-
-        function showProcessDetails(consultantKey) {
-            const details = consultantDetails[consultantKey];
-            if (!details) return;
-            const modal = document.getElementById('process-details-modal');
-            const titleEl = document.getElementById('modal-title');
-            const contentEl = document.getElementById('modal-details-content');
-            titleEl.textContent = `Detalhes de ${details.name}`;
-            const sortedProcesses = Object.entries(details.processDetails).sort((a, b) => b[1] - a[1]);
-            if (sortedProcesses.length === 0) {
-                contentEl.innerHTML = '<p>Nenhum detalhe de processo encontrado.</p>';
-            } else {
-                let listHtml = '<ul class="details-list">';
-                sortedProcesses.forEach(([processName, count]) => {
-                    const formattedName = processName.charAt(0).toUpperCase() + processName.slice(1).toLowerCase();
-                    listHtml += `<li><span class="process-name">${formattedName}</span> <span class="process-count-badge">${count}</span></li>`;
-                });
-                listHtml += '</ul>';
-                contentEl.innerHTML = listHtml;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function closeProcessDetails() {
-            document.getElementById('process-details-modal').style.display = 'none';
-        }
-        
-        function filterPayments(statusToShow) {
-            document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
-            
-            document.querySelectorAll('.payment-status-section').forEach(section => {
-                if (statusToShow === 'all') {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = section.id === `section-${statusToShow}` ? 'block' : 'none';
-                }
-            });
-        }
-
-        async function fetchAllData() {
-            await Promise.allSettled([
-                fetchSalesData(),
-                fetchCearaData(),
-                fetchPaymentsData(),
-                fetchRtmPaymentsData(),
-                fetchAcordosData() 
-            ]);
-            
-            updateTotalFinishedCounter();
-            
-            if (salesData.length > 0 || cearaData.length > 0 || paymentsData.length > 0 || rtmPaymentsData.length > 0) {
-                 updateConnectionStatus('connected', 'Conectado');
-            }
-            
-            firstLoad = false;
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
+            // 1. Prepara a navegação do carrossel
             setupCarousel();
+
+            // 2. Busca todos os dados pela primeira vez (esta é a linha que liga tudo)
             fetchAllData(); 
+
+            // 3. Configura a atualização automática a cada 30 segundos (30000 milissegundos)
             setInterval(fetchAllData, 30000);
 
+            // Configura o fechamento do modal ao clicar fora dele
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
                 if (event.target == modal) {
@@ -1926,6 +1737,7 @@ let html = '';
                 }
             }
 
+            // Configura o botão de pausar/retomar o carrossel
             const toggleBtn = document.getElementById('carousel-toggle-button');
             const icon = toggleBtn.querySelector('i');
             
@@ -1944,27 +1756,10 @@ let html = '';
                 }
             });
 
+            // Garante que o filtro de pagamentos comece mostrando tudo
             filterPayments('all');
         });
-        function toggleRanking(stateSuffix) {
-            const list = document.getElementById(`ranking-list-${stateSuffix}`);
-            const button = document.getElementById(`expand-btn-${stateSuffix}`);
-
-            if (list && button) {
-                list.classList.toggle('collapsed');
-                if (list.classList.contains('collapsed')) {
-                    button.textContent = 'Ver Ranking Completo';
-                } else {
-                    button.textContent = 'Mostrar Menos';
-                }
-            }
-        }
     </script>
 </body>
 </html>
-
-
-
-
-
 
