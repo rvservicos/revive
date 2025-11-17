@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - ReVive Dashboard</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+
+        <!-- Header -->
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-cog"></i>
+                Painel Administrativo
+            </h1>
+            <div class="user-info">
+                <span class="user-email" id="userEmail">Carregando...</span>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Link para Dashboard -->
+        <div style="margin-bottom: 2rem;">
+            <a href="index.html" class="btn btn-secondary" style="text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar ao Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="alert-container"></div>
+
+        <!-- Sistema de Abas -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-button active" data-tab="events">
+                    <i class="fas fa-calendar-alt"></i> Eventos
+                </button>
+                <button class="tab-button" data-tab="goals">
+                    <i class="fas fa-bullseye"></i> Metas
+                </button>
+                <button class="tab-button" data-tab="consultants">
+                    <i class="fas fa-users"></i> Consultores
+                </button>
+                <button class="tab-button" data-tab="categories">
+                    <i class="fas fa-tags"></i> Categorias
+                </button>
+                <button class="tab-button" data-tab="appearance">
+                    <i class="fas fa-palette"></i> Aparência
+                </button>
+                <button class="tab-button" data-tab="settings">
+                    <i class="fas fa-sliders-h"></i> Configurações
+                </button>
+            </div>
+
+            <!-- ============================================
+                 ABA: EVENTOS
+                 ============================================ -->
+            <div class="tab-content active" id="events-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Gerenciar Eventos</h3>
+                        <button class="btn btn-primary" id="addEventBtn">
+                            <i class="fas fa-plus"></i> Adicionar Evento
+                        </button>
+                    </div>
+                    <div class="admin-card-body">
+                        <div id="eventsList" class="items-list">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 ABA: METAS
+                 ============================================ -->
+            <div class="tab-content" id="goals-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-bullseye"></i> Configurar Metas Mensais</h3>
+                    </div>
+                    <div class="admin-card-body">
+                        <div class="form-group">
+                            <label for="goalMonth">Selecionar Mês</label>
+                            <select id="goalMonth" class="form-control">
+                                <!-- Preenchido via JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="goalPrevidenciarios">
+                                    <i class="fas fa-scale-balanced"></i> Meta Previdenciários
+                                </label>
+                                <input type="number" id="goalPrevidenciarios" class="form-control" placeholder="600" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="goalSeguroTerceiro">
+                                    <i class="fas fa-car-crash"></i> Meta Seguro Terceiro
+                                </label>
+                                <input type="number" id="goalSeguroTerceiro" class="form-control" placeholder="35" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="goalSeguroVida">
+                                    <i class="fas fa-heartbeat"></i> Meta Seguro de Vida
+                                </label>
+                                <input type="number" id="goalSeguroVida" class="form-control" placeholder="100" min="0">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" id="saveGoalsBtn">
+                            <i class="fas fa-save"></i> Salvar Metas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Histórico de Metas -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-history"></i> Histórico de Metas</h3>
+                    </div>
+                    <div class="admin-card-body">
+                        <div id="goalsHistory">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 ABA: CONSULTORES
+                 ============================================ -->
+            <div class="tab-content" id="consultants-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-users"></i> Gerenciar Consultores</h3>
+                        <button class="btn btn-primary" id="addConsultantBtn">
+                            <i class="fas fa-user-plus"></i> Adicionar Consultor
+                        </button>
+                    </div>
+                    <div class="admin-card-body">
+                        <div id="consultantsList" class="items-list">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 ABA: CATEGORIAS
+                 ============================================ -->
+            <div class="tab-content" id="categories-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-tags"></i> Categorias de Processos</h3>
+                        <button class="btn btn-primary" id="addCategoryBtn">
+                            <i class="fas fa-plus"></i> Adicionar Categoria
+                        </button>
+                    </div>
+                    <div class="admin-card-body">
+                        <div id="categoriesList" class="items-list">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 ABA: APARÊNCIA
+                 ============================================ -->
+            <div class="tab-content" id="appearance-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-palette"></i> Personalizar Tema</h3>
+                    </div>
+                    <div class="admin-card-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="themeName">Nome do Tema</label>
+                                <input type="text" id="themeName" class="form-control" placeholder="Tema ReVive">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="primaryColor">Cor Primária (SC)</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="primaryColor" class="color-picker-input" value="#8b5cf6">
+                                    <div class="color-preview" id="primaryPreview" style="background: #8b5cf6;">
+                                        Santa Catarina
+                                    </div>
+                                </div>
+                                <small class="form-help">Cor principal para região de Santa Catarina</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="secondaryColor">Cor Secundária (CE)</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="secondaryColor" class="color-picker-input" value="#10b981">
+                                    <div class="color-preview" id="secondaryPreview" style="background: #10b981;">
+                                        Ceará
+                                    </div>
+                                </div>
+                                <small class="form-help">Cor para região do Ceará</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="accentColor">Cor de Destaque</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="accentColor" class="color-picker-input" value="#ffc107">
+                                    <div class="color-preview" id="accentPreview" style="background: #ffc107;">
+                                        Destaques
+                                    </div>
+                                </div>
+                                <small class="form-help">Cor para elementos de destaque</small>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" id="saveThemeBtn">
+                            <i class="fas fa-save"></i> Salvar Tema
+                        </button>
+                        <button class="btn btn-secondary" id="resetThemeBtn">
+                            <i class="fas fa-undo"></i> Restaurar Padrão
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 ABA: CONFIGURAÇÕES
+                 ============================================ -->
+            <div class="tab-content" id="settings-tab">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-sliders-h"></i> Configurações Gerais</h3>
+                    </div>
+                    <div class="admin-card-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="refreshInterval">
+                                    <i class="fas fa-sync"></i> Intervalo de Atualização (segundos)
+                                </label>
+                                <input type="number" id="refreshInterval" class="form-control" placeholder="30" min="10" max="300">
+                                <small class="form-help">Frequência de atualização dos dados (10-300 segundos)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="carouselInterval">
+                                    <i class="fas fa-images"></i> Intervalo do Carrossel (segundos)
+                                </label>
+                                <input type="number" id="carouselInterval" class="form-control" placeholder="35" min="10" max="120">
+                                <small class="form-help">Tempo entre mudanças de página (10-120 segundos)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="baseProcessCount">
+                                    <i class="fas fa-calculator"></i> Contagem Base de Processos
+                                </label>
+                                <input type="number" id="baseProcessCount" class="form-control" placeholder="20224" min="0">
+                                <small class="form-help">Total de processos finalizados historicamente</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="companyGoal">
+                                    <i class="fas fa-flag-checkered"></i> Meta da Empresa (2030)
+                                </label>
+                                <input type="number" id="companyGoal" class="form-control" placeholder="100000" min="0">
+                                <small class="form-help">Meta de processos até 2030</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="autoPlayCarousel" style="width: auto;">
+                                <span><i class="fas fa-play-circle"></i> Carrossel Automático</span>
+                            </label>
+                            <small class="form-help">Ativar rotação automática de páginas</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="showNotifications" style="width: auto;">
+                                <span><i class="fas fa-bell"></i> Exibir Notificações</span>
+                            </label>
+                            <small class="form-help">Mostrar alertas de vendas e pagamentos</small>
+                        </div>
+
+                        <button class="btn btn-primary" id="saveSettingsBtn">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================
+         MODAL: ADICIONAR/EDITAR EVENTO
+         ============================================ -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle">Adicionar Evento</h3>
+                <button class="modal-close" onclick="adminApp.closeModal('eventModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="eventId">
+
+                <div class="form-group">
+                    <label for="eventTitle">Título do Evento</label>
+                    <input type="text" id="eventTitle" class="form-control" placeholder="Nome do evento" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDate">Data do Evento</label>
+                    <input type="date" id="eventDate" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Descrição</label>
+                    <textarea id="eventDescription" class="form-control" rows="4" placeholder="Descrição detalhada do evento"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventImage">Imagem do Evento</label>
+                    <div class="image-upload-container" id="eventImageUpload">
+                        <div class="image-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p>Clique ou arraste uma imagem aqui</p>
+                        <p style="font-size: 0.9rem; color: var(--color-text-muted);">JPG, PNG ou GIF (máx. 5MB)</p>
+                        <input type="file" id="eventImageInput" accept="image/*" style="display: none;">
+                    </div>
+                    <img id="eventImagePreview" class="image-preview" style="display: none;">
+                    <div class="upload-progress" id="eventUploadProgress" style="display: none;">
+                        <div class="upload-progress-bar" id="eventUploadProgressBar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="eventFeatured" style="width: auto;">
+                        <span><i class="fas fa-star"></i> Evento em Destaque</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="adminApp.closeModal('eventModal')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" id="saveEventBtn">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MODAL: ADICIONAR/EDITAR CONSULTOR
+         ============================================ -->
+    <div class="modal-overlay" id="consultantModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="consultantModalTitle">Adicionar Consultor</h3>
+                <button class="modal-close" onclick="adminApp.closeModal('consultantModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="consultantId">
+
+                <div class="form-group">
+                    <label for="consultantName">Nome Completo</label>
+                    <input type="text" id="consultantName" class="form-control" placeholder="Nome do consultor" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="consultantRegion">Região</label>
+                    <select id="consultantRegion" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="CE">Ceará</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="consultantEmail">Email</label>
+                    <input type="email" id="consultantEmail" class="form-control" placeholder="email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="consultantPhoto">Foto de Perfil</label>
+                    <div class="image-upload-container" id="consultantPhotoUpload">
+                        <div class="image-upload-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <p>Clique ou arraste uma foto aqui</p>
+                        <p style="font-size: 0.9rem; color: var(--color-text-muted);">JPG ou PNG (máx. 2MB)</p>
+                        <input type="file" id="consultantPhotoInput" accept="image/*" style="display: none;">
+                    </div>
+                    <img id="consultantPhotoPreview" class="image-preview" style="display: none; max-height: 200px;">
+                    <div class="upload-progress" id="consultantUploadProgress" style="display: none;">
+                        <div class="upload-progress-bar" id="consultantUploadProgressBar"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="adminApp.closeModal('consultantModal')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" id="saveConsultantBtn">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MODAL: ADICIONAR/EDITAR CATEGORIA
+         ============================================ -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Adicionar Categoria</h3>
+                <button class="modal-close" onclick="adminApp.closeModal('categoryModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="categoryId">
+
+                <div class="form-group">
+                    <label for="categoryName">Nome da Categoria</label>
+                    <input type="text" id="categoryName" class="form-control" placeholder="PREVIDENCIÁRIOS" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryTypes">Tipos de Processos</label>
+                    <textarea id="categoryTypes" class="form-control" rows="4" placeholder="BPC, AUXILIO DOENÇA, APOSENTADORIA (separados por vírgula)"></textarea>
+                    <small class="form-help">Digite os tipos separados por vírgula</small>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="categoryColor">Cor</label>
+                        <input type="color" id="categoryColor" class="color-picker-input" value="#8b5cf6">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryIcon">Ícone (Font Awesome)</label>
+                        <input type="text" id="categoryIcon" class="form-control" placeholder="fa-scale-balanced">
+                        <small class="form-help">Nome do ícone sem "fas fa-"</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="adminApp.closeModal('categoryModal')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" id="saveCategoryBtn">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SCRIPTS
+         ============================================ -->
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <!-- Scripts modulares -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-data.js"></script>
+    <script src="js/admin.js"></script>
+
+    <!-- Inicialização -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Painel administrativo carregado!');
+
+            // Inicializa autenticação
+            if (typeof authSystem !== 'undefined') {
+                authSystem.init();
+                authSystem.requireAdmin();
+            }
+
+            // Inicializa Firebase Data
+            if (typeof firebaseData !== 'undefined') {
+                firebaseData.init();
+            }
+
+            // Inicializa Admin App
+            if (typeof adminApp !== 'undefined') {
+                adminApp.init();
+            }
+        });
+    </script>
+</body>
+</html>

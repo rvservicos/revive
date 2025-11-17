@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReVive Dashboard - Vendas e Cultura</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Container Principal -->
+    <div class="main-container">
+
+        <!-- Botão Admin (canto superior direito) -->
+        <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+            <a href="admin.html" class="btn btn-primary" style="text-decoration: none;">
+                <i class="fas fa-cog"></i>
+                <span>Admin</span>
+            </a>
+        </div>
+
+        <!-- ============================================
+             PÁGINA 1: DASHBOARD
+             ============================================ -->
+        <div id="dashboard-view" class="carousel-page active fade-in" data-name="Dashboard">
+
+            <!-- Header -->
+            <div class="header">
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard de Vendas - ReVive
+                </h1>
+                <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
+            </div>
+
+            <!-- Status de Conexão -->
+            <div style="text-align: center;">
+                <div class="connection-status status-loading" id="connectionStatus">
+                    <i class="fas fa-sync fa-spin"></i>
+                    <span id="statusText">Carregando dados...</span>
+                </div>
+            </div>
+
+            <!-- Seletor de Mês e Navegação -->
+            <div class="month-selector">
+                <div class="month-selector-group">
+                    <label for="monthFilter">
+                        <i class="fas fa-calendar"></i> Mês:
+                    </label>
+                    <select id="monthFilter" class="form-select">
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+
+                <div class="month-selector-group">
+                    <label for="pageSelector">
+                        <i class="fas fa-map-signs"></i> Navegar para:
+                    </label>
+                    <select id="pageSelector" class="form-select">
+                        <option value="dashboard-view">📊 Dashboard</option>
+                        <option value="chart-view">📈 Gráficos</option>
+                        <option value="culture-view">💎 Cultura</option>
+                        <option value="rtm-view">💰 Pagamentos RTM</option>
+                        <option value="schedule-view">📅 Cronograma</option>
+                    </select>
+                </div>
+
+                <div class="month-selector-group">
+                    <button id="carouselPrevBtn" class="btn btn-secondary">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="carouselNextBtn" class="btn btn-secondary">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button id="carouselToggleBtn" class="btn btn-secondary" title="Pausar Carrossel">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card de Total Global -->
+            <div class="stat-card text-center" style="margin-bottom: 2rem; border-top: 4px solid var(--color-primary-dark);">
+                <h3><i class="fas fa-globe"></i> Total de Processos (Empresa)</h3>
+                <div class="stat-value" style="justify-content: center;" id="totalMonthGlobal">-</div>
+                <div class="stat-label" id="monthLabelGlobal">-</div>
+            </div>
+
+            <!-- Grid de Estatísticas (SC e CE) -->
+            <div class="stats-grid-container">
+
+                <!-- Coluna Santa Catarina -->
+                <div>
+                    <div class="stat-card" style="margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-map-marker-alt"></i> Total Processos (SC)</h3>
+                        <div class="stat-value" id="totalMonthSC">-</div>
+                        <div class="stat-label" id="monthLabelSC">processos em SC</div>
+                    </div>
+
+                    <div class="stat-card" style="margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-chart-bar"></i> Média Diária (SC)</h3>
+                        <div class="stat-value" id="dailyAverageSC">-</div>
+                        <div class="stat-label">processos/dia em SC</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3><i class="fas fa-trophy"></i> Melhor Consultor SC</h3>
+                        <div class="stat-value">
+                            🏆 <span id="topConsultant">-</span>
+                            <img id="topConsultantPhoto" src="" alt="Foto" style="width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid var(--color-primary-light); display: none; box-shadow: 0 7px 20px rgba(139, 92, 246, 0.25);">
+                        </div>
+                        <div class="stat-label">processos este mês</div>
+                    </div>
+                </div>
+
+                <!-- Coluna Ceará -->
+                <div>
+                    <div class="stat-card stat-card-ce" style="margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-sun"></i> Total Processos (Ceará)</h3>
+                        <div class="stat-value" id="totalMonthCE">-</div>
+                        <div class="stat-label">processos no Ceará</div>
+                    </div>
+
+                    <div class="stat-card stat-card-ce" style="margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-chart-bar"></i> Média Diária (CE)</h3>
+                        <div class="stat-value" id="dailyAverageCE">-</div>
+                        <div class="stat-label">processos/dia no Ceará</div>
+                    </div>
+
+                    <div class="stat-card stat-card-ce">
+                        <h3><i class="fas fa-trophy"></i> Melhor Consultor CE</h3>
+                        <div class="stat-value">
+                            🏆 <span id="topConsultantCE">-</span>
+                            <img id="topConsultantPhotoCE" src="" alt="Foto" style="width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid var(--color-secondary); display: none; box-shadow: 0 7px 20px rgba(16, 185, 129, 0.25);">
+                        </div>
+                        <div class="stat-label">processos este mês</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Metas -->
+            <div class="panel full-width">
+                <h2><i class="fas fa-bullseye"></i> Tipos de Processo e Metas</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 1.5rem; border-radius: 20px; text-align: center;">
+                        <h4 style="color: var(--color-primary-dark); font-size: 1.2rem; margin-bottom: 0.75rem; text-transform: uppercase;">Previdenciários</h4>
+                        <div style="font-size: 2.6rem; font-weight: 700; color: var(--color-primary);" id="previdenciariosCount">-</div>
+                        <div style="font-size: 1rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
+                            Meta: <span id="previdenciariosGoal">-</span>
+                            (<span id="previdenciariosPercent">-</span>%)
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 1.5rem; border-radius: 20px; text-align: center;">
+                        <h4 style="color: var(--color-primary-dark); font-size: 1.2rem; margin-bottom: 0.75rem; text-transform: uppercase;">Seguro Terceiro</h4>
+                        <div style="font-size: 2.6rem; font-weight: 700; color: var(--color-primary);" id="seguroTerceiroCount">-</div>
+                        <div style="font-size: 1rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
+                            Meta: <span id="seguroTerceiroGoal">-</span>
+                            (<span id="seguroTerceiroPercent">-</span>%)
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 1.5rem; border-radius: 20px; text-align: center;">
+                        <h4 style="color: var(--color-primary-dark); font-size: 1.2rem; margin-bottom: 0.75rem; text-transform: uppercase;">Seguro de Vida</h4>
+                        <div style="font-size: 2.6rem; font-weight: 700; color: var(--color-primary);" id="seguroVidaCount">-</div>
+                        <div style="font-size: 1rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
+                            Meta: <span id="seguroVidaGoal">-</span>
+                            (<span id="seguroVidaPercent">-</span>%)
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 1.5rem; border-radius: 20px; text-align: center;">
+                        <h4 style="color: var(--color-primary-dark); font-size: 1.2rem; margin-bottom: 0.75rem; text-transform: uppercase;">Outros</h4>
+                        <div style="font-size: 2.6rem; font-weight: 700; color: var(--color-primary);" id="outrosCount">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rankings -->
+            <div class="rankings-grid">
+                <!-- Ranking SC -->
+                <div class="panel panel-sc">
+                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (SC)</h2>
+                    <div id="consultantRankingSC">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Ranking CE -->
+                <div class="panel panel-ce">
+                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (CE)</h2>
+                    <div id="consultantRankingCE">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabelas de Processos -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+
+                <!-- Processos SC -->
+                <div class="panel panel-sc">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                        <h2 style="margin: 0; border: none; padding: 0;">
+                            <i class="fas fa-clock"></i> Processos do Mês (SC)
+                        </h2>
+                        <div>
+                            <label for="consultantFilterSC" style="font-weight: 600; color: var(--color-primary-dark); margin-right: 0.5rem;">Filtrar:</label>
+                            <select id="consultantFilterSC" class="form-select">
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Processo</th>
+                                <th>Consultor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSalesTableSC">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Processos CE -->
+                <div class="panel panel-ce">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                        <h2 style="margin: 0; border: none; padding: 0;">
+                            <i class="fas fa-clock"></i> Processos do Mês (CE)
+                        </h2>
+                        <div>
+                            <label for="consultantFilterCE" style="font-weight: 600; color: var(--color-secondary); margin-right: 0.5rem;">Filtrar:</label>
+                            <select id="consultantFilterCE" class="form-select">
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th class="th-ce">Data</th>
+                                <th class="th-ce">Cliente</th>
+                                <th class="th-ce">Processo</th>
+                                <th class="th-ce">Consultor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSalesTableCE">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============================================
+             PÁGINA 2: GRÁFICOS
+             ============================================ -->
+        <div id="chart-view" class="carousel-page" data-name="Gráficos">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-chart-area"></i>
+                    Evolução de Processos
+                </h1>
+                <p class="subtitle" id="chartSubtitle">Acompanhamento mensal do ano corrente</p>
+            </div>
+
+            <div class="panel">
+                <div style="position: relative; height: 500px;">
+                    <canvas id="processEvolutionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             PÁGINA 3: CULTURA
+             ============================================ -->
+        <div id="culture-view" class="carousel-page" data-name="Cultura">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-gem"></i>
+                    Nossa Cultura - ReVive
+                </h1>
+                <p class="subtitle">Os pilares que nos guiam todos os dias.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <!-- Missão -->
+                <div class="panel" style="text-align: center; background: linear-gradient(135deg, #fdfcff, #f3f5ff); border-top: 7px solid var(--color-primary);">
+                    <div style="font-size: 4.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h2 style="font-size: 2.8rem; color: var(--color-primary-dark); margin-bottom: 1.5rem;">Missão</h2>
+                    <p style="font-size: 1.8rem; font-weight: 500; color: var(--color-text-primary); line-height: 1.5;">
+                        Simplificar o acesso a direitos para quem enfrenta a dor.
+                    </p>
+                </div>
+
+                <!-- Visão -->
+                <div class="panel" style="text-align: center; background: linear-gradient(135deg, #fdfcff, #f3f5ff); border-top: 7px solid var(--color-primary);">
+                    <div style="font-size: 4.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h2 style="font-size: 2.8rem; color: var(--color-primary-dark); margin-bottom: 1.5rem;">Visão</h2>
+                    <p style="font-size: 1.8rem; font-weight: 500; color: var(--color-text-primary); line-height: 1.5;">
+                        Conduzir ao êxito mais de 100 mil processos até 2030.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Valores -->
+            <div class="panel" style="text-align: center; border-top: 7px solid var(--color-primary-light);">
+                <div style="font-size: 3.9rem; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h2 style="font-size: 2.3rem; color: var(--color-primary-dark); margin-bottom: 1.5rem;">Nossos Valores</h2>
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 2rem;">
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-balance-scale"></i> Ética Profissional
+                    </span>
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-trophy"></i> Meritocracia
+                    </span>
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-lightbulb"></i> Inovação
+                    </span>
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-heart"></i> Empatia
+                    </span>
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-bolt"></i> Proatividade
+                    </span>
+                    <span class="value-tag" style="background: #f8f9ff; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid #e8ecff; color: var(--color-primary-dark); font-weight: 600; font-size: 1.4rem; display: inline-flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-search"></i> Atenção aos Detalhes
+                    </span>
+                </div>
+            </div>
+
+            <!-- Contador de Processos -->
+            <div class="panel" style="text-align: center; border-top: 4px solid var(--color-primary);">
+                <h3 style="font-size: 2.2rem; color: var(--color-primary); margin-bottom: 1rem;">
+                    Processos Finalizados Rumo à Meta
+                </h3>
+                <div style="font-size: 4.5rem; font-weight: 700; margin-top: 1rem;">
+                    <span id="finishedProcesses" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        20.224
+                    </span>
+                    <span style="color: var(--color-text-secondary);"> / 100.000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             PÁGINA 4: PAGAMENTOS RTM
+             ============================================ -->
+        <div id="rtm-view" class="carousel-page" data-name="Pagamentos RTM">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-receipt"></i>
+                    Pagamentos de RTM
+                </h1>
+                <p class="subtitle">Acompanhamento de pagamentos recebidos via RTM.</p>
+            </div>
+
+            <div class="panel text-center" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 2.2rem; color: var(--color-primary); margin-bottom: 1rem;">
+                    RTMs Cobrados Hoje
+                </h3>
+                <div style="font-size: 4.5rem; font-weight: 700; color: var(--color-primary);" id="rtmTodayCounter">
+                    0
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2><i class="fas fa-history"></i> Histórico de Recebimentos</h2>
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Valor</th>
+                            <th>Cobrado por</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rtmPaymentsTableBody">
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================
+             PÁGINA 5: CRONOGRAMA
+             ============================================ -->
+        <div id="schedule-view" class="carousel-page" data-name="Cronograma">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-calendar-alt"></i>
+                    Cronograma ReVive
+                </h1>
+                <p class="subtitle">Fique por dentro dos nossos próximos eventos!</p>
+            </div>
+
+            <div id="eventsTimeline">
+                <!-- Preenchido via JavaScript com eventos do Firebase -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================
+         SCRIPTS
+         ============================================ -->
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <!-- Scripts modulares -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/firebase-data.js"></script>
+    <script src="js/dashboard.js"></script>
+
+    <!-- Inicialização -->
+    <script>
+        // Inicializa ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 ReVive Dashboard v2 carregado!');
+
+            // Inicializa Firebase Data
+            if (typeof firebaseData !== 'undefined') {
+                firebaseData.init();
+            }
+
+            // Inicializa Dashboard
+            if (typeof dashboardApp !== 'undefined') {
+                dashboardApp.init();
+            }
+        });
+    </script>
+</body>
+</html>
