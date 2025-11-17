@@ -1,0 +1,75 @@
+# ReVive Dashboard v2 - Git Ignore
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependências
+node_modules/
+bower_components/
+
+# Arquivos de ambiente (NÃO commitar credenciais)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Configuração Firebase (substituir antes de commitar)
+# Descomente a linha abaixo se quiser ignorar config.js
+# js/config.js
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores de código
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Build e distribuição
+dist/
+build/
+out/
+
+# Imagens temporárias de upload
+uploads/temp/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Testes
+coverage/
+.nyc_output/
+
+# Arquivos comprimidos
+*.zip
+*.tar.gz
+*.rar
+
+# Backups de banco de dados
+*.sql
+*.sqlite
+*.db
