@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReVive Dashboard - Modern Edition</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ============================================
+           VARIÁVEIS E RESET
+           ============================================ */
+        :root {
+            /* Cores principais */
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --accent: #f59e0b;
+
+            /* Background */
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(255, 255, 255, 0.1);
+
+            /* Texto */
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+
+            /* Sombras */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+            --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.3);
+
+            /* Espaçamentos */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            /* Border radius */
+            --radius-sm: 0.75rem;
+            --radius-md: 1rem;
+            --radius-lg: 1.5rem;
+            --radius-xl: 2rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================
+           ESTILOS GERAIS
+           ============================================ */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* Background animado */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(245, 158, 11, 0.2) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* ============================================
+           HEADER MODERNO
+           ============================================ */
+        .header-modern {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            background-size: 200% 100%;
+            animation: gradientFlow 3s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header-modern h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
+        }
+
+        .header-modern .subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .header-modern .icon {
+            display: inline-block;
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ============================================
+           CARDS GLASSMORPHISM
+           ============================================ */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        /* ============================================
+           GRID DE ESTATÍSTICAS
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .stat-card.ce::after {
+            background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: white;
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card.ce .stat-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-card.ce .stat-value {
+            color: var(--secondary);
+        }
+
+        .stat-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           RANKINGS MODERNOS
+           ============================================ */
+        .rankings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .ranking-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .ranking-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ranking-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .ranking-card.ce .ranking-header h2 {
+            color: var(--secondary);
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            background: rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ranking-item:hover {
+            background: rgba(124, 58, 237, 0.05);
+            transform: translateX(5px);
+        }
+
+        .ranking-card.ce .ranking-item:hover {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .rank-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ranking-card.ce .rank-badge {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        .rank-badge.top-3 {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .consultant-info {
+            flex: 1;
+        }
+
+        .consultant-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .consultant-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .sales-badge {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 1.25rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ranking-card.ce .sales-badge {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        /* ============================================
+           CONTROLES DE NAVEGAÇÃO
+           ============================================ */
+        .controls-bar {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .control-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        select, button {
+            padding: 0.75rem 1.25rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        select {
+            background: white;
+            color: var(--text-primary);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* ============================================
+           BADGE DE STATUS
+           ============================================ */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .status-badge.connected {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .status-badge.loading {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: white;
+        }
+
+        .status-badge.error {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+        }
+
+        /* ============================================
+           RESPONSIVIDADE
+           ============================================ */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rankings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-modern h1 {
+                font-size: 2rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* ============================================
+           UTILITÁRIOS
+           ============================================ */
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: var(--spacing-xs); }
+        .mb-2 { margin-bottom: var(--spacing-sm); }
+        .mb-3 { margin-bottom: var(--spacing-md); }
+        .mb-4 { margin-bottom: var(--spacing-lg); }
+
+        .hidden { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spin { animation: spin 1s linear infinite; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header Moderno -->
+        <div class="header-modern">
+            <div class="icon">📊</div>
+            <h1>ReVive Dashboard</h1>
+            <p class="subtitle">Rumo aos cem mil processos até 2030!</p>
+        </div>
+
+        <!-- Status de Conexão -->
+        <div class="text-center mb-3">
+            <div class="status-badge loading" id="statusBadge">
+                <i class="fas fa-sync spin"></i>
+                <span id="statusText">Carregando dados...</span>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls-bar">
+            <div class="control-group">
+                <label for="monthFilter"><i class="fas fa-calendar"></i> Mês:</label>
+                <select id="monthFilter">
+                    <!-- Preenchido via JS -->
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button onclick="location.reload()">
+                    <i class="fas fa-sync"></i> Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid de Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="stat-label">Total Geral</div>
+                <div class="stat-value" id="totalGlobal">-</div>
+                <div class="stat-subtitle">processos na empresa</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-label">Santa Catarina</div>
+                <div class="stat-value" id="totalSC">-</div>
+                <div class="stat-subtitle" id="avgSC">-</div>
+            </div>
+
+            <div class="stat-card ce">
+                <div class="stat-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="stat-label">Ceará</div>
+                <div class="stat-value" id="totalCE">-</div>
+                <div class="stat-subtitle" id="avgCE">-</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-label">Top Consultor</div>
+                <div class="stat-value" id="topConsultant">-</div>
+                <div class="stat-subtitle" id="topConsultantSales">-</div>
+            </div>
+        </div>
+
+        <!-- Rankings -->
+        <div class="rankings-container">
+            <!-- Ranking SC -->
+            <div class="ranking-card">
+                <div class="ranking-header">
+                    <i class="fas fa-medal" style="font-size: 1.75rem; color: var(--primary);"></i>
+                    <h2>Ranking SC</h2>
+                </div>
+                <div id="rankingSC">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+
+            <!-- Ranking CE -->
+            <div class="ranking-card ce">
+                <div class="ranking-header">
+                    <i class="fas fa-medal" style="font-size: 1.75rem; color: var(--secondary);"></i>
+                    <h2>Ranking Ceará</h2>
+                </div>
+                <div id="rankingCE">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Configuração
+        const CONSULTORES_CEARA = ['WESLLEY', 'LIVIA', 'LÍVIA', 'LUCAS', 'VANESSA'];
+
+        const SHEETS = {
+            ranking: {
+                id: '1YyyXkC2f3PU7_-IsO0ZgyusKVelyweZ301p63XFDrJ8',
+                gid: '1686794249'
+            },
+            salesSC: {
+                id: '1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms',
+                gid: '1536647709'
+            },
+            salesCE: {
+                id: '1fSTEyMmAEgfMnAFUTdYbJah5dr8OudsEsqjKHnHwFms',
+                gid: '1480007459'
+            }
+        };
+
+        // Estado
+        let salesDataSC = [];
+        let salesDataCE = [];
+        let rankingData = [];
+        let currentMonth = new Date();
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Dashboard carregado');
+            populateMonthSelector();
+            fetchAllData();
+
+            // Atualiza a cada 30 segundos
+            setInterval(fetchAllData, 30000);
+        });
+
+        // Popula seletor de meses
+        function populateMonthSelector() {
+            const select = document.getElementById('monthFilter');
+            const now = new Date();
+
+            for (let i = 0; i < 12; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const monthName = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+                const option = document.createElement('option');
+                option.value = `${month}-${year}`;
+                option.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+                if (i === 0) option.selected = true;
+
+                select.appendChild(option);
+            }
+
+            select.addEventListener('change', (e) => {
+                const [month, year] = e.target.value.split('-');
+                currentMonth = new Date(parseInt(year), parseInt(month) - 1, 1);
+                updateDashboard();
+            });
+        }
+
+        // Busca todos os dados
+        async function fetchAllData() {
+            updateStatus('loading', 'Carregando dados...');
+
+            try {
+                await Promise.all([
+                    fetchSalesData('SC'),
+                    fetchSalesData('CE'),
+                    fetchRankingData()
+                ]);
+
+                updateDashboard();
+                updateStatus('connected', 'Conectado - Dados atualizados');
+
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                updateStatus('error', 'Erro ao carregar dados');
+            }
+        }
+
+        // Busca vendas
+        async function fetchSalesData(region) {
+            const sheet = region === 'SC' ? SHEETS.salesSC : SHEETS.salesCE;
+            const url = `https://docs.google.com/spreadsheets/d/${sheet.id}/export?format=csv&gid=${sheet.gid}&_=${Date.now()}`;
+
+            try {
+                const response = await fetch(url);
+                const csv = await response.text();
+                const data = parseCSV(csv);
+
+                if (region === 'SC') {
+                    salesDataSC = data;
+                } else {
+                    salesDataCE = data;
+                }
+
+                console.log(`✅ Vendas ${region}:`, data.length);
+            } catch (error) {
+                console.error(`❌ Erro vendas ${region}:`, error);
+            }
+        }
+
+        // Busca ranking
+        async function fetchRankingData() {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEETS.ranking.id}/export?format=csv&gid=${SHEETS.ranking.gid}&_=${Date.now()}`;
+
+            try {
+                const response = await fetch(url);
+                const csv = await response.text();
+                rankingData = parseRankingCSV(csv);
+
+                console.log('✅ Ranking:', rankingData.length);
+            } catch (error) {
+                console.error('❌ Erro ranking:', error);
+            }
+        }
+
+        // Parse CSV
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length >= 4) {
+                    data.push({
+                        data: values[0],
+                        cliente: values[1],
+                        processo: values[2],
+                        consultor: values[3]
+                    });
+                }
+            }
+
+            return data;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let char of line) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            result.push(current.trim());
+            return result;
+        }
+
+        function parseRankingCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = parseCSVLine(lines[0]);
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values[0]) {
+                    let total = 0;
+                    for (let j = 1; j < values.length; j++) {
+                        total += parseInt(values[j]) || 0;
+                    }
+
+                    data.push({
+                        name: values[0],
+                        sales: total
+                    });
+                }
+            }
+
+            return data.sort((a, b) => b.sales - a.sales);
+        }
+
+        // Atualiza dashboard
+        function updateDashboard() {
+            const salesSCMonth = filterByMonth(salesDataSC);
+            const salesCEMonth = filterByMonth(salesDataCE);
+
+            // Estatísticas
+            const totalSC = salesSCMonth.length;
+            const totalCE = salesCEMonth.length;
+            const totalGlobal = totalSC + totalCE;
+
+            document.getElementById('totalGlobal').textContent = formatNumber(totalGlobal);
+            document.getElementById('totalSC').textContent = formatNumber(totalSC);
+            document.getElementById('totalCE').textContent = formatNumber(totalCE);
+
+            // Médias
+            const avgSC = calculateDailyAvg(salesSCMonth);
+            const avgCE = calculateDailyAvg(salesCEMonth);
+
+            document.getElementById('avgSC').textContent = `Média: ${avgSC.toFixed(1)} /dia`;
+            document.getElementById('avgCE').textContent = `Média: ${avgCE.toFixed(1)} /dia`;
+
+            // Top consultor
+            const allSales = [...salesSCMonth, ...salesCEMonth];
+            const topConsultant = getTopConsultant(allSales);
+
+            document.getElementById('topConsultant').textContent = topConsultant.name || '-';
+            document.getElementById('topConsultantSales').textContent = `${topConsultant.count} processos`;
+
+            // Rankings
+            updateRankings();
+        }
+
+        // Atualiza rankings
+        function updateRankings() {
+            const rankingSC = rankingData.filter(c => !CONSULTORES_CEARA.includes(c.name.toUpperCase()));
+            const rankingCE = rankingData.filter(c => CONSULTORES_CEARA.includes(c.name.toUpperCase()));
+
+            renderRanking('rankingSC', rankingSC);
+            renderRanking('rankingCE', rankingCE);
+        }
+
+        // Renderiza ranking
+        function renderRanking(elementId, data) {
+            const container = document.getElementById(elementId);
+
+            let html = '';
+            data.slice(0, 10).forEach((consultant, index) => {
+                const isTop3 = index < 3;
+                html += `
+                    <div class="ranking-item">
+                        <div class="rank-badge ${isTop3 ? 'top-3' : ''}">
+                            ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                        </div>
+                        <div class="consultant-info">
+                            <div class="consultant-name">${consultant.name}</div>
+                            <div class="consultant-meta">${consultant.sales} processos no total</div>
+                        </div>
+                        <div class="sales-badge">${consultant.sales}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p style="text-align: center; color: var(--text-muted);">Sem dados</p>';
+        }
+
+        // Filtra por mês
+        function filterByMonth(sales) {
+            return sales.filter(sale => {
+                const saleDate = parseDate(sale.data);
+                if (!saleDate) return false;
+
+                return saleDate.getMonth() === currentMonth.getMonth() &&
+                       saleDate.getFullYear() === currentMonth.getFullYear();
+            });
+        }
+
+        // Parse data BR
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            const parts = dateStr.split('/');
+            if (parts.length !== 3) return null;
+
+            return new Date(
+                parseInt(parts[2]),
+                parseInt(parts[1]) - 1,
+                parseInt(parts[0])
+            );
+        }
+
+        // Calcula média diária
+        function calculateDailyAvg(sales) {
+            if (sales.length === 0) return 0;
+
+            const daysInMonth = new Date(
+                currentMonth.getFullYear(),
+                currentMonth.getMonth() + 1,
+                0
+            ).getDate();
+
+            return sales.length / daysInMonth;
+        }
+
+        // Top consultor
+        function getTopConsultant(sales) {
+            const counts = {};
+
+            sales.forEach(sale => {
+                counts[sale.consultor] = (counts[sale.consultor] || 0) + 1;
+            });
+
+            let topName = '';
+            let topCount = 0;
+
+            for (const [name, count] of Object.entries(counts)) {
+                if (count > topCount) {
+                    topCount = count;
+                    topName = name;
+                }
+            }
+
+            return { name: topName, count: topCount };
+        }
+
+        // Formata número
+        function formatNumber(num) {
+            return num.toLocaleString('pt-BR');
+        }
+
+        // Atualiza status
+        function updateStatus(status, text) {
+            const badge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+
+            badge.className = `status-badge ${status}`;
+
+            if (status === 'connected') {
+                badge.innerHTML = `<i class="fas fa-check-circle"></i><span>${text}</span>`;
+            } else if (status === 'loading') {
+                badge.innerHTML = `<i class="fas fa-sync spin"></i><span>${text}</span>`;
+            } else {
+                badge.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>${text}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
