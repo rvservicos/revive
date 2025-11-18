@@ -34,7 +34,11 @@ Sistema modernizado da página VITA com painel administrativo para gerenciar lin
 1. No menu lateral, vá em "Build" → "Firestore Database"
 2. Clique em "Criar banco de dados"
 3. Selecione "Modo de produção"
-4. Escolha a localização (recomendado: southamerica-east1 - São Paulo)
+4. **⚠️ IMPORTANTE - Escolha a localização:**
+   - **southamerica-east1** (São Paulo, Brasil) 🇧🇷
+   - **NÃO escolha** us-central1, us-east1 ou outras regiões dos EUA
+   - **Esta escolha é permanente e não pode ser alterada!**
+   - Ver `REGIAO_FIREBASE.txt` para mais detalhes
 5. Clique em "Ativar"
 
 ### 3. Configurar Firebase Hosting

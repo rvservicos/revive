@@ -14,7 +14,11 @@
 1. No menu lateral: **Firestore Database**
 2. Clique em **"Criar banco de dados"**
 3. Modo: **Produção**
-4. Localização: **southamerica-east1** (São Paulo)
+4. **⚠️ IMPORTANTE - Localização:**
+   - Escolha: **southamerica-east1** (São Paulo) 🇧🇷
+   - **NÃO escolha** regiões dos EUA (us-central1, us-east1, etc.)
+   - Esta escolha **NÃO pode ser alterada depois!**
+   - Ver detalhes em: `REGIAO_FIREBASE.txt`
 5. Clique em **"Ativar"**
 
 ### 3️⃣ Obter Credenciais (1 min)
