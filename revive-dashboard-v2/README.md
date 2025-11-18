@@ -58,6 +58,15 @@ revive-dashboard-v2/
 
 ## 🔧 Configuração Inicial
 
+> **⚠️ IMPORTANTE - REGIÃO DO FIREBASE:**
+>
+> Ao configurar o Firebase, **SEMPRE selecione a região `southamerica-east1` (São Paulo)** para:
+> - ✅ Firestore Database
+> - ✅ Storage
+> - ✅ Functions (se usar no futuro)
+>
+> Isso garante menor latência e conformidade com LGPD (dados no Brasil).
+
 ### 1. Criar Projeto Firebase
 
 1. Acesse [Firebase Console](https://console.firebase.google.com/)
@@ -76,7 +85,8 @@ revive-dashboard-v2/
 
 1. No menu lateral, vá em **Build > Storage**
 2. Clique em "Começar"
-3. Aceite as regras padrão
+3. **IMPORTANTE:** Selecione a mesma região (southamerica-east1 - São Paulo)
+4. Aceite as regras padrão
 
 ### 4. Habilitar Authentication
 

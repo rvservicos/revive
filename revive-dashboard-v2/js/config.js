@@ -4,8 +4,11 @@
  * INSTRUÇÕES:
  * 1. Crie um projeto no Firebase Console: https://console.firebase.google.com/
  * 2. Habilite Firestore, Storage e Authentication
- * 3. Copie as credenciais do seu projeto e cole abaixo
- * 4. Substitua os valores de exemplo pelas suas credenciais reais
+ * 3. ⚠️ IMPORTANTE: Selecione SEMPRE a região "southamerica-east1" (São Paulo)
+ *    - Menor latência para usuários no Brasil
+ *    - Conformidade com LGPD (dados armazenados no Brasil)
+ * 4. Copie as credenciais do seu projeto e cole abaixo
+ * 5. Substitua os valores de exemplo pelas suas credenciais reais
  */
 
 // ============================================
