@@ -564,6 +564,251 @@
         }
 
         /* ============================================
+           NOTIFICAÇÕES MODERNAS
+           ============================================ */
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification-overlay.show {
+            display: flex;
+        }
+
+        .notification-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .notification-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            background-size: 200% 100%;
+            animation: gradientFlow 2s linear infinite;
+        }
+
+        .notification-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .notification-icon.success {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .notification-icon.money {
+            background: linear-gradient(135deg, var(--accent), #fbbf24);
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.4);
+        }
+
+        .notification-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .notification-message {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .notification-details {
+            font-size: 1rem;
+            color: var(--text-muted);
+            background: rgba(124, 58, 237, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            min-width: 300px;
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideInRight 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), var(--primary-light));
+        }
+
+        .toast.success::before {
+            background: linear-gradient(180deg, var(--secondary), var(--secondary-light));
+        }
+
+        .toast.money::before {
+            background: linear-gradient(180deg, var(--accent), #fbbf24);
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        .toast.money .toast-icon {
+            background: linear-gradient(135deg, var(--accent), #fbbf24);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* Partículas de celebração */
+        .celebration-particle {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUp 3s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
            UTILITÁRIOS
            ============================================ */
         .text-center { text-align: center; }
@@ -579,6 +824,33 @@
         }
 
         .spin { animation: spin 1s linear infinite; }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+
+            .toast {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .notification-card {
+                padding: 2rem;
+            }
+
+            .notification-title {
+                font-size: 2rem;
+            }
+
+            .notification-icon {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -681,6 +953,21 @@
 
     </div>
 
+    <!-- Notificação Modal -->
+    <div class="notification-overlay" id="notificationOverlay">
+        <div class="notification-card">
+            <div class="notification-icon" id="notificationIcon">
+                🚀
+            </div>
+            <h2 class="notification-title" id="notificationTitle">Nova Venda!</h2>
+            <p class="notification-message" id="notificationMessage">Parabéns pela conquista!</p>
+            <div class="notification-details" id="notificationDetails">Carregando...</div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Scripts -->
     <script>
         // Configuração
@@ -706,6 +993,12 @@
         let salesDataCE = [];
         let rankingData = [];
         let currentMonth = new Date();
+
+        // Sistema de notificações
+        let previousSalesCount = 0;
+        let notificationQueue = [];
+        let isNotificationShowing = false;
+        const audioCache = {};
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
@@ -1006,6 +1299,229 @@
                 badge.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>${text}</span>`;
             }
         }
+
+        // ============================================
+        // SISTEMA DE NOTIFICAÇÕES
+        // ============================================
+
+        // Pré-carrega sons
+        function preloadSounds() {
+            const sounds = ['foguete.wav', 'palmas.mp3', 'dinheiro.mp3'];
+            sounds.forEach(sound => {
+                audioCache[sound] = new Audio(sound);
+                audioCache[sound].volume = 0.5;
+            });
+        }
+
+        // Toca som
+        function playSound(soundFile) {
+            try {
+                if (audioCache[soundFile]) {
+                    audioCache[soundFile].currentTime = 0;
+                    audioCache[soundFile].play().catch(e => console.log('Audio play prevented:', e));
+                }
+            } catch (error) {
+                console.log('Erro ao tocar som:', error);
+            }
+        }
+
+        // Detecta novas vendas
+        function detectNewSales() {
+            const currentSalesCount = salesDataSC.length + salesDataCE.length;
+
+            if (previousSalesCount > 0 && currentSalesCount > previousSalesCount) {
+                const newSalesCount = currentSalesCount - previousSalesCount;
+                console.log(`🎉 ${newSalesCount} nova(s) venda(s) detectada(s)!`);
+
+                // Adiciona à fila de notificações
+                for (let i = 0; i < newSalesCount; i++) {
+                    const allSales = [...salesDataSC, ...salesDataCE];
+                    const newSale = allSales[allSales.length - 1 - i];
+
+                    if (newSale) {
+                        notificationQueue.push({
+                            type: 'sale',
+                            data: newSale
+                        });
+                    }
+                }
+
+                processNotificationQueue();
+            }
+
+            previousSalesCount = currentSalesCount;
+        }
+
+        // Processa fila de notificações
+        function processNotificationQueue() {
+            if (isNotificationShowing || notificationQueue.length === 0) {
+                return;
+            }
+
+            const notification = notificationQueue.shift();
+            showNotification(notification);
+        }
+
+        // Mostra notificação
+        function showNotification(notification) {
+            if (notification.type === 'sale') {
+                showSaleNotification(notification.data);
+            }
+        }
+
+        // Notificação de venda
+        function showSaleNotification(sale) {
+            isNotificationShowing = true;
+
+            // Configura modal
+            const icon = document.getElementById('notificationIcon');
+            const title = document.getElementById('notificationTitle');
+            const message = document.getElementById('notificationMessage');
+            const details = document.getElementById('notificationDetails');
+
+            icon.className = 'notification-icon';
+            icon.textContent = '🚀';
+
+            title.textContent = '🎉 Nova Venda!';
+            message.innerHTML = `<strong>${sale.consultor}</strong> fechou um novo processo!`;
+            details.textContent = `${sale.processo} - ${sale.cliente}`;
+
+            // Mostra modal
+            const overlay = document.getElementById('notificationOverlay');
+            overlay.classList.add('show');
+
+            // Efeitos visuais
+            launchConfetti();
+            createCelebrationParticles();
+
+            // Som
+            playSound('foguete.wav');
+
+            // Toast adicional
+            showToast({
+                type: 'sale',
+                icon: '🚀',
+                title: 'Nova Venda!',
+                message: `${sale.consultor} - ${sale.processo}`,
+                duration: 4000
+            });
+
+            // Fecha modal após 5 segundos
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                isNotificationShowing = false;
+
+                // Processa próxima notificação
+                setTimeout(() => processNotificationQueue(), 500);
+            }, 5000);
+        }
+
+        // Toast notification
+        function showToast({ type = 'sale', icon = '🚀', title, message, duration = 3000 }) {
+            const container = document.getElementById('toastContainer');
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Remove automaticamente
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease';
+                setTimeout(() => toast.remove(), 400);
+            }, duration);
+        }
+
+        // Lança confetti
+        function launchConfetti() {
+            if (typeof confetti === 'undefined') return;
+
+            // Confetti colorido
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#7c3aed', '#10b981', '#f59e0b', '#3b82f6', '#ec4899']
+            });
+
+            // Segundo burst
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#7c3aed', '#10b981', '#f59e0b']
+                });
+            }, 200);
+
+            // Terceiro burst
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#7c3aed', '#10b981', '#f59e0b']
+                });
+            }, 400);
+        }
+
+        // Cria partículas de celebração
+        function createCelebrationParticles() {
+            const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎈', '🎆', '🏆', '💰'];
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'celebration-particle';
+                    particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = '100%';
+                    particle.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    particle.style.animationDelay = (Math.random() * 0.5) + 's';
+
+                    document.body.appendChild(particle);
+
+                    setTimeout(() => particle.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        // Modifica a função updateDashboard para detectar vendas
+        const originalUpdateDashboard = updateDashboard;
+        updateDashboard = function() {
+            originalUpdateDashboard();
+            detectNewSales();
+        };
+
+        // Pré-carrega sons ao iniciar
+        preloadSounds();
+
+        // Fecha notificação ao clicar fora
+        document.addEventListener('click', (e) => {
+            const overlay = document.getElementById('notificationOverlay');
+            if (e.target === overlay) {
+                overlay.classList.remove('show');
+                isNotificationShowing = false;
+                processNotificationQueue();
+            }
+        });
+
+        console.log('✅ Sistema de notificações carregado');
     </script>
 </body>
 </html>
