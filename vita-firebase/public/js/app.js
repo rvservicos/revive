@@ -25,53 +25,134 @@ if (USE_FIREBASE && typeof firebase !== 'undefined') {
 
 // Elementos do DOM
 const loadingEl = document.getElementById('loading');
-const mainContentEl = document.getElementById('main-content');
+const categoriesViewEl = document.getElementById('categoriesView');
+const linksViewEl = document.getElementById('linksView');
+const categoriesGridEl = document.getElementById('categoriesGrid');
+const linksGridEl = document.getElementById('linksGrid');
+const breadcrumbEl = document.getElementById('breadcrumb');
+const backBtnEl = document.getElementById('backBtn');
+const currentCategoryEl = document.getElementById('currentCategory');
+const linksHeaderIconEl = document.getElementById('linksHeaderIcon');
+const linksTitleEl = document.getElementById('linksTitle');
 
-// Função para criar elemento de categoria
-function createCategorySection(category, links) {
-    const section = document.createElement('section');
-    section.className = 'category-section';
-    section.innerHTML = `
-        <div class="category-header">
-            <div class="category-icon">${category.icon || '📁'}</div>
-            <h2 class="category-title">${category.name}</h2>
-        </div>
-        <div class="button-grid" id="category-${category.id}"></div>
-    `;
+// Estado da aplicação
+let appData = {
+    categories: [],
+    links: []
+};
 
-    const buttonGrid = section.querySelector(`#category-${category.id}`);
+let currentView = 'categories'; // 'categories' ou 'links'
+let selectedCategory = null;
 
-    // Adicionar links à categoria
-    links.forEach(link => {
-        const button = document.createElement('a');
-        button.href = link.url;
-        button.className = `action-button ${link.style || ''}`;
-        button.target = '_blank';
-        button.rel = 'noopener noreferrer';
-        button.innerHTML = `
-            <span class="button-icon">${link.icon || '🔗'}</span>
-            <span class="button-text">${link.title}</span>
-        `;
-        buttonGrid.appendChild(button);
-    });
+// ═══ Funções de Navegação ═══
 
-    return section;
+function showCategories() {
+    currentView = 'categories';
+    selectedCategory = null;
+
+    categoriesViewEl.style.display = 'block';
+    linksViewEl.style.display = 'none';
+    breadcrumbEl.style.display = 'none';
+
+    renderCategories();
 }
 
-// Função para mostrar estado vazio
-function showEmptyState() {
-    mainContentEl.innerHTML = `
-        <div class="category-section">
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h3>Nenhum link cadastrado</h3>
-                <p>Use o painel admin para adicionar seus primeiros links</p>
+function showLinks(categoryId) {
+    const category = appData.categories.find(c => c.id === categoryId);
+    if (!category) return;
+
+    currentView = 'links';
+    selectedCategory = category;
+
+    categoriesViewEl.style.display = 'none';
+    linksViewEl.style.display = 'block';
+    breadcrumbEl.style.display = 'flex';
+
+    // Atualizar breadcrumb
+    currentCategoryEl.textContent = category.name;
+
+    // Atualizar header da tela de links
+    linksHeaderIconEl.textContent = category.icon || '📁';
+    linksTitleEl.textContent = category.name;
+
+    renderLinks(categoryId);
+}
+
+// ═══ Funções de Renderização ═══
+
+function renderCategories() {
+    categoriesGridEl.innerHTML = '';
+
+    if (!appData.categories || appData.categories.length === 0) {
+        categoriesGridEl.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">📭</div>
+                <h3 style="font-size: 1.5rem; color: white; margin-bottom: 0.5rem;">Nenhuma categoria</h3>
+                <p style="color: rgba(255,255,255,0.8);">Use o painel admin para criar categorias</p>
             </div>
-        </div>
-    `;
+        `;
+        return;
+    }
+
+    // Ordenar categorias
+    const sortedCategories = [...appData.categories].sort((a, b) => a.order - b.order);
+
+    sortedCategories.forEach((category, index) => {
+        // Contar links da categoria
+        const linksCount = appData.links.filter(link => link.categoryId === category.id).length;
+
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.innerHTML = `
+            <span class="category-card-icon">${category.icon || '📁'}</span>
+            <h3 class="category-card-title">${category.name}</h3>
+            <p class="category-card-count">${linksCount} ${linksCount === 1 ? 'item' : 'itens'}</p>
+        `;
+
+        card.addEventListener('click', () => showLinks(category.id));
+
+        categoriesGridEl.appendChild(card);
+    });
 }
 
-// Carregar dados do Firestore
+function renderLinks(categoryId) {
+    linksGridEl.innerHTML = '';
+
+    // Filtrar e ordenar links da categoria
+    const categoryLinks = appData.links
+        .filter(link => link.categoryId === categoryId)
+        .sort((a, b) => a.order - b.order);
+
+    if (categoryLinks.length === 0) {
+        linksGridEl.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">📭</div>
+                <h3 style="font-size: 1.25rem; color: #374151; margin-bottom: 0.5rem;">Nenhum link</h3>
+                <p style="color: #6b7280;">Esta categoria ainda não possui links</p>
+            </div>
+        `;
+        return;
+    }
+
+    categoryLinks.forEach((link, index) => {
+        const card = document.createElement('a');
+        card.href = link.url;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+        card.className = `link-card ${link.style || ''}`;
+        card.style.animationDelay = `${index * 0.05}s`;
+        card.innerHTML = `
+            <span class="link-card-icon">${link.icon || '🔗'}</span>
+            <span class="link-card-text">${link.title}</span>
+        `;
+
+        linksGridEl.appendChild(card);
+    });
+}
+
+// ═══ Carregar Dados ═══
+
 async function loadDataFromFirebase() {
     try {
         // Buscar categorias
@@ -79,37 +160,22 @@ async function loadDataFromFirebase() {
             .orderBy('order', 'asc')
             .get();
 
-        if (categoriesSnapshot.empty) {
-            showEmptyState();
-            return;
-        }
+        appData.categories = categoriesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
 
-        // Para cada categoria, buscar seus links
-        for (const categoryDoc of categoriesSnapshot.docs) {
-            const category = { id: categoryDoc.id, ...categoryDoc.data() };
+        // Buscar todos os links
+        const linksSnapshot = await db.collection('links')
+            .orderBy('order', 'asc')
+            .get();
 
-            // Buscar links da categoria
-            const linksSnapshot = await db.collection('links')
-                .where('categoryId', '==', category.id)
-                .orderBy('order', 'asc')
-                .get();
+        appData.links = linksSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
 
-            const links = linksSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-
-            // Criar e adicionar seção da categoria
-            if (links.length > 0) {
-                const section = createCategorySection(category, links);
-                mainContentEl.appendChild(section);
-            }
-        }
-
-        // Se não houver nenhum link em nenhuma categoria
-        if (mainContentEl.children.length === 0) {
-            showEmptyState();
-        }
+        console.log('Dados carregados do Firebase:', appData);
 
     } catch (error) {
         console.error('Erro ao carregar dados do Firebase:', error);
@@ -117,61 +183,25 @@ async function loadDataFromFirebase() {
     }
 }
 
-// Carregar dados locais do arquivo data.js
 function loadDataFromLocal() {
     try {
         if (typeof VITA_DATA === 'undefined') {
             console.error('VITA_DATA não encontrado');
-            showEmptyState();
+            appData = { categories: [], links: [] };
             return;
         }
 
-        const { categories, links } = VITA_DATA;
+        appData.categories = VITA_DATA.categories || [];
+        appData.links = VITA_DATA.links || [];
 
-        if (!categories || categories.length === 0) {
-            showEmptyState();
-            return;
-        }
-
-        // Ordenar categorias
-        const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
-
-        // Para cada categoria, buscar seus links
-        sortedCategories.forEach(category => {
-            // Filtrar links da categoria
-            const categoryLinks = links
-                .filter(link => link.categoryId === category.id)
-                .sort((a, b) => a.order - b.order);
-
-            // Criar e adicionar seção da categoria
-            if (categoryLinks.length > 0) {
-                const section = createCategorySection(category, categoryLinks);
-                mainContentEl.appendChild(section);
-            }
-        });
-
-        // Se não houver nenhum link
-        if (mainContentEl.children.length === 0) {
-            showEmptyState();
-        }
-
-        console.log('Dados locais carregados com sucesso');
+        console.log('Dados locais carregados:', appData);
 
     } catch (error) {
         console.error('Erro ao carregar dados locais:', error);
-        mainContentEl.innerHTML = `
-            <div class="category-section">
-                <div class="empty-state">
-                    <div class="empty-state-icon">⚠️</div>
-                    <h3>Erro ao carregar dados</h3>
-                    <p>${error.message}</p>
-                </div>
-            </div>
-        `;
+        appData = { categories: [], links: [] };
     }
 }
 
-// Carregar dados (Firebase ou local)
 async function loadData() {
     try {
         if (USE_FIREBASE && db) {
@@ -182,15 +212,28 @@ async function loadData() {
             loadDataFromLocal();
         }
     } catch (error) {
-        console.warn('Erro ao carregar dados do Firebase, tentando dados locais:', error);
-        // Fallback para dados locais se Firebase falhar
+        console.warn('Erro ao carregar dados do Firebase, usando dados locais:', error);
         loadDataFromLocal();
     } finally {
-        // Esconder loading e mostrar conteúdo
+        // Esconder loading e mostrar categorias
         loadingEl.style.display = 'none';
-        mainContentEl.style.display = 'block';
+        showCategories();
     }
 }
 
-// Carregar dados quando a página carregar
+// ═══ Event Listeners ═══
+
+backBtnEl.addEventListener('click', () => {
+    showCategories();
+});
+
+// Tecla ESC volta para categorias
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && currentView === 'links') {
+        showCategories();
+    }
+});
+
+// ═══ Inicializar ═══
+
 document.addEventListener('DOMContentLoaded', loadData);
