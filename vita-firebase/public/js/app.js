@@ -171,14 +171,31 @@ async function loadDataFromFirebase() {
 
 function loadDataFromLocal() {
     try {
-        if (typeof VITA_VERSIONS === 'undefined') {
-            console.error('VITA_VERSIONS não encontrado');
-            showEmptyState();
-            return;
+        // PRIMEIRO: Tentar carregar do localStorage (salvo pelo admin)
+        const storedData = localStorage.getItem('VITA_VERSIONS');
+        let allVersions;
+
+        if (storedData) {
+            try {
+                allVersions = JSON.parse(storedData);
+                console.log('✅ Dados carregados do localStorage');
+            } catch (e) {
+                console.warn('Erro ao ler localStorage, usando dados do arquivo:', e);
+                allVersions = VITA_VERSIONS;
+            }
+        } else {
+            // Fallback: usar dados do data.js
+            console.log('📂 Nenhum dado no localStorage, usando dados do arquivo data.js');
+            if (typeof VITA_VERSIONS === 'undefined') {
+                console.error('VITA_VERSIONS não encontrado');
+                showEmptyState();
+                return;
+            }
+            allVersions = VITA_VERSIONS;
         }
 
         // Obter dados da versão específica
-        const versionData = VITA_VERSIONS[CURRENT_VERSION];
+        const versionData = allVersions[CURRENT_VERSION];
 
         if (!versionData) {
             console.error(`Versão '${CURRENT_VERSION}' não encontrada`);
@@ -189,7 +206,7 @@ function loadDataFromLocal() {
         appData.categories = versionData.categories || [];
         appData.links = versionData.links || [];
 
-        console.log(`Dados locais carregados (versão: ${CURRENT_VERSION}):`, appData);
+        console.log(`Dados carregados (versão: ${CURRENT_VERSION}):`, appData);
 
         if (!appData.categories || appData.categories.length === 0) {
             showEmptyState();
