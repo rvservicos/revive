@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VITA - Painel Administrativo</title>
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase SDK (Opcional - necessário apenas se quiser sincronizar com Firebase) -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         .admin-container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
         .admin-header { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15); text-align: center; }
@@ -65,7 +70,11 @@
         </div>
 
         <div class="alert alert-info">
-            <strong>💡 Dica:</strong> As alterações são salvas automaticamente no navegador (localStorage). Para usar com Firebase, configure as credenciais no arquivo js/app.js
+            <strong>💡 Modo de Operação:</strong>
+            <span id="firebaseStatus">
+                ⚠️ <strong>Modo Local</strong> - Os dados são salvos apenas neste navegador.
+                Para sincronizar entre computadores, configure o Firebase no arquivo <code>js/admin-app.js</code>
+            </span>
         </div>
 
         <div class="admin-tabs" id="versionTabs"></div>

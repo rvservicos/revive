@@ -2,6 +2,31 @@
 // VITA Admin - Gerenciamento de Múltiplas Versões
 // ═══════════════════════════════════════════════════════════
 
+// Configuração do Firebase (mesma do app.js)
+const firebaseConfig = {
+    apiKey: "",  // Deixe vazio para usar apenas dados locais
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+};
+
+// Verificar se deve usar Firebase
+const USE_FIREBASE = firebaseConfig.apiKey !== "";
+let db = null;
+
+// Inicializar Firebase se configurado
+if (USE_FIREBASE && typeof firebase !== 'undefined') {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log('🔥 Firebase inicializado com sucesso no Admin');
+    } catch (error) {
+        console.warn('⚠️ Erro ao inicializar Firebase, usando apenas localStorage:', error);
+    }
+}
+
 // Estado Global
 let currentVersion = 'normal';
 let allVersions = {};
@@ -14,6 +39,20 @@ function init() {
     loadFromLocalStorage();
     renderVersionTabs();
     switchVersion('normal');
+    updateFirebaseStatus();
+}
+
+function updateFirebaseStatus() {
+    const statusEl = document.getElementById('firebaseStatus');
+    if (statusEl) {
+        if (USE_FIREBASE && db) {
+            statusEl.innerHTML = '☁️ <strong>Modo Firebase</strong> - Os dados são sincronizados automaticamente entre todos os computadores!';
+            statusEl.parentElement.className = 'alert alert-success';
+        } else {
+            statusEl.innerHTML = '⚠️ <strong>Modo Local</strong> - Os dados são salvos apenas neste navegador. Para sincronizar entre computadores, configure o Firebase no arquivo <code>js/admin-app.js</code>';
+            statusEl.parentElement.className = 'alert alert-info';
+        }
+    }
 }
 
 // ═══ LocalStorage ═══
@@ -34,11 +73,60 @@ function loadFromLocalStorage() {
     }
 }
 
-function saveToLocalStorage() {
+async function saveToLocalStorage() {
+    // SEMPRE salvar no localStorage (backup local)
     localStorage.setItem('VITA_VERSIONS', JSON.stringify(allVersions));
-    // Também atualizar a variável global para refletir nas páginas
     window.VITA_VERSIONS = allVersions;
-    console.log('Dados salvos no localStorage');
+    console.log('💾 Dados salvos no localStorage');
+
+    // Se Firebase estiver configurado, salvar também na nuvem
+    if (USE_FIREBASE && db) {
+        try {
+            await saveToFirebase();
+            console.log('☁️ Dados sincronizados com Firebase');
+        } catch (error) {
+            console.error('❌ Erro ao salvar no Firebase:', error);
+            showAlert('Dados salvos localmente, mas erro ao sincronizar com Firebase', 'warning');
+        }
+    }
+}
+
+async function saveToFirebase() {
+    if (!db) return;
+
+    const batch = db.batch();
+
+    // Para cada versão, salvar categorias e links
+    for (const versionId in allVersions) {
+        const version = allVersions[versionId];
+
+        // Salvar/atualizar categorias
+        if (version.categories) {
+            for (const category of version.categories) {
+                const docRef = db.collection('categories').doc(category.id);
+                batch.set(docRef, {
+                    ...category,
+                    version: versionId,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+        }
+
+        // Salvar/atualizar links
+        if (version.links) {
+            for (const link of version.links) {
+                const docRef = db.collection('links').doc(link.id);
+                batch.set(docRef, {
+                    ...link,
+                    version: versionId,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+        }
+    }
+
+    // Executar todas as operações em batch
+    await batch.commit();
 }
 
 // ═══ Tabs de Versões ═══
@@ -83,14 +171,14 @@ function loadVersionData() {
 
 // ═══ Salvar Info da Versão ═══
 
-function saveVersionInfo() {
+async function saveVersionInfo() {
     const name = document.getElementById('versionName').value;
     const description = document.getElementById('versionDescription').value;
 
     allVersions[currentVersion].name = name;
     allVersions[currentVersion].description = description;
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderVersionTabs();
     showAlert('Informações da versão salvas!', 'success');
 }
@@ -150,7 +238,7 @@ function closeCategoryModal() {
     editingCategoryId = null;
 }
 
-function saveCategory(event) {
+async function saveCategory(event) {
     event.preventDefault();
 
     const id = document.getElementById('categoryId').value || 'cat' + Date.now();
@@ -171,7 +259,7 @@ function saveCategory(event) {
         allVersions[currentVersion].categories.push(category);
     }
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderCategories();
     updateCategorySelects();
     closeCategoryModal();
@@ -182,7 +270,7 @@ function editCategory(categoryId) {
     openCategoryModal(categoryId);
 }
 
-function deleteCategory(categoryId) {
+async function deleteCategory(categoryId) {
     if (!confirm('Tem certeza que deseja deletar esta categoria e todos os seus links?')) return;
 
     // Deletar categoria
@@ -191,7 +279,7 @@ function deleteCategory(categoryId) {
     // Deletar links da categoria
     allVersions[currentVersion].links = allVersions[currentVersion].links.filter(l => l.categoryId !== categoryId);
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderCategories();
     renderLinks();
     updateCategorySelects();
@@ -268,7 +356,7 @@ function closeLinkModal() {
     editingLinkId = null;
 }
 
-function saveLink(event) {
+async function saveLink(event) {
     event.preventDefault();
 
     const id = document.getElementById('linkId').value || 'link' + Date.now();
@@ -292,7 +380,7 @@ function saveLink(event) {
         allVersions[currentVersion].links.push(link);
     }
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderLinks();
     closeLinkModal();
     showAlert('Link salvo!', 'success');
@@ -302,12 +390,12 @@ function editLink(linkId) {
     openLinkModal(linkId);
 }
 
-function deleteLink(linkId) {
+async function deleteLink(linkId) {
     if (!confirm('Tem certeza que deseja deletar este link?')) return;
 
     allVersions[currentVersion].links = allVersions[currentVersion].links.filter(l => l.id !== linkId);
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderLinks();
     showAlert('Link deletado!', 'success');
 }
@@ -344,7 +432,7 @@ function closeNewVersionModal() {
     document.getElementById('newVersionModal').classList.remove('active');
 }
 
-function createNewVersion(event) {
+async function createNewVersion(event) {
     event.preventDefault();
 
     const id = document.getElementById('newVersionId').value;
@@ -364,14 +452,14 @@ function createNewVersion(event) {
         links: []
     };
 
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderVersionTabs();
     closeNewVersionModal();
     switchVersion(id);
     showAlert(`Versão "${name}" criada com sucesso!`, 'success');
 }
 
-function deleteCurrentVersion() {
+async function deleteCurrentVersion() {
     if (currentVersion === 'normal') {
         alert('Não é possível deletar a versão Normal!');
         return;
@@ -380,7 +468,7 @@ function deleteCurrentVersion() {
     if (!confirm(`Tem certeza que deseja deletar a versão "${allVersions[currentVersion].name}"?`)) return;
 
     delete allVersions[currentVersion];
-    saveToLocalStorage();
+    await saveToLocalStorage();
     renderVersionTabs();
     switchVersion('normal');
     showAlert('Versão deletada!', 'success');
@@ -405,11 +493,11 @@ function importData(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
         try {
             const data = JSON.parse(e.target.result);
             allVersions = data;
-            saveToLocalStorage();
+            await saveToLocalStorage();
             renderVersionTabs();
             switchVersion('normal');
             showAlert('Dados importados com sucesso!', 'success');
