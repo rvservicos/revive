@@ -1,3 +1,7 @@
+// ═══════════════════════════════════════════════════════════
+// VITA - Sistema com Suporte a Múltiplas Versões
+// ═══════════════════════════════════════════════════════════
+
 // Configuração do Firebase (OPCIONAL - deixe vazio para usar dados locais)
 const firebaseConfig = {
     apiKey: "",  // Deixe vazio para usar dados locais
@@ -23,17 +27,37 @@ if (USE_FIREBASE && typeof firebase !== 'undefined') {
     }
 }
 
+// ═══ Detectar Versão ═══
+// A versão pode ser definida de 3 formas (em ordem de prioridade):
+// 1. Via atributo data-version no script
+// 2. Via variável global VITA_VERSION
+// 3. Padrão: 'normal'
+
+function detectVersion() {
+    // 1. Verificar atributo data-version no script
+    const scripts = document.getElementsByTagName('script');
+    for (let script of scripts) {
+        if (script.src.includes('app.js')) {
+            const version = script.getAttribute('data-version');
+            if (version) return version;
+        }
+    }
+
+    // 2. Verificar variável global
+    if (typeof VITA_VERSION !== 'undefined') {
+        return VITA_VERSION;
+    }
+
+    // 3. Padrão
+    return 'normal';
+}
+
+const CURRENT_VERSION = detectVersion();
+console.log(`VITA versão: ${CURRENT_VERSION}`);
+
 // Elementos do DOM
 const loadingEl = document.getElementById('loading');
-const categoriesViewEl = document.getElementById('categoriesView');
-const linksViewEl = document.getElementById('linksView');
-const categoriesGridEl = document.getElementById('categoriesGrid');
-const linksGridEl = document.getElementById('linksGrid');
-const breadcrumbEl = document.getElementById('breadcrumb');
-const backBtnEl = document.getElementById('backBtn');
-const currentCategoryEl = document.getElementById('currentCategory');
-const linksHeaderIconEl = document.getElementById('linksHeaderIcon');
-const linksTitleEl = document.getElementById('linksTitle');
+const mainContentEl = document.getElementById('main-content');
 
 // Estado da aplicação
 let appData = {
@@ -41,141 +65,101 @@ let appData = {
     links: []
 };
 
-let currentView = 'categories'; // 'categories' ou 'links'
-let selectedCategory = null;
+// ═══ Funções de Criação de Elementos ═══
 
-// ═══ Funções de Navegação ═══
+function createCategorySection(category, links) {
+    const section = document.createElement('section');
+    section.className = 'category-section';
+    section.innerHTML = `
+        <div class="category-header">
+            <div class="category-icon">${category.icon || '📁'}</div>
+            <h2 class="category-title">${category.name}</h2>
+        </div>
+        <div class="button-grid" id="category-${category.id}"></div>
+    `;
 
-function showCategories() {
-    currentView = 'categories';
-    selectedCategory = null;
+    const buttonGrid = section.querySelector(`#category-${category.id}`);
 
-    categoriesViewEl.style.display = 'block';
-    linksViewEl.style.display = 'none';
-    breadcrumbEl.style.display = 'none';
-
-    renderCategories();
-}
-
-function showLinks(categoryId) {
-    const category = appData.categories.find(c => c.id === categoryId);
-    if (!category) return;
-
-    currentView = 'links';
-    selectedCategory = category;
-
-    categoriesViewEl.style.display = 'none';
-    linksViewEl.style.display = 'block';
-    breadcrumbEl.style.display = 'flex';
-
-    // Atualizar breadcrumb
-    currentCategoryEl.textContent = category.name;
-
-    // Atualizar header da tela de links
-    linksHeaderIconEl.textContent = category.icon || '📁';
-    linksTitleEl.textContent = category.name;
-
-    renderLinks(categoryId);
-}
-
-// ═══ Funções de Renderização ═══
-
-function renderCategories() {
-    categoriesGridEl.innerHTML = '';
-
-    if (!appData.categories || appData.categories.length === 0) {
-        categoriesGridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">📭</div>
-                <h3 style="font-size: 1.5rem; color: white; margin-bottom: 0.5rem;">Nenhuma categoria</h3>
-                <p style="color: rgba(255,255,255,0.8);">Use o painel admin para criar categorias</p>
-            </div>
+    // Adicionar links à categoria
+    links.forEach(link => {
+        const button = document.createElement('a');
+        button.href = link.url;
+        button.className = `action-button ${link.style || ''}`;
+        button.target = '_blank';
+        button.rel = 'noopener noreferrer';
+        button.innerHTML = `
+            <span class="button-icon">${link.icon || '🔗'}</span>
+            <span class="button-text">${link.title}</span>
         `;
-        return;
-    }
-
-    // Ordenar categorias
-    const sortedCategories = [...appData.categories].sort((a, b) => a.order - b.order);
-
-    sortedCategories.forEach((category, index) => {
-        // Contar links da categoria
-        const linksCount = appData.links.filter(link => link.categoryId === category.id).length;
-
-        const card = document.createElement('div');
-        card.className = 'category-card';
-        card.style.animationDelay = `${index * 0.1}s`;
-        card.innerHTML = `
-            <span class="category-card-icon">${category.icon || '📁'}</span>
-            <h3 class="category-card-title">${category.name}</h3>
-            <p class="category-card-count">${linksCount} ${linksCount === 1 ? 'item' : 'itens'}</p>
-        `;
-
-        card.addEventListener('click', () => showLinks(category.id));
-
-        categoriesGridEl.appendChild(card);
+        buttonGrid.appendChild(button);
     });
+
+    return section;
 }
 
-function renderLinks(categoryId) {
-    linksGridEl.innerHTML = '';
-
-    // Filtrar e ordenar links da categoria
-    const categoryLinks = appData.links
-        .filter(link => link.categoryId === categoryId)
-        .sort((a, b) => a.order - b.order);
-
-    if (categoryLinks.length === 0) {
-        linksGridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">📭</div>
-                <h3 style="font-size: 1.25rem; color: #374151; margin-bottom: 0.5rem;">Nenhum link</h3>
-                <p style="color: #6b7280;">Esta categoria ainda não possui links</p>
+function showEmptyState() {
+    mainContentEl.innerHTML = `
+        <div class="category-section">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>Nenhum link cadastrado</h3>
+                <p>Use o painel admin para adicionar seus primeiros links</p>
             </div>
-        `;
-        return;
-    }
-
-    categoryLinks.forEach((link, index) => {
-        const card = document.createElement('a');
-        card.href = link.url;
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
-        card.className = `link-card ${link.style || ''}`;
-        card.style.animationDelay = `${index * 0.05}s`;
-        card.innerHTML = `
-            <span class="link-card-icon">${link.icon || '🔗'}</span>
-            <span class="link-card-text">${link.title}</span>
-        `;
-
-        linksGridEl.appendChild(card);
-    });
+        </div>
+    `;
 }
 
-// ═══ Carregar Dados ═══
+// ═══ Carregar Dados do Firebase ═══
 
 async function loadDataFromFirebase() {
     try {
-        // Buscar categorias
+        // Buscar categorias da versão específica
         const categoriesSnapshot = await db.collection('categories')
+            .where('version', '==', CURRENT_VERSION)
             .orderBy('order', 'asc')
             .get();
 
-        appData.categories = categoriesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        if (categoriesSnapshot.empty) {
+            // Tentar buscar categorias sem filtro de versão (compatibilidade)
+            const allCategoriesSnapshot = await db.collection('categories')
+                .orderBy('order', 'asc')
+                .get();
 
-        // Buscar todos os links
+            appData.categories = allCategoriesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } else {
+            appData.categories = categoriesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        }
+
+        // Buscar links da versão específica
         const linksSnapshot = await db.collection('links')
+            .where('version', '==', CURRENT_VERSION)
             .orderBy('order', 'asc')
             .get();
 
-        appData.links = linksSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        if (linksSnapshot.empty) {
+            // Tentar buscar links sem filtro de versão (compatibilidade)
+            const allLinksSnapshot = await db.collection('links')
+                .orderBy('order', 'asc')
+                .get();
 
-        console.log('Dados carregados do Firebase:', appData);
+            appData.links = allLinksSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } else {
+            appData.links = linksSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        }
+
+        console.log(`Dados do Firebase carregados (versão: ${CURRENT_VERSION}):`, appData);
 
     } catch (error) {
         console.error('Erro ao carregar dados do Firebase:', error);
@@ -183,56 +167,124 @@ async function loadDataFromFirebase() {
     }
 }
 
+// ═══ Carregar Dados Locais ═══
+
 function loadDataFromLocal() {
     try {
-        if (typeof VITA_DATA === 'undefined') {
-            console.error('VITA_DATA não encontrado');
-            appData = { categories: [], links: [] };
+        if (typeof VITA_VERSIONS === 'undefined') {
+            console.error('VITA_VERSIONS não encontrado');
+            showEmptyState();
             return;
         }
 
-        appData.categories = VITA_DATA.categories || [];
-        appData.links = VITA_DATA.links || [];
+        // Obter dados da versão específica
+        const versionData = VITA_VERSIONS[CURRENT_VERSION];
 
-        console.log('Dados locais carregados:', appData);
+        if (!versionData) {
+            console.error(`Versão '${CURRENT_VERSION}' não encontrada`);
+            showEmptyState();
+            return;
+        }
+
+        appData.categories = versionData.categories || [];
+        appData.links = versionData.links || [];
+
+        console.log(`Dados locais carregados (versão: ${CURRENT_VERSION}):`, appData);
+
+        if (!appData.categories || appData.categories.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        // Ordenar categorias
+        const sortedCategories = [...appData.categories].sort((a, b) => a.order - b.order);
+
+        // Para cada categoria, buscar seus links
+        sortedCategories.forEach(category => {
+            // Filtrar links da categoria
+            const categoryLinks = appData.links
+                .filter(link => link.categoryId === category.id)
+                .sort((a, b) => a.order - b.order);
+
+            // Criar e adicionar seção da categoria
+            if (categoryLinks.length > 0) {
+                const section = createCategorySection(category, categoryLinks);
+                mainContentEl.appendChild(section);
+            }
+        });
+
+        // Se não houver nenhum link
+        if (mainContentEl.children.length === 0) {
+            showEmptyState();
+        }
 
     } catch (error) {
         console.error('Erro ao carregar dados locais:', error);
-        appData = { categories: [], links: [] };
+        mainContentEl.innerHTML = `
+            <div class="category-section">
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <h3>Erro ao carregar dados</h3>
+                    <p>${error.message}</p>
+                </div>
+            </div>
+        `;
     }
 }
+
+// ═══ Carregar e Renderizar Dados do Firebase ═══
+
+async function renderFirebaseData() {
+    if (!appData.categories || appData.categories.length === 0) {
+        showEmptyState();
+        return;
+    }
+
+    // Ordenar categorias
+    const sortedCategories = [...appData.categories].sort((a, b) => a.order - b.order);
+
+    // Para cada categoria, buscar seus links
+    sortedCategories.forEach(category => {
+        // Filtrar links da categoria
+        const categoryLinks = appData.links
+            .filter(link => link.categoryId === category.id)
+            .sort((a, b) => a.order - b.order);
+
+        // Criar e adicionar seção da categoria
+        if (categoryLinks.length > 0) {
+            const section = createCategorySection(category, categoryLinks);
+            mainContentEl.appendChild(section);
+        }
+    });
+
+    // Se não houver nenhum link
+    if (mainContentEl.children.length === 0) {
+        showEmptyState();
+    }
+}
+
+// ═══ Função Principal de Carregamento ═══
 
 async function loadData() {
     try {
         if (USE_FIREBASE && db) {
-            console.log('Carregando dados do Firebase...');
+            console.log(`Carregando dados do Firebase (versão: ${CURRENT_VERSION})...`);
             await loadDataFromFirebase();
+            await renderFirebaseData();
         } else {
-            console.log('Carregando dados locais...');
+            console.log(`Carregando dados locais (versão: ${CURRENT_VERSION})...`);
             loadDataFromLocal();
         }
     } catch (error) {
-        console.warn('Erro ao carregar dados do Firebase, usando dados locais:', error);
+        console.warn('Erro ao carregar dados do Firebase, tentando dados locais:', error);
+        // Fallback para dados locais se Firebase falhar
         loadDataFromLocal();
     } finally {
-        // Esconder loading e mostrar categorias
+        // Esconder loading e mostrar conteúdo
         loadingEl.style.display = 'none';
-        showCategories();
+        mainContentEl.style.display = 'block';
     }
 }
-
-// ═══ Event Listeners ═══
-
-backBtnEl.addEventListener('click', () => {
-    showCategories();
-});
-
-// Tecla ESC volta para categorias
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && currentView === 'links') {
-        showCategories();
-    }
-});
 
 // ═══ Inicializar ═══
 

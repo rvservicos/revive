@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VITA ADM - Versão Administrativa. Acesso rápido a ferramentas de gestão.">
+    <meta name="theme-color" content="#6366f1">
+    <title>VITA ADM - Versão Administrativa</title>
+
+    <!-- Preconnect para melhor performance -->
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://rvservicos.github.io">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase SDK (Opcional) -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Definir versão antes de carregar o app -->
+    <script>
+        const VITA_VERSION = 'adm';
+    </script>
+</head>
+<body>
+    <!-- Background Decorativo -->
+    <div class="bg-decoration">
+        <div class="bg-gradient-1"></div>
+        <div class="bg-gradient-2"></div>
+        <div class="bg-gradient-3"></div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="app-container">
+
+        <!-- Header Moderno -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="logo.png" alt="VITA ADM Logo" class="logo-main">
+            </div>
+
+            <!-- Badge da Versão -->
+            <div style="text-align: center; margin-top: 1rem;">
+                <span style="display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">
+                    ⚙️ Versão ADM
+                </span>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading-state">
+            <div class="loading-content">
+                <div class="spinner-modern">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p class="loading-text">Carregando sistemas administrativos...</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content" style="display: none;">
+            <!-- Categorias e links serão inseridos aqui dinamicamente -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">VITA ADM © 2024 - Sistema Administrativo</p>
+        </footer>
+
+    </div>
+
+    <!-- Botão Admin Flutuante -->
+    <a href="admin.html" class="fab-button" title="Painel Administrativo" aria-label="Acessar Painel Admin">
+        <svg class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js" data-version="adm"></script>
+</body>
+</html>
