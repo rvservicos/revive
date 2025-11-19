@@ -1,0 +1,124 @@
+{
+  "normal": {
+    "id": "normal",
+    "name": "VITA Normal",
+    "description": "Versão padrão para equipe geral",
+    "categories": [
+      {
+        "id": "cat1",
+        "name": "Documentos e Contratos",
+        "icon": "📄",
+        "order": 1
+      },
+      {
+        "id": "cat2",
+        "name": "Controle e Sistemas Santa Catarina",
+        "icon": "📠",
+        "order": 2
+      },
+      {
+        "id": "cat3",
+        "name": "Controle e Sistemas CEARÁ",
+        "icon": "☀️",
+        "order": 3
+      },
+      {
+        "id": "cat4",
+        "name": "Gestão e Controle Geral",
+        "icon": "📊",
+        "order": 4
+      },
+      {
+        "id": "cat5",
+        "name": "Ferramentas e Análises",
+        "icon": "🛠️",
+        "order": 5
+      },
+      {
+        "id": "cat6",
+        "name": "Suporte e Informações",
+        "icon": "💬",
+        "order": 6
+      }
+    ],
+    "links": [
+      { "id": "link1", "categoryId": "cat1", "title": "Envio de Documentos", "url": "https://docs.google.com/forms/d/e/1FAIpQLSdbNodbYHu5CNR_LbtsAl50oE9RCk1WMEtEz7NTHuMij7VGBw/viewform?usp=dialog", "icon": "📤", "style": "", "order": 1 },
+      { "id": "link2", "categoryId": "cat1", "title": "Consulta Documentos", "url": "https://script.google.com/macros/s/AKfycbzDyV-5s3GveaSauq1TPnm83ZUAGaQsgW2HBqWz6XuPtpKpZcNwO926ZaNSk5dtqQLs6g/exec?page=consulta", "icon": "🔍", "style": "", "order": 2 },
+      { "id": "link3", "categoryId": "cat2", "title": "Novo Contrato SC", "url": "https://app.zapsign.com.br/verificar/doc/9088c21f-820c-4a1f-9ea9-c5fb749579c1", "icon": "📝", "style": "warning", "order": 1 },
+      { "id": "link4", "categoryId": "cat2", "title": "Contrato Menor", "url": "https://app.zapsign.com.br/verificar/doc/ce1d102e-ad07-4c94-938c-85c3bfc51372", "icon": "👶", "style": "warning", "order": 2 },
+      { "id": "link5", "categoryId": "cat2", "title": "Kit Maba", "url": "https://app.zapsign.com.br/verificar/doc/81a57629-96c9-4d0b-9704-526cf05f5e6f", "icon": "🤵", "style": "warning", "order": 3 },
+      { "id": "link6", "categoryId": "cat2", "title": "Novo Feedback SC", "url": "https://script.google.com/macros/s/AKfycby8fytlrrk6KNsN7iF2PBWHzKRqVav-hWkS5Eyq1YwmckHg_GZ8gaqOB0TIUYdlO-EN/exec", "icon": "✅", "style": "warning", "order": 4 },
+      { "id": "link7", "categoryId": "cat2", "title": "Gerenciar Leads SC", "url": "https://script.google.com/macros/s/AKfycbyqapC88zgvJpu1DkEAtnMRcIplK9e7nDj_SnlIMvm38f0y3Y9RJ9TVEwP4fqWOWIXB/exec", "icon": "📋", "style": "warning", "order": 5 },
+      { "id": "link8", "categoryId": "cat3", "title": "Novo Contrato CEARÁ", "url": "https://app.zapsign.com.br/verificar/doc/9b3c87e3-0892-400e-914f-3fc034521e7a", "icon": "📝", "style": "success", "order": 1 },
+      { "id": "link9", "categoryId": "cat3", "title": "Contrato Menor", "url": "https://app.zapsign.com.br/verificar/doc/ed12719f-ef85-418e-883c-d28ace4eabe0", "icon": "👶", "style": "success", "order": 2 },
+      { "id": "link10", "categoryId": "cat3", "title": "Gerenciar Leads CEARÁ", "url": "https://script.google.com/macros/s/AKfycbxeiKfvVeTjt_8eQYj4z-m0Xoj09g2MTZ6rzIhNEKi9cfoVmx7NAFEAkaggJwGbipGv/exec", "icon": "📋", "style": "success", "order": 3 },
+      { "id": "link11", "categoryId": "cat3", "title": "Novo Feedback CEARÁ", "url": "https://script.google.com/macros/s/AKfycbzM5TdlOlmyOcAVw49Jkrj3I1cdwvRBhyUq0zzc-zDB36UXtTHoFq0A_j_yUWsf8JZjYg/exec", "icon": "✅", "style": "success", "order": 4 },
+      { "id": "link12", "categoryId": "cat4", "title": "Novo Fechamento", "url": "https://docs.google.com/forms/d/e/1FAIpQLSd-MBnLLIhgIPpSSVA9e0Vnbk2qw2UZ5N_ap7xvsFYmW_gRlA/viewform", "icon": "🆕", "style": "primary", "order": 1 },
+      { "id": "link13", "categoryId": "cat4", "title": "Controle Fechamento", "url": "https://script.google.com/macros/s/AKfycbwzr191Adr1TMlWVU24TEaiXXLx4iUkaWw2B1CnsbdwvAa2Gp6bWodLFkdt7N4lau7x1Q/exec?page=consultor", "icon": "📈", "style": "primary", "order": 2 },
+      { "id": "link14", "categoryId": "cat4", "title": "Controle de Frota", "url": "https://script.google.com/macros/s/AKfycbw3JToBXkDA7GNNLYx7PRjXr6K1NvEvkN3hmcZDeNHX9mHBchVqTF8ryK_cZw3JjU-f/exec", "icon": "🚗", "style": "primary", "order": 3 },
+      { "id": "link15", "categoryId": "cat4", "title": "Despesas", "url": "https://script.google.com/macros/s/AKfycbxTCA8NNU_fB1UCAJmWSFu-2AMgbuwc51qNdw5JbVibrOsNeXRVOTD4VUFE-NqIPAR6QA/exec", "icon": "💰", "style": "primary", "order": 4 },
+      { "id": "link16", "categoryId": "cat4", "title": "Controle de Taxa RTM", "url": "https://script.google.com/macros/s/AKfycbyunSScP4z43CAR0Q-KKhXd20vcya_nTastdVXp6dlzbFj7Cnl05IKfaoEl3IbnOGSJRQ/exec?page=consultor", "icon": "🏥", "style": "primary", "order": 5 },
+      { "id": "link17", "categoryId": "cat5", "title": "Ranking de Vendas", "url": "https://rvservicos.github.io/revive/ranking.html", "icon": "🏆", "style": "", "order": 1 },
+      { "id": "link18", "categoryId": "cat5", "title": "Cálculo de Contribuição INSS", "url": "https://claude.ai/public/artifacts/c4fe1983-7805-4627-9cb4-74c3b8be05c5", "icon": "✏️", "style": "", "order": 2 },
+      { "id": "link19", "categoryId": "cat5", "title": "Análise de Direitos", "url": "https://rvservicos.github.io/revive/analise.html", "icon": "⚖️", "style": "", "order": 3 },
+      { "id": "link20", "categoryId": "cat5", "title": "Empresas com Vida", "url": "https://script.google.com/macros/s/AKfycbwMA2gdR5lNuJfEHpvQniu1veYy0EMKn8_a4rSNPWxdRRflqXQsVcHlvgF68HJbYUl3/exec", "icon": "🛡️", "style": "", "order": 4 },
+      { "id": "link21", "categoryId": "cat6", "title": "Processos", "url": "https://rvservicos.github.io/revive/index.html", "icon": "⚖️", "style": "", "order": 1 },
+      { "id": "link22", "categoryId": "cat6", "title": "Documentação", "url": "https://rvservicos.github.io/revive/index.html", "icon": "📑", "style": "", "order": 2 }
+    ]
+  },
+  "adm": {
+    "id": "adm",
+    "name": "VITA ADM",
+    "description": "Versão administrativa com ferramentas de gestão",
+    "categories": [
+      {
+        "id": "catAdm1",
+        "name": "Documentos e Contratos",
+        "icon": "📄",
+        "order": 1
+      },
+      {
+        "id": "catAdm2",
+        "name": "Gestão e Controle ADM",
+        "icon": "📊",
+        "order": 2
+      },
+      {
+        "id": "catAdm3",
+        "name": "Ferramentas e Análises",
+        "icon": "🛠️",
+        "order": 3
+      },
+      {
+        "id": "catAdm4",
+        "name": "Suporte e Informações",
+        "icon": "💬",
+        "order": 4
+      }
+    ],
+    "links": [
+      { "id": "linkAdm1", "categoryId": "catAdm1", "title": "Novo Contrato", "url": "https://app.zapsign.com.br/verificar/doc/9088c21f-820c-4a1f-9ea9-c5fb749579c1", "icon": "📝", "style": "", "order": 1 },
+      { "id": "linkAdm2", "categoryId": "catAdm1", "title": "Contrato Menor", "url": "https://app.zapsign.com.br/verificar/doc/ce1d102e-ad07-4c94-938c-85c3bfc51372", "icon": "👶", "style": "", "order": 2 },
+      { "id": "linkAdm3", "categoryId": "catAdm1", "title": "Kit Maba", "url": "https://app.zapsign.com.br/verificar/doc/81a57629-96c9-4d0b-9704-526cf05f5e6f", "icon": "🤵", "style": "", "order": 3 },
+      { "id": "linkAdm4", "categoryId": "catAdm1", "title": "Envio de Documentos", "url": "https://docs.google.com/forms/d/e/1FAIpQLSdbNodbYHu5CNR_LbtsAl50oE9RCk1WMEtEz7NTHuMij7VGBw/viewform?usp=dialog", "icon": "📤", "style": "", "order": 4 },
+      { "id": "linkAdm5", "categoryId": "catAdm1", "title": "Consulta Documentos", "url": "https://script.google.com/macros/s/AKfycbzDyV-5s3GveaSauq1TPnm83ZUAGaQsgW2HBqWz6XuPtpKpZcNwO926ZaNSk5dtqQLs6g/exec?page=consulta", "icon": "🔍", "style": "", "order": 5 },
+      { "id": "linkAdm6", "categoryId": "catAdm2", "title": "Sistema Seguro de Vida", "url": "https://script.google.com/macros/s/AKfycbwxyhAY5m3U-uzzOJ6XJm0jq4tmk0sOfhkLKBM97-nBrxX0xYHm7NeTgWQ89Ei0iLdYXg/exec", "icon": "💝", "style": "primary", "order": 1 },
+      { "id": "linkAdm7", "categoryId": "catAdm2", "title": "Sistema Laudo RTM", "url": "https://script.google.com/macros/s/AKfycbwzEvmkZeLV4McQe3hQOHwl7cBhW-eY-LRTvWqQ2G8lFkpqaJc-ZRxJ1CwkCztxpAF_lA/exec", "icon": "💊", "style": "primary", "order": 2 },
+      { "id": "linkAdm8", "categoryId": "catAdm2", "title": "Gestão de Documentos", "url": "https://script.google.com/macros/s/AKfycbyNswHlc8ne7XEEwbFvg1QhKa_lco5FvJiTgdLvj6JCQUol6WiQT9qwDjy99GcbhtrXPQ/exec?page=gestao", "icon": "💾", "style": "primary", "order": 3 },
+      { "id": "linkAdm9", "categoryId": "catAdm2", "title": "Sistema de Seguro Terceiro", "url": "https://script.google.com/macros/s/AKfycbxybjnL-sA02ua5m4EHIiPbW3gYrnr9MZTeSLjNxJ0RaP03_7qeaEMm_UBl0A_9Z9BbAg/exec", "icon": "🚗", "style": "primary", "order": 4 },
+      { "id": "linkAdm10", "categoryId": "catAdm2", "title": "Feedback Diário", "url": "https://script.google.com/macros/s/AKfycbxYlEMdkn4wEgc6g-eY0msIp59m76SfS2UyL9FC19izRh3gJCuoqCG1RneBxd1xl9w/exec", "icon": "✅", "style": "primary", "order": 5 },
+      { "id": "linkAdm11", "categoryId": "catAdm2", "title": "Sistema de Protocolo", "url": "https://sistema-protocolo-30af2.web.app/", "icon": "📑", "style": "primary", "order": 6 },
+      { "id": "linkAdm12", "categoryId": "catAdm2", "title": "Sistema de Auxílios", "url": "https://script.google.com/macros/s/AKfycbycEu03xeZ62Gfbt6fnJGjbrZCU4oPkBx-QVLN_uzhfG12LC4z-nq7iPavg32ga0fCE/exec", "icon": "⚖️", "style": "primary", "order": 7 },
+      { "id": "linkAdm13", "categoryId": "catAdm2", "title": "Sistema de Auditoria", "url": "https://script.google.com/macros/s/AKfycbxsr4QszSOl3a2QkBWqKDybeZzRPvcScFuM4l3SMuVulxNdZpLRKlsHvG7b4sbrGkT6yQ/exec?page=auditoria", "icon": "📈", "style": "", "order": 8 },
+      { "id": "linkAdm14", "categoryId": "catAdm2", "title": "Sistema da Corretora", "url": "https://script.google.com/macros/s/AKfycbxxW2JnPSPCTDVDzRgHmfzG7gzotKgcFNUXv5sCtqE3IxGSisjOXUtaY5AycpDZlsLT/exec", "icon": "💬", "style": "", "order": 9 },
+      { "id": "linkAdm15", "categoryId": "catAdm2", "title": "Portal do Médico", "url": "https://rvservicos.github.io/revive/laudortm.html", "icon": "💊", "style": "", "order": 10 },
+      { "id": "linkAdm16", "categoryId": "catAdm2", "title": "Prontuário(em desenvolvimento)", "url": "https://www.google.com", "icon": "🛠️", "style": "", "order": 11 },
+      { "id": "linkAdm17", "categoryId": "catAdm3", "title": "Ranking de Vendas", "url": "ranking.html", "icon": "🏆", "style": "warning", "order": 1 },
+      { "id": "linkAdm18", "categoryId": "catAdm3", "title": "Cálculo de Contribuição INSS", "url": "https://claude.ai/public/artifacts/c4fe1983-7805-4627-9cb4-74c3b8be05c5", "icon": "✏️", "style": "success", "order": 2 },
+      { "id": "linkAdm19", "categoryId": "catAdm3", "title": "Análise de Direitos", "url": "analise.html", "icon": "⚖️", "style": "success", "order": 3 },
+      { "id": "linkAdm20", "categoryId": "catAdm3", "title": "Empresas com Vida", "url": "https://script.google.com/macros/s/AKfycbwMA2gdR5lNuJfEHpvQniu1veYy0EMKn8_a4rSNPWxdRRflqXQsVcHlvgF68HJbYUl3/exec", "icon": "🛡️", "style": "success", "order": 4 },
+      { "id": "linkAdm21", "categoryId": "catAdm4", "title": "Processos", "url": "index.html", "icon": "⚖️", "style": "", "order": 1 },
+      { "id": "linkAdm22", "categoryId": "catAdm4", "title": "Documentação", "url": "index.html", "icon": "📑", "style": "", "order": 2 }
+    ]
+  }
+}
