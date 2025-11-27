@@ -22,41 +22,56 @@
         .status-connected { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
         .status-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
         .status-loading { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        
         .stats-grid-container {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Cria as duas colunas principais */
+            grid-template-columns: 1fr 1fr 1fr; /* Agora 3 colunas para SC, CE e MG */
             gap: 26px;
             margin-bottom: 39px;
         }
         
         .stats-column {
             display: flex;
-            flex-direction: column; /* Empilha os cards verticalmente dentro de cada coluna */
+            flex-direction: column;
             gap: 26px;
         }
         .stat-card { background: white; padding: 33px; border-radius: 20px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
         .stat-card h3 { color: #6b46c1; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .stat-card-ce h3 { 
-            color: #10b981 !important; 
-        }
-        .stat-card-ce .stat-value { 
-            color: #10b981 !important; 
-        }
-        .stat-card-ce .stat-label { 
-            color: #34d399 !important; 
-        }
+        
+        /* Estilos para Ceará (Verde) */
+        .stat-card-ce h3 { color: #10b981 !important; }
+        .stat-card-ce .stat-value { color: #10b981 !important; }
+        .stat-card-ce .stat-label { color: #34d399 !important; }
+        
+        /* Estilos para Minas Gerais (Laranja/Claude) */
+        .stat-card-mg h3 { color: #da7756 !important; }
+        .stat-card-mg .stat-value { color: #da7756 !important; }
+        .stat-card-mg .stat-label { color: #e8956f !important; }
+        
         .stat-value { font-size: 2.2rem; font-weight: 700; color: #8b5cf6; display: flex; align-items: center; gap: 20px; }
         .stat-label { color: #a78bfa; font-size: 1rem; }
         .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 39px; margin-bottom: 39px; }
-        .rankings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 26px; }
+        
+        .rankings-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; /* 3 colunas para rankings */
+            gap: 26px; 
+            margin-bottom: 26px; 
+        }
+        
         .panel { background: white; border-radius: 26px; padding: 33px; box-shadow: 0 10px 42px rgba(147, 51, 234, 0.1); }
         .panel.full-width { grid-column: 1 / -1; }
         .panel-sc { border-top: 4px solid #8b5cf6; }
         .panel-ce { border-top: 4px solid #10b981; }
+        .panel-mg { border-top: 4px solid #da7756; }
+        
         .panel h2 { color: #6b46c1; font-size: 2rem; margin-bottom: 26px; font-weight: 600; padding-bottom: 13px; border-bottom: 3px solid #f3f4f6; display: flex; align-items: center; gap: 13px; }
         .panel-ce h2 { color: #10b981; }
+        .panel-mg h2 { color: #da7756; }
+        
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f3f4f6; }
         .ranking-item:last-child { border-bottom: none; }
+        
         /* --- ESTILOS PARA O RANKING EXPANSÍVEL --- */
         .ranking-list-container {
             transition: max-height 0.7s ease-in-out;
@@ -64,7 +79,6 @@
         }
 
         .ranking-list-container.collapsed {
-            /* Ajuste este valor se a altura dos 5 primeiros itens for diferente */
             max-height: 400px; 
         }
 
@@ -99,12 +113,38 @@
             background-color: #d1fae5;
             border-color: #a7f3d0;
         }
+        
+        .expand-ranking-btn.btn-mg {
+            color: #da7756;
+            border-color: #fde4d8;
+            background-color: #fef7f4;
+        }
+
+        .expand-ranking-btn.btn-mg:hover {
+            background-color: #fde4d8;
+            border-color: #f9c9b5;
+        }
+        
         .consultant-info { display: flex; align-items: center; gap: 20px; }
         .rank-number { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; width: 39px; height: 39px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.2rem; flex-shrink: 0; }
         .rank-number-ce { background: linear-gradient(135deg, #10b981, #34d399); }
+        .rank-number-mg { background: linear-gradient(135deg, #da7756, #e8956f); }
+        
         .consultant-name { color: #374151; font-weight: 500; font-size: 1.2rem; }
         .sales-count { background: #e8ecff; color: #6b46c1; padding: 7px 16px; border-radius: 26px; font-weight: 600; font-size: 1.2rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .sales-count:hover { background-color: #6b46c1; color: white; }
+        .sales-count-ce { background: #d1fae5; color: #10b981; }
+        .sales-count-ce:hover { background-color: #10b981; color: white; }
+        .sales-count-mg { background: #fde4d8; color: #da7756; }
+        .sales-count-mg:hover { background-color: #da7756; color: white; }
+        
+        .three-column-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 39px; 
+            margin-bottom: 39px; 
+        }
+        
         .two-column-layout { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -112,26 +152,27 @@
             margin-bottom: 39px; 
         }
         
-        .sales-table th.th-ce { 
-            background: linear-gradient(135deg, #10b981, #34d399); 
-        }
+        .sales-table th.th-ce { background: linear-gradient(135deg, #10b981, #34d399); }
+        .sales-table th.th-mg { background: linear-gradient(135deg, #da7756, #e8956f); }
+        
         .consultant-photo-ranking { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e8ecff; }
         #topConsultantPhoto { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 5px solid #a78bfa; margin-left: 20px; box-shadow: 0 7px 20px rgba(147, 51, 234, 0.25); background-color: #f0f2ff; transition: transform 0.3s ease; }
         .stat-card:hover #topConsultantPhoto { transform: scale(1.05); }
         #topConsultantPhotoCE { 
-            width: 104px; 
-            height: 104px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 5px solid #10b981; 
-            margin-left: 20px; 
+            width: 104px; height: 104px; border-radius: 50%; object-fit: cover; 
+            border: 5px solid #10b981; margin-left: 20px; 
             box-shadow: 0 7px 20px rgba(16, 185, 129, 0.25); 
-            background-color: #10b981; 
-            transition: transform 0.3s ease; 
+            background-color: #10b981; transition: transform 0.3s ease; 
         }
-        .stat-card:hover #topConsultantPhotoCE { 
-            transform: scale(1.05); 
+        .stat-card:hover #topConsultantPhotoCE { transform: scale(1.05); }
+        #topConsultantPhotoMG { 
+            width: 104px; height: 104px; border-radius: 50%; object-fit: cover; 
+            border: 5px solid #da7756; margin-left: 20px; 
+            box-shadow: 0 7px 20px rgba(218, 119, 86, 0.25); 
+            background-color: #da7756; transition: transform 0.3s ease; 
         }
+        .stat-card:hover #topConsultantPhotoMG { transform: scale(1.05); }
+        
         .process-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         .process-card { background: linear-gradient(135deg, #f8f9ff, #e8ecff); padding: 26px; border-radius: 20px; text-align: center; }
         .process-card h4 { color: #6b46c1; font-size: 1.2rem; margin-bottom: 13px; text-transform: uppercase; }
@@ -139,8 +180,6 @@
         .process-meta { font-size: 1rem; color: #6b7280; margin-top: 7px; }
         .recent-sales { grid-column: 1 / -1; }
 
-
-        
         .sales-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.2rem; }
         .sales-table th { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; padding: 20px; text-align: left; font-weight: 700; }
         .sales-table td { padding: 20px; border-bottom: 1px solid #f3f4f6; color: #374151; vertical-align: middle; }
@@ -201,26 +240,14 @@
         .timeline-item:nth-child(even)::after { left: -13px; }
         
         #sale-notification-overlay { 
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            width: 100% !important; 
-            height: 100% !important; 
+            position: fixed !important; top: 0 !important; left: 0 !important; 
+            width: 100% !important; height: 100% !important; 
             background: rgba(29, 13, 51, 0.7) !important; 
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px); 
-            z-index: 999999 !important; 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            opacity: 0; 
-            transition: opacity 0.5s ease; 
-            overflow: hidden; 
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); 
+            z-index: 999999 !important; display: none; justify-content: center; 
+            align-items: center; opacity: 0; transition: opacity 0.5s ease; overflow: hidden; 
         }
-        #sale-notification-overlay.show { 
-            display: flex !important; 
-            opacity: 1 !important; 
-        }
+        #sale-notification-overlay.show { display: flex !important; opacity: 1 !important; }
         .notification-content { background: white; padding: 52px 65px; border-radius: 33px; text-align: center; box-shadow: 0 26px 65px rgba(0,0,0,0.3); position: relative; transform: scale(0.7); opacity: 0; animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 90%; width: 910px; border-top: 10px solid #a78bfa; }
         @keyframes pop-in { to { transform: scale(1); opacity: 1; } }
         
@@ -265,11 +292,31 @@
         .payment-status-section h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 15px; margin-top: 25px; justify-content: flex-start; }
         .payment-status-section:first-of-type h2 { margin-top: 0; }
 
+        @media (max-width: 1200px) {
+            .stats-grid-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .rankings-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .three-column-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
         @media (max-width: 1024px) {
             .stats-grid-container {
-                grid-template-columns: 1fr; /* Faz as colunas empilharem em telas menores */
+                grid-template-columns: 1fr;
             }
-            
+            .rankings-grid {
+                grid-template-columns: 1fr;
+            }
+            .three-column-layout {
+                grid-template-columns: 1fr;
+            }
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
             .timeline::before { left: 20px; }
             .timeline-item { width: 100%; padding-left: 65px; padding-right: 13px; }
             .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; text-align: left; }
@@ -280,7 +327,6 @@
 <body>
     <div class="main-container">
         <!-- Páginas do Carrossel -->
-        <!-- SUBSTITUA ESTE BLOCO INTEIRO -->
         <div id="dashboard-view" class="carousel-page active" data-name="Dashboard">
             <div class="header"><h1><i class="fas fa-chart-line"></i> Dashboard de Vendas - ReVive</h1><p class="subtitle">Rumo aos cem mil processos até 2030!</p></div>
             <div class="connection-status" id="connectionStatus" style="margin: 0 auto 20px auto;"><i class="fas fa-sync fa-spin"></i><span id="statusText">Verificando conexão...</span></div>
@@ -302,7 +348,7 @@
                 </div>
             </div>
             
-<!-- CARD DE TOTAL GLOBAL (NOVO) -->
+            <!-- CARD DE TOTAL GLOBAL -->
             <div class="stat-card" style="margin-bottom: 26px; text-align: center; border-top: 4px solid #6b46c1;">
                 <h3><i class="fas fa-globe"></i> Total Processos (Empresa)</h3>
                 <div class="stat-value" id="totalMonthGlobal" style="justify-content: center;">-</div>
@@ -312,7 +358,6 @@
             <div class="stats-grid-container">
                 <!-- Coluna da Esquerda: Santa Catarina -->
                 <div class="stats-column">
-                    <!-- CARD DE SC (MODIFICADO) -->
                     <div class="stat-card">
                         <h3><i class="fas fa-map-marker-alt"></i> Total Processos (SC)</h3>
                         <div class="stat-value" id="totalMonthSC">-</div>
@@ -330,7 +375,7 @@
                     </div>
                 </div>
             
-                <!-- Coluna da Direita: Ceará -->
+                <!-- Coluna do Meio: Ceará -->
                 <div class="stats-column">
                     <div class="stat-card stat-card-ce">
                         <h3><i class="fas fa-sun"></i> Total Processos (Ceará)</h3>
@@ -348,9 +393,28 @@
                         <div class="stat-label">em processos este mês</div>
                     </div>
                 </div>
+                
+                <!-- Coluna da Direita: Minas Gerais -->
+                <div class="stats-column">
+                    <div class="stat-card stat-card-mg">
+                        <h3><i class="fas fa-mountain"></i> Total Processos (MG)</h3>
+                        <div class="stat-value" id="totalMonthMG">-</div>
+                        <div class="stat-label">processos em Minas Gerais</div>
+                    </div>
+                    <div class="stat-card stat-card-mg">
+                        <h3><i class="fas fa-chart-bar"></i> Média Diária (MG)</h3>
+                        <div class="stat-value" id="dailyAverageMG">-</div>
+                        <div class="stat-label">processos/dia em MG</div>
+                    </div>
+                    <div class="stat-card stat-card-mg">
+                        <h3><i class="fas fa-trophy"></i> Melhor Consultor MG</h3>
+                        <div class="stat-value">🏆 <span id="topConsultantMG">-</span><img id="topConsultantPhotoMG" src="" alt="Foto do Melhor Consultor MG" style="display: none;"></div>
+                        <div class="stat-label">em processos este mês</div>
+                    </div>
+                </div>
             </div>
             
-            <!-- PAINEL DE METAS RESTAURADO -->
+            <!-- PAINEL DE METAS -->
             <div class="panel full-width" style="margin-bottom: 39px;">
                 <h2><i class="fas fa-chart-pie"></i> Tipos de Processo e Metas</h2>
                 <div class="process-stats">
@@ -360,58 +424,79 @@
                     <div class="process-card"><h4>Outros</h4><div class="process-number" id="outrosCount">-</div></div>
                 </div>
             </div>
-            <!-- PAINEL DE RANKINGS (RESTAURAR ESTE BLOCO) -->
+            
+            <!-- PAINEL DE RANKINGS - 3 COLUNAS -->
             <div class="rankings-grid" style="margin-bottom: 39px;">
                 <!-- Ranking de Santa Catarina -->
                 <div class="panel panel-sc">
-                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (SC)</h2>
-                    <div id="consultantRanking">
-                        <!-- O JavaScript vai preencher este espaço -->
-                    </div>
+                    <h2><i class="fas fa-medal"></i> Ranking (SC)</h2>
+                    <div id="consultantRanking"></div>
                 </div>
                 <!-- Ranking do Ceará -->
                 <div class="panel panel-ce">
-                    <h2><i class="fas fa-medal"></i> Ranking de Consultores (CE)</h2>
-                    <div id="cearaRanking">
-                        <!-- O JavaScript vai preencher este espaço -->
-                    </div>
+                    <h2><i class="fas fa-medal"></i> Ranking (CE)</h2>
+                    <div id="cearaRanking"></div>
+                </div>
+                <!-- Ranking de Minas Gerais -->
+                <div class="panel panel-mg">
+                    <h2><i class="fas fa-medal"></i> Ranking (MG)</h2>
+                    <div id="minasRanking"></div>
                 </div>
             </div>
-            <div class="two-column-layout">
+            
+            <!-- LISTAS DE PROCESSOS - 3 COLUNAS -->
+            <div class="three-column-layout">
                 <!-- Coluna da Esquerda: Lista de Processos SC -->
                 <div class="panel panel-sc">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
-                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos do Mês (SC)</h2>
+                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos (SC)</h2>
                         <div class="consultant-filter-container">
-                            <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px; font-size: 1.2rem;">Filtrar:</label>
-                            <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
+                            <label for="consultantFilter" style="font-weight: 600; color: #6b46c1; margin-right: 10px; font-size: 1rem;">Filtrar:</label>
+                            <select id="consultantFilter" onchange="filterSalesByConsultant()" style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; background-color: white; cursor: pointer;"></select>
                         </div>
                     </div>
-                    <table class="sales-table" style="font-size: 1.2rem;">
+                    <table class="sales-table" style="font-size: 1.1rem;">
                         <thead>
                             <tr><th>Data</th><th>Cliente</th><th>Processo</th><th>Consultor</th></tr>
                         </thead>
                         <tbody id="recentSalesTable"></tbody>
                     </table>
                 </div>
-                <!-- Coluna da Direita: Lista de Processos CE -->
+                <!-- Coluna do Meio: Lista de Processos CE -->
                 <div class="panel panel-ce">
                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
-                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos do Mês (CE)</h2>
+                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos (CE)</h2>
                         <div class="consultant-filter-container">
-                            <label for="consultantFilterCE" style="font-weight: 600; color: #10b981; margin-right: 10px; font-size: 1.2rem;">Filtrar:</label>
-                            <select id="consultantFilterCE" onchange="filterSalesByConsultantCE()" style="padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1.2rem; background-color: white; cursor: pointer;"></select>
+                            <label for="consultantFilterCE" style="font-weight: 600; color: #10b981; margin-right: 10px; font-size: 1rem;">Filtrar:</label>
+                            <select id="consultantFilterCE" onchange="filterSalesByConsultantCE()" style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; background-color: white; cursor: pointer;"></select>
                         </div>
                     </div>
-                    <table class="sales-table" style="font-size: 1.2rem;">
+                    <table class="sales-table" style="font-size: 1.1rem;">
                         <thead>
                             <tr><th class="th-ce">Data</th><th class="th-ce">Cliente</th><th class="th-ce">Processo</th><th class="th-ce">Consultor</th></tr>
                         </thead>
                         <tbody id="recentSalesTableCE"></tbody>
                     </table>
                 </div>
+                <!-- Coluna da Direita: Lista de Processos MG -->
+                <div class="panel panel-mg">
+                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                        <h2 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-clock"></i> Processos (MG)</h2>
+                        <div class="consultant-filter-container">
+                            <label for="consultantFilterMG" style="font-weight: 600; color: #da7756; margin-right: 10px; font-size: 1rem;">Filtrar:</label>
+                            <select id="consultantFilterMG" onchange="filterSalesByConsultantMG()" style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; background-color: white; cursor: pointer;"></select>
+                        </div>
+                    </div>
+                    <table class="sales-table" style="font-size: 1.1rem;">
+                        <thead>
+                            <tr><th class="th-mg">Data</th><th class="th-mg">Cliente</th><th class="th-mg">Processo</th><th class="th-mg">Consultor</th></tr>
+                        </thead>
+                        <tbody id="recentSalesTableMG"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        
         <div id="chart-view" class="carousel-page" data-name="Gráficos"><div class="header"><h1><i class="fas fa-chart-area"></i> Evolução de Processos</h1><p class="subtitle" id="chart-subtitle">Acompanhamento mensal do ano corrente</p></div><div class="panel"><div style="position: relative; height: 585px;"><canvas id="processEvolutionChart"></canvas></div></div></div>
         
         <div id="mission-view" class="carousel-page" data-name="Cultura">
@@ -520,6 +605,7 @@
     <script>
         let salesData = [];
         let cearaData = [];
+        let minasData = []; // Dados de MG filtrados da planilha SC pela coluna F
         let paymentsData = [];
         let rtmPaymentsData = [];
         let acordosData = [];
@@ -544,17 +630,20 @@
         let currentPageIndex = 0;
         const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NkZGFmYiI+PHBhdGggZD0iTTEyIDJBNCA0IDAgMCAwIDggNkE0IDQgMCAwIDAgMTIgMTBBNCA0IDAgMCAwIDE2IDZBNCA0IDAgMCAwIDEyIDJ6bTAgMTBDOC4xMyAxMiA0IDEzLjc5IDQgMTd2M2g4di0zYzAtMS42NiAxLjM0LTMgMy0zaDEuNjlBMy4wMDIgMy4wMDIgMCAwIDEgMTYgMTRjMS42NiAwIDMgMS4zNCAzIDN2M2gydi0zYzAtMy4yMS00LjEzLTUtOC01eiIvPjwvc3ZnPg==';
         const RANKING_AUDITORIA_ID = "1YyyXkC2f3PU7_-IsO0ZgyusKVelyweZ301p63XFDrJ8";
-        const RANKING_AUDITORIA_GID = "1686794249"; // GID da aba "Ranking do Mês"
+        const RANKING_AUDITORIA_GID = "1686794249";
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
-        // ADICIONE ESTA FUNÇÃO COMPLETA
-// ADICIONE ESTA FUNÇÃO COMPLETA
-function getNormalizedConsultantKey(fullName) {
-    if (!fullName || typeof fullName !== 'string') return 'desconhecido';
-    // Remove acentos, converte para minúsculas e pega o primeiro nome
-    return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
-}
+        
+        // Consultores de cada estado (nomes em maiúsculo para comparação)
+        const CONSULTORES_CEARA = ['WESLLEY', 'LIVIA', 'LÍVIA', 'LUCAS', 'VANESSA'];
+        const CONSULTORES_MINAS = ['LUIZMG', 'CONSULTORMG2']; // ADICIONE AQUI OS NOMES DOS CONSULTORES DE MG
+        
+        function getNormalizedConsultantKey(fullName) {
+            if (!fullName || typeof fullName !== 'string') return 'desconhecido';
+            return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+        }
+        
         async function fetchRankingData() {
             try {
                 const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&gid=${RANKING_AUDITORIA_GID}&_=${new Date().getTime()}`;
@@ -565,74 +654,78 @@ function getNormalizedConsultantKey(fullName) {
                 if (csvData && csvData.trim()) {
                     return await processRankingCsv(csvData);
                 }
-                return null; // Retorna nulo se não houver dados
+                return null;
             } catch (error) {
                 console.error("Erro ao buscar dados de ranking:", error);
-                return null; // Retorna nulo em caso de erro
+                return null;
             }
         }
-        // ADICIONE ESTA FUNÇÃO COMPLETA
-// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
-// SUBSTITUA A FUNÇÃO processRankingCsv PELA VERSÃO ABAIXO
-async function processRankingCsv(csvText) {
-    const lines = csvText.split('\n').filter(line => line.trim());
-    if (lines.length < 2) return null;
-
-    const headers = parseCSVLine(lines[0]);
-    const consultorIndex = headers.indexOf('Consultor');
-    const totalIndex = headers.indexOf('Total de Processos');
-    
-    if (consultorIndex === -1 || totalIndex === -1) {
-        console.error('Colunas "Consultor" ou "Total de Processos" não encontradas.');
-        return null;
-    }
-
-    const CONSULTORES_CEARA = ['WESLLEY', 'LIVIA', 'LÍVIA', 'LUCAS', 'VANESSA'];
-    const rankingSC_raw = [];
-    const rankingCE_raw = [];
-
-    const rows = lines.slice(1);
-    rows.forEach(line => {
-        const rowData = parseCSVLine(line);
-        const consultorName = (rowData[consultorIndex] || '').toUpperCase();
         
-        // Ignora linhas de total ou vazias
-        if (!consultorName || consultorName === 'TOTAIS') return;
-        
-        const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
+        async function processRankingCsv(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) return null;
 
-        // Cria um objeto para o consultor, mapeando cada header para seu valor
-        const consultorDataObject = {
-            name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
-            sales: totalVendas,
-            details: {}
-        };
+            const headers = parseCSVLine(lines[0]);
+            const consultorIndex = headers.indexOf('Consultor');
+            const totalIndex = headers.indexOf('Total de Processos');
+            
+            if (consultorIndex === -1 || totalIndex === -1) {
+                console.error('Colunas "Consultor" ou "Total de Processos" não encontradas.');
+                return null;
+            }
 
-        headers.forEach((header, index) => {
-            consultorDataObject.details[header] = parseInt(rowData[index], 10) || 0;
-        });
+            const rankingSC_raw = [];
+            const rankingCE_raw = [];
+            const rankingMG_raw = [];
 
-        if (CONSULTORES_CEARA.includes(consultorName)) {
-            rankingCE_raw.push(consultorDataObject);
-        } else {
-            rankingSC_raw.push(consultorDataObject);
+            const rows = lines.slice(1);
+            rows.forEach(line => {
+                const rowData = parseCSVLine(line);
+                const consultorName = (rowData[consultorIndex] || '').toUpperCase();
+                
+                if (!consultorName || consultorName === 'TOTAIS') return;
+                
+                const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
+
+                const consultorDataObject = {
+                    name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
+                    sales: totalVendas,
+                    details: {}
+                };
+
+                headers.forEach((header, index) => {
+                    consultorDataObject.details[header] = parseInt(rowData[index], 10) || 0;
+                });
+
+                if (CONSULTORES_CEARA.includes(consultorName)) {
+                    rankingCE_raw.push(consultorDataObject);
+                } else if (CONSULTORES_MINAS.includes(consultorName)) {
+                    rankingMG_raw.push(consultorDataObject);
+                } else {
+                    rankingSC_raw.push(consultorDataObject);
+                }
+            });
+            
+            rankingSC_raw.sort((a, b) => b.sales - a.sales);
+            rankingCE_raw.sort((a, b) => b.sales - a.sales);
+            rankingMG_raw.sort((a, b) => b.sales - a.sales);
+
+            const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
+            const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
+            const rankingMG = rankingMG_raw.map(c => ({ name: c.name, sales: c.sales }));
+            
+            const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
+            const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
+            const totalMG = rankingMG.reduce((sum, c) => sum + c.sales, 0);
+
+            return { 
+                rankingSC, rankingCE, rankingMG, 
+                totalSC, totalCE, totalMG, 
+                totalGlobal: totalSC + totalCE + totalMG, 
+                allConsultantData: [...rankingSC_raw, ...rankingCE_raw, ...rankingMG_raw] 
+            };
         }
-    });
-    
-    // Ordena os rankings
-    rankingSC_raw.sort((a, b) => b.sales - a.sales);
-    rankingCE_raw.sort((a, b) => b.sales - a.sales);
-
-    // Simplifica para o formato que a função de ranking espera (nome e vendas)
-    const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
-    const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
-    
-    const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
-    const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
-
-    // Retorna os dados brutos também, para que possamos calcular os totais de processo
-    return { rankingSC, rankingCE, totalSC, totalCE, totalGlobal: totalSC + totalCE, allConsultantData: [...rankingSC_raw, ...rankingCE_raw] };
-}
+        
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
             if (carouselPages.length === 0) return;
@@ -658,75 +751,109 @@ async function processRankingCsv(csvText) {
                 navigateCarousel(1);
             }, 35000);
         }
-// ADICIONE ESTE BLOCO DE CÓDIGO COMPLETO
 
-function populateConsultantFilter(monthSales) {
-    const consultantFilterSelect = document.getElementById('consultantFilter');
-    if (!consultantFilterSelect || !monthSales) return;
-    
-    const currentSelection = consultantFilterSelect.value;
-    const consultantsMap = new Map();
+        function populateConsultantFilter(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            if (!consultantFilterSelect || !monthSales) return;
+            
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
 
-    monthSales.forEach(sale => {
-        if (sale.consultor && sale.consultor.trim() !== "") {
-            const rawName = sale.consultor.trim();
-            const key = getNormalizedConsultantKey(rawName);
-            if (!consultantsMap.has(key)) {
-                const displayName = rawName.split(' ')[0];
-                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                consultantsMap.set(key, formattedName);
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
+
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; 
+                option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
             }
         }
-    });
 
-    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-    
-    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-    sortedConsultants.forEach(([key, displayName]) => {
-        const option = document.createElement('option');
-        option.value = key; 
-        option.textContent = displayName;
-        consultantFilterSelect.appendChild(option);
-    });
+        function populateConsultantFilterCE(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            if (!consultantFilterSelect || !monthSales) return;
+            
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
 
-    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-        consultantFilterSelect.value = currentSelection;
-    }
-}
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
 
-function populateConsultantFilterCE(monthSales) {
-    const consultantFilterSelect = document.getElementById('consultantFilterCE');
-    if (!consultantFilterSelect || !monthSales) return;
-    
-    const currentSelection = consultantFilterSelect.value;
-    const consultantsMap = new Map();
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; 
+                option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
 
-    monthSales.forEach(sale => {
-        if (sale.consultor && sale.consultor.trim() !== "") {
-            const rawName = sale.consultor.trim();
-            const key = getNormalizedConsultantKey(rawName);
-            if (!consultantsMap.has(key)) {
-                const displayName = rawName.split(' ')[0];
-                const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                consultantsMap.set(key, formattedName);
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
             }
         }
-    });
+        
+        function populateConsultantFilterMG(monthSales) {
+            const consultantFilterSelect = document.getElementById('consultantFilterMG');
+            if (!consultantFilterSelect || !monthSales) return;
+            
+            const currentSelection = consultantFilterSelect.value;
+            const consultantsMap = new Map();
 
-    const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-    
-    consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
-    sortedConsultants.forEach(([key, displayName]) => {
-        const option = document.createElement('option');
-        option.value = key; 
-        option.textContent = displayName;
-        consultantFilterSelect.appendChild(option);
-    });
+            monthSales.forEach(sale => {
+                if (sale.consultor && sale.consultor.trim() !== "") {
+                    const rawName = sale.consultor.trim();
+                    const key = getNormalizedConsultantKey(rawName);
+                    if (!consultantsMap.has(key)) {
+                        const displayName = rawName.split(' ')[0];
+                        const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                        consultantsMap.set(key, formattedName);
+                    }
+                }
+            });
 
-    if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
-        consultantFilterSelect.value = currentSelection;
-    }
-}
+            const sortedConsultants = Array.from(consultantsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            
+            consultantFilterSelect.innerHTML = '<option value="all">Todos</option>';
+            sortedConsultants.forEach(([key, displayName]) => {
+                const option = document.createElement('option');
+                option.value = key; 
+                option.textContent = displayName;
+                consultantFilterSelect.appendChild(option);
+            });
+
+            if (Array.from(consultantFilterSelect.options).some(opt => opt.value === currentSelection)) {
+                consultantFilterSelect.value = currentSelection;
+            }
+        }
+        
         function navigateCarousel(direction) {
             if (carouselPages.length === 0) return;
             carouselPages[currentPageIndex].classList.remove('active');
@@ -742,84 +869,75 @@ function populateConsultantFilterCE(monthSales) {
                 startCarouselInterval();
             }
         }
-// ADICIONE ESTA FUNÇÃO COMPLETA
 
-// SUBSTITUA A FUNÇÃO ANTIGA POR ESTA VERSÃO CORRIGIDA
-function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
-    const combinedData = [...(allSalesData || []), ...(allCearaData || [])];
-    if (combinedData.length === 0) return;
+        function updateProcessEvolutionChart(allSalesData, allCearaData = [], allMinasData = []) {
+            const combinedData = [...(allSalesData || []), ...(allCearaData || []), ...(allMinasData || [])];
+            if (combinedData.length === 0) return;
 
-    // --- INÍCIO DA CORREÇÃO ---
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonthIndex = now.getMonth(); // Janeiro = 0, Fevereiro = 1, ..., Novembro = 10
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonthIndex = now.getMonth();
 
-    document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${currentYear}`;
-    
-    // Inicia a contagem para todos os meses
-    const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
+            document.getElementById('chart-subtitle').textContent = `Acompanhamento mensal do ano de ${currentYear}`;
+            
+            const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
 
-    combinedData.forEach(sale => {
-        if (!sale.processo) return;
-        const date = parsePtBrDate(sale.data);
+            combinedData.forEach(sale => {
+                if (!sale.processo) return;
+                const date = parsePtBrDate(sale.data);
+                
+                if (date && date.getFullYear() === currentYear) {
+                    const month = date.getMonth() + 1;
+                    const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
+                    if (monthlyCounts.hasOwnProperty(month)) {
+                        monthlyCounts[month] += numProcessos;
+                    }
+                }
+            });
+
+            const dataPoints = Object.values(monthlyCounts);
+            
+            const finalDataPoints = dataPoints.map((point, index) => {
+                return index <= currentMonthIndex ? point : null;
+            });
+
+            const ctx = document.getElementById('processEvolutionChart').getContext('2d');
+            const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            
+            if (processEvolutionChartInstance) {
+                processEvolutionChartInstance.destroy();
+            }
+            
+            processEvolutionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Processos',
+                        data: finalDataPoints,
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#6b46c1',
+                        pointRadius: 5,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } },
+                        x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 }
+                    }
+                }
+            });
+        }
         
-        // Filtra os dados para considerar apenas os do ano corrente
-        if (date && date.getFullYear() === currentYear) {
-            const month = date.getMonth() + 1; // getMonth() é 0-11, então +1 para ser 1-12
-            const numProcessos = (sale.processo || '').split(',').filter(p => p.trim() && p.trim().toUpperCase() !== DRA_RENATA_STRING).length;
-            if (monthlyCounts.hasOwnProperty(month)) {
-                monthlyCounts[month] += numProcessos;
-            }
-        }
-    });
-
-    const dataPoints = Object.values(monthlyCounts);
-    
-    // Lógica corrigida: Mostra dados até o mês atual e define os meses futuros como nulos.
-    // O gráfico para de desenhar a linha quando encontra "null".
-    const finalDataPoints = dataPoints.map((point, index) => {
-        return index <= currentMonthIndex ? point : null;
-    });
-    // --- FIM DA CORREÇÃO ---
-
-    const ctx = document.getElementById('processEvolutionChart').getContext('2d');
-    const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    
-    // Destrói o gráfico antigo, se existir, para evitar sobreposição
-    if (processEvolutionChartInstance) {
-        processEvolutionChartInstance.destroy();
-    }
-    
-    // Cria o novo gráfico com os dados corrigidos
-    processEvolutionChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Número de Processos',
-                data: finalDataPoints, // Usa os pontos de dados corrigidos
-                backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                borderColor: '#8b5cf6',
-                borderWidth: 3,
-                pointBackgroundColor: '#6b46c1',
-                pointRadius: 5,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#f3f4f6' } },
-                x: { ticks: { color: '#6b7280' }, grid: { display: false } }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: { backgroundColor: '#6b46c1', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 10 }
-            }
-        }
-    });
-}
         function jumpToPage(index) {
             clearInterval(carouselInterval);
             carouselPages[currentPageIndex].classList.remove('active');
@@ -913,6 +1031,7 @@ function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
             }, 10);
             setTimeout(onAnimationFinish, 8000); 
         }
+        
         function triggerSaleAnimation(sale) {
             new Audio('foguete.wav').play().catch(e => console.error("Erro ao tocar 'foguete.wav':", e));
             const overlay = document.getElementById('sale-notification-overlay');
@@ -943,126 +1062,105 @@ function updateProcessEvolutionChart(allSalesData, allCearaData = []) {
              confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             
             setTimeout(onAnimationFinish, 8000);
-        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+        }
 
-// SUBSTITUA A FUNÇÃO fetchAllData ANTIGA POR ESTA
-// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
-// SUBSTITUA A FUNÇÃO fetchAllData PELA VERSÃO ABAIXO
-async function fetchAllData() {
-    updateConnectionStatus('loading', 'Atualizando dados...');
+        async function fetchAllData() {
+            updateConnectionStatus('loading', 'Atualizando dados...');
 
-    // Executa todas as buscas de dados em paralelo
-    const [rankingResult, salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
-        fetchRankingData(),
-        fetchSalesData(),
-        fetchCearaData(),
-        fetchPaymentsData(),
-        fetchRtmPaymentsData(),
-        fetchAcordosData()
-    ]);
+            const [rankingResult, salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
+                fetchRankingData(),
+                fetchSalesData(),
+                fetchCearaData(),
+                fetchPaymentsData(),
+                fetchRtmPaymentsData(),
+                fetchAcordosData()
+            ]);
 
-    // Lógica para os Rankings e Cards de Estatísticas (da planilha de auditoria)
-    if (rankingResult.status === 'fulfilled' && rankingResult.value) {
-        // --- INÍCIO DA CORREÇÃO ---
-        // Extrai todas as propriedades do objeto retornado para variáveis locais.
-        const { rankingSC, rankingCE, totalSC, totalCE, totalGlobal, allConsultantData } = rankingResult.value;
+            if (rankingResult.status === 'fulfilled' && rankingResult.value) {
+                const { rankingSC, rankingCE, rankingMG, totalSC, totalCE, totalMG, totalGlobal, allConsultantData } = rankingResult.value;
 
-        // Agora, passa essas variáveis locais para as funções.
-        updateMainStats(totalSC, totalCE, totalGlobal);
-        updateProcessStats(allConsultantData); // <-- CORRIGIDO
-        updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto');
-        updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE');
-        // --- FIM DA CORREÇÃO ---
-        
-        updateConnectionStatus('connected', 'Conectado');
-    } else {
-        console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
-        updateConnectionStatus('error', 'Falha no Ranking');
-        // Fallback: se a busca do ranking principal falhar, chamamos a lógica antiga
-        updateDashboard(); 
-    }
-    
-    // Lógica para as Tabelas de Detalhes e Gráfico (das planilhas antigas)
-    // (A atribuição a `salesData` e `cearaData` já acontece dentro das suas respectivas funções fetch)
-    
-    // Após todos os dados serem carregados, atualiza as partes restantes da UI
-    updateTotalFinishedCounter();
-    if (firstLoad) {
-        populateMonthFilter(salesData, cearaData);
-    }
-    
-    // Chama updateDashboard para filtrar e exibir os dados nas tabelas com base nos dados antigos
-    updateDashboard(); 
-    
-    firstLoad = false;
-}
-// SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
-// SUBSTITUA A FUNÇÃO updateProcessStats PELA VERSÃO ABAIXO
-function updateProcessStats(allConsultantData) {
-    if (!allConsultantData || allConsultantData.length === 0) {
-        // Zera os contadores para limpar a tela se não houver dados
-        document.getElementById('previdenciariosCount').textContent = '0';
-        document.getElementById('seguroTerceiroCount').textContent = '0';
-        document.getElementById('seguroVidaCount').textContent = '0';
-        document.getElementById('outrosCount').textContent = '0';
-        return;
-    }
-
-    const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
-    const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
-    const SEGURO_TERCEIRO_COLS = ['Terceiro'];
-    const SEGURO_VIDA_COLS = ['Vida'];
-
-    allConsultantData.forEach(consultor => {
-        for (const processName in consultor.details) {
-            const count = consultor.details[processName] || 0;
-            if (PREVIDENCIARIO_COLS.includes(processName)) {
-                processCounts.previdenciarios += count;
-            } else if (SEGURO_TERCEIRO_COLS.includes(processName)) {
-                processCounts.seguroTerceiro += count;
-            } else if (SEGURO_VIDA_COLS.includes(processName)) {
-                processCounts.seguroVida += count;
-            } else if (processName !== 'Consultor' && processName !== 'Total de Processos') {
-                processCounts.outros += count;
+                updateMainStats(totalSC, totalCE, totalMG, totalGlobal);
+                updateProcessStats(allConsultantData);
+                updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto', 'SC');
+                updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE', 'CE');
+                updateConsultantRanking(rankingMG, 'minasRanking', 'topConsultantMG', 'topConsultantPhotoMG', 'MG');
+                
+                updateConnectionStatus('connected', 'Conectado');
+            } else {
+                console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
+                updateConnectionStatus('error', 'Falha no Ranking');
+                updateDashboard(); 
             }
-        }
-    });
-
-    const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
-    
-    const updateCard = (type, count, meta) => {
-        // --- INÍCIO DA CORREÇÃO ---
-        // A linha abaixo foi o problema. Removemos a conversão para minúsculas.
-        // O nome 'type' que recebemos (ex: "seguroTerceiro") já está no formato correto.
-        const typeCamelCase = type;
-        // --- FIM DA CORREÇÃO ---
-        
-        const countEl = document.getElementById(`${typeCamelCase}Count`);
-        const goalEl = document.getElementById(`${typeCamelCase}Goal`);
-        const percentEl = document.getElementById(`${typeCamelCase}Percent`);
-
-        if (countEl) {
-            countEl.textContent = count;
+            
+            updateTotalFinishedCounter();
+            if (firstLoad) {
+                populateMonthFilter(salesData, cearaData, minasData);
+            }
+            
+            updateDashboard(); 
+            
+            firstLoad = false;
         }
 
-        if (goalEl && percentEl) {
-             const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
-             goalEl.textContent = `${count}/${meta}`;
-             percentEl.textContent = percent;
-        } else if (count === 0 && goalEl) {
-            // Limpa os campos de meta se a contagem for zero
-            goalEl.textContent = '-';
-            if (percentEl) percentEl.textContent = '-';
-        }
-    };
+        function updateProcessStats(allConsultantData) {
+            if (!allConsultantData || allConsultantData.length === 0) {
+                document.getElementById('previdenciariosCount').textContent = '0';
+                document.getElementById('seguroTerceiroCount').textContent = '0';
+                document.getElementById('seguroVidaCount').textContent = '0';
+                document.getElementById('outrosCount').textContent = '0';
+                return;
+            }
 
-    updateCard('previdenciarios', processCounts.previdenciarios, metas['PREVIDENCIÁRIOS']);
-    updateCard('seguroTerceiro', processCounts.seguroTerceiro, metas['SEGURO TERCEIRO']);
-    updateCard('seguroVida', processCounts.seguroVida, metas['SEGURO DE VIDA']);
-    
-    const outrosEl = document.getElementById('outrosCount');
-    if (outrosEl) outrosEl.textContent = processCounts.outros;
-}
+            const processCounts = { previdenciarios: 0, seguroTerceiro: 0, seguroVida: 0, outros: 0 };
+            const PREVIDENCIARIO_COLS = ['Auxílio-Doença', 'Auxílio-Acidente', 'Auxílio-Maternidade', 'Aposentadoria', 'LOAS'];
+            const SEGURO_TERCEIRO_COLS = ['Terceiro'];
+            const SEGURO_VIDA_COLS = ['Vida'];
+
+            allConsultantData.forEach(consultor => {
+                for (const processName in consultor.details) {
+                    const count = consultor.details[processName] || 0;
+                    if (PREVIDENCIARIO_COLS.includes(processName)) {
+                        processCounts.previdenciarios += count;
+                    } else if (SEGURO_TERCEIRO_COLS.includes(processName)) {
+                        processCounts.seguroTerceiro += count;
+                    } else if (SEGURO_VIDA_COLS.includes(processName)) {
+                        processCounts.seguroVida += count;
+                    } else if (processName !== 'Consultor' && processName !== 'Total de Processos') {
+                        processCounts.outros += count;
+                    }
+                }
+            });
+
+            const metas = { 'PREVIDENCIÁRIOS': 600, 'SEGURO TERCEIRO': 35, 'SEGURO DE VIDA': 100 };
+            
+            const updateCard = (type, count, meta) => {
+                const typeCamelCase = type;
+                
+                const countEl = document.getElementById(`${typeCamelCase}Count`);
+                const goalEl = document.getElementById(`${typeCamelCase}Goal`);
+                const percentEl = document.getElementById(`${typeCamelCase}Percent`);
+
+                if (countEl) {
+                    countEl.textContent = count;
+                }
+
+                if (goalEl && percentEl) {
+                     const percent = meta > 0 ? Math.min(100, Math.round((count / meta) * 100)) : 0;
+                     goalEl.textContent = `${count}/${meta}`;
+                     percentEl.textContent = percent;
+                } else if (count === 0 && goalEl) {
+                    goalEl.textContent = '-';
+                    if (percentEl) percentEl.textContent = '-';
+                }
+            };
+
+            updateCard('previdenciarios', processCounts.previdenciarios, metas['PREVIDENCIÁRIOS']);
+            updateCard('seguroTerceiro', processCounts.seguroTerceiro, metas['SEGURO TERCEIRO']);
+            updateCard('seguroVida', processCounts.seguroVida, metas['SEGURO DE VIDA']);
+            
+            const outrosEl = document.getElementById('outrosCount');
+            if (outrosEl) outrosEl.textContent = processCounts.outros;
+        }
 
         function triggerPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
@@ -1088,8 +1186,8 @@ function updateProcessStats(allConsultantData) {
                 overlay.style.opacity = '1';
             }, 10);
 
-            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
-        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+            setTimeout(onAnimationFinish, 8000);
+        }
 
         function triggerRtmPaymentAnimation(payment) {
             new Audio('dinheiro.mp3').play().catch(e => console.error("Erro ao tocar 'dinheiro.mp3':", e));
@@ -1131,8 +1229,8 @@ function updateProcessStats(allConsultantData) {
                 overlay.style.opacity = '1';
             }, 10);
             
-            setTimeout(onAnimationFinish, 8000); // Adicionado para fechar a notificação
-        } // <-- CHAVE DE FECHAMENTO ADICIONADA AQUI
+            setTimeout(onAnimationFinish, 8000);
+        }
         
         function checkForNewSales(newSales, oldSales, region = 'Santa Catarina') {
             if (firstLoad || newSales.length <= oldSales.length) return;
@@ -1188,188 +1286,224 @@ function updateProcessStats(allConsultantData) {
                 processNotificationQueue();
             }
         }
-// APAGUE ESTA FUNÇÃO INTEIRA
-function countTotalProcesses(sales) {
-    let total = 0;
-    const processosExclusivos = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL', 'AÇÃO DE ACIDENTE DE TRÂNSITO'].map(p => p.toUpperCase().trim());
 
-    sales.forEach(sale => {
-        const todosProcessos = (sale.processo || '').split(',').map(p => p.trim().toUpperCase()).filter(p => p && p !== DRA_RENATA_STRING);
-        const processosExclusivosNestaVenda = todosProcessos.filter(p => processosExclusivos.includes(p));
-        const outrosProcessosNestaVenda = todosProcessos.filter(p => !processosExclusivos.includes(p));
-        
-        let contagemParaEstaVenda = outrosProcessosNestaVenda.length;
-        if (processosExclusivosNestaVenda.length > 0) {
-            contagemParaEstaVenda += 1;
+        function updateMonthSales(monthSales) {
+            if (!monthSales) return;
+            const consultantFilterSelect = document.getElementById('consultantFilter');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
+            
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return (b.originalIndex || 0) - (a.originalIndex || 0);
+            });
+
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr>
+                            <td><span class="date-badge">${sale.data || '-'}</span></td>
+                            <td>${sale.cliente || '-'}</td>
+                            <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                            <td>${sale.consultor || '-'}</td>
+                        </tr>`;
+            });
+            
+            const tableBody = document.getElementById('recentSalesTable');
+            if(tableBody) {
+                tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+            }
         }
-        total += contagemParaEstaVenda;
-    });
-    return total;
-}
-// ADICIONE ESTAS DUAS FUNÇÕES COMPLETAS
 
-function updateMonthSales(monthSales) {
-    if (!monthSales) return; // Garante que não quebre se os dados não existirem
-    const consultantFilterSelect = document.getElementById('consultantFilter');
-    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
-    
-    let filteredSales = monthSales;
-    if (selectedConsultantKey !== 'all') {
-        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-    }
-    
-    const sortedSales = [...filteredSales].sort((a, b) => {
-        const dateA = parsePtBrDate(a.data);
-        const dateB = parsePtBrDate(b.data);
-        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
-        if (!dateA) return 1;
-        if (!dateB) return -1;
-        if (dateB - dateA !== 0) return dateB - dateA;
-        return (b.originalIndex || 0) - (a.originalIndex || 0);
-    });
+        function updateMonthSalesCE(monthSales) {
+            if (!monthSales) return;
+            const consultantFilterSelect = document.getElementById('consultantFilterCE');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
 
-    let html = '';
-    sortedSales.forEach(sale => {
-        html += `<tr>
-                    <td><span class="date-badge">${sale.data || '-'}</span></td>
-                    <td>${sale.cliente || '-'}</td>
-                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
-                    <td>${sale.consultor || '-'}</td>
-                </tr>`;
-    });
-    
-    const tableBody = document.getElementById('recentSalesTable');
-    if(tableBody) {
-        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-    }
-}
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
 
-function updateMonthSalesCE(monthSales) {
-    if (!monthSales) return; // Garante que não quebre se os dados não existirem
-    const consultantFilterSelect = document.getElementById('consultantFilterCE');
-    const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return (b.originalIndex || 0) - (a.originalIndex || 0);
+            });
 
-    let filteredSales = monthSales;
-    if (selectedConsultantKey !== 'all') {
-        filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
-    }
-
-    const sortedSales = [...filteredSales].sort((a, b) => {
-        const dateA = parsePtBrDate(a.data);
-        const dateB = parsePtBrDate(b.data);
-        if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
-        if (!dateA) return 1;
-        if (!dateB) return -1;
-        if (dateB - dateA !== 0) return dateB - dateA;
-        return (b.originalIndex || 0) - (a.originalIndex || 0);
-    });
-
-    let html = '';
-    sortedSales.forEach(sale => {
-        html += `<tr>
-                    <td><span class="date-badge">${sale.data || '-'}</span></td>
-                    <td>${sale.cliente || '-'}</td>
-                    <td><span class="process-badge">${sale.processo || '-'}</span></td>
-                    <td>${sale.consultor || '-'}</td>
-                </tr>`;
-    });
-    
-    const tableBody = document.getElementById('recentSalesTableCE');
-    if(tableBody) {
-        tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
-    }
-}
-// SUBSTITUA A FUNÇÃO updateDashboard PELA VERSÃO ABAIXO
-function updateDashboard() {
-    if (document.getElementById('monthFilter').options.length === 0 && !firstLoad) {
-        // Se não há meses para filtrar (e não é a primeira carga), não faz nada.
-        return;
-    }
-
-    // Pega os dados filtrados pelo mês selecionado
-    const monthSalesSC = getMonthSales();
-    const monthSalesCE = getMonthCeara();
-    
-    // Popula os filtros de consultor com base nos dados do mês
-    populateConsultantFilter(monthSalesSC);
-    populateConsultantFilterCE(monthSalesCE);
-    
-    // Atualiza as tabelas de detalhes com os dados filtrados
-    updateMonthSales(monthSalesSC);
-    updateMonthSalesCE(monthSalesCE);
-    
-    // Atualiza o gráfico com todos os dados (não apenas do mês)
-    updateProcessEvolutionChart(salesData, cearaData);
-}
-
-// SUBSTITUA PELA VERSÃO ABAIXO
-function updateMainStats(totalSC, totalCE, totalGlobal) {
-    document.getElementById('totalMonthGlobal').textContent = totalGlobal;
-    document.getElementById('totalMonthSC').textContent = totalSC;
-    document.getElementById('totalMonthCE').textContent = totalCE;
-
-    // A média diária agora é uma estimativa simples baseada no dia atual do mês.
-    const dayOfMonth = new Date().getDate();
-    document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && dayOfMonth > 0) ? (totalSC / dayOfMonth).toFixed(1) : '0.0';
-    document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && dayOfMonth > 0) ? (totalCE / dayOfMonth).toFixed(1) : '0.0';
-
-    // Atualiza o rótulo do mês nos cards
-    const selectedMonthYear = document.getElementById('monthFilter').value;
-    if (selectedMonthYear) {
-        const [monthStr, yearStr] = selectedMonthYear.split('/');
-        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr>
+                            <td><span class="date-badge">${sale.data || '-'}</span></td>
+                            <td>${sale.cliente || '-'}</td>
+                            <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                            <td>${sale.consultor || '-'}</td>
+                        </tr>`;
+            });
+            
+            const tableBody = document.getElementById('recentSalesTableCE');
+            if(tableBody) {
+                tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+            }
+        }
         
-        document.getElementById('monthLabelGlobal').textContent = monthLabelText;
-        document.getElementById('monthLabelSC').textContent = monthLabelText;
-    }
-}
-// SUBSTITUA PELA VERSÃO ABAIXO
-function updateConsultantRanking(ranking, rankingElementId, topConsultantId, topPhotoId) {
-    const topConsultantNameEl = document.getElementById(topConsultantId);
-    const topConsultantPhotoEl = document.getElementById(topPhotoId);
-    
-    // Atualiza o card de "Melhor Consultor"
-    if (ranking && ranking.length > 0 && ranking[0].sales > 0) {
-        const topConsultant = ranking[0];
-        topConsultantNameEl.textContent = topConsultant.name;
-        topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
-        topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; };
-        topConsultantPhotoEl.style.display = 'inline-block';
-    } else {
-        topConsultantNameEl.textContent = '-';
-        topConsultantPhotoEl.style.display = 'none';
-    }
+        function updateMonthSalesMG(monthSales) {
+            if (!monthSales) return;
+            const consultantFilterSelect = document.getElementById('consultantFilterMG');
+            const selectedConsultantKey = consultantFilterSelect ? consultantFilterSelect.value : 'all';
 
-    const rankNumberClass = rankingElementId === 'cearaRanking' ? 'rank-number rank-number-ce' : 'rank-number';
-    const stateSuffix = rankingElementId === 'cearaRanking' ? 'CE' : 'SC';
-    
-    // Constrói a lista de ranking a partir dos dados recebidos
-    let listHtml = (ranking || []).map((consultor, index) => {
-        const photoUrl = getConsultantPhotoUrl(consultor.name);
-        // O modal de detalhes não funciona com esta fonte, então o onclick é removido
-        return `<div class="ranking-item">
-                    <div class="consultant-info">
-                        <div class="${rankNumberClass}">${index + 1}</div>
-                        <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}';">
-                        <div class="consultant-name">${consultor.name}</div>
-                    </div>
-                    <div class="sales-count">${consultor.sales}</div>
-                </div>`;
-    }).join('');
+            let filteredSales = monthSales;
+            if (selectedConsultantKey !== 'all') {
+                filteredSales = monthSales.filter(sale => sale.consultor && getNormalizedConsultantKey(sale.consultor) === selectedConsultantKey);
+            }
 
-    // Monta o HTML final com a lista e o botão de expandir (se necessário)
-    let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
-    if (ranking.length > 5) {
-        const btnClass = stateSuffix === 'CE' ? 'expand-ranking-btn btn-ce' : 'expand-ranking-btn';
-        finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
-    }
+            const sortedSales = [...filteredSales].sort((a, b) => {
+                const dateA = parsePtBrDate(a.data);
+                const dateB = parsePtBrDate(b.data);
+                if (!dateA && !dateB) return (b.originalIndex || 0) - (a.originalIndex || 0);
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return (b.originalIndex || 0) - (a.originalIndex || 0);
+            });
 
-    const rankingContainer = document.getElementById(rankingElementId);
-    if (rankingContainer) {
-        rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
-    }
-}
+            let html = '';
+            sortedSales.forEach(sale => {
+                html += `<tr>
+                            <td><span class="date-badge">${sale.data || '-'}</span></td>
+                            <td>${sale.cliente || '-'}</td>
+                            <td><span class="process-badge">${sale.processo || '-'}</span></td>
+                            <td>${sale.consultor || '-'}</td>
+                        </tr>`;
+            });
+            
+            const tableBody = document.getElementById('recentSalesTableMG');
+            if(tableBody) {
+                tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#6b7280;">Nenhum processo encontrado.</td></tr>';
+            }
+        }
+        
+        function filterSalesByConsultant() {
+            const monthSalesSC = getMonthSales();
+            updateMonthSales(monthSalesSC);
+        }
+        
+        function filterSalesByConsultantCE() {
+            const monthSalesCE = getMonthCeara();
+            updateMonthSalesCE(monthSalesCE);
+        }
+        
+        function filterSalesByConsultantMG() {
+            const monthSalesMG = getMonthMinas();
+            updateMonthSalesMG(monthSalesMG);
+        }
+
+        function updateDashboard() {
+            if (document.getElementById('monthFilter').options.length === 0 && !firstLoad) {
+                return;
+            }
+
+            const monthSalesSC = getMonthSales();
+            const monthSalesCE = getMonthCeara();
+            const monthSalesMG = getMonthMinas();
+            
+            populateConsultantFilter(monthSalesSC);
+            populateConsultantFilterCE(monthSalesCE);
+            populateConsultantFilterMG(monthSalesMG);
+            
+            updateMonthSales(monthSalesSC);
+            updateMonthSalesCE(monthSalesCE);
+            updateMonthSalesMG(monthSalesMG);
+            
+            updateProcessEvolutionChart(salesData, cearaData, minasData);
+        }
+
+        function updateMainStats(totalSC, totalCE, totalMG, totalGlobal) {
+            document.getElementById('totalMonthGlobal').textContent = totalGlobal;
+            document.getElementById('totalMonthSC').textContent = totalSC;
+            document.getElementById('totalMonthCE').textContent = totalCE;
+            document.getElementById('totalMonthMG').textContent = totalMG;
+
+            const dayOfMonth = new Date().getDate();
+            document.getElementById('dailyAverageSC').textContent = (totalSC > 0 && dayOfMonth > 0) ? (totalSC / dayOfMonth).toFixed(1) : '0.0';
+            document.getElementById('dailyAverageCE').textContent = (totalCE > 0 && dayOfMonth > 0) ? (totalCE / dayOfMonth).toFixed(1) : '0.0';
+            document.getElementById('dailyAverageMG').textContent = (totalMG > 0 && dayOfMonth > 0) ? (totalMG / dayOfMonth).toFixed(1) : '0.0';
+
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (selectedMonthYear) {
+                const [monthStr, yearStr] = selectedMonthYear.split('/');
+                const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                const monthLabelText = `${monthNames[parseInt(monthStr, 10) - 1]} ${yearStr}`;
+                
+                document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+                document.getElementById('monthLabelSC').textContent = monthLabelText;
+            }
+        }
+
+        function updateConsultantRanking(ranking, rankingElementId, topConsultantId, topPhotoId, stateSuffix) {
+            const topConsultantNameEl = document.getElementById(topConsultantId);
+            const topConsultantPhotoEl = document.getElementById(topPhotoId);
+            
+            if (ranking && ranking.length > 0 && ranking[0].sales > 0) {
+                const topConsultant = ranking[0];
+                topConsultantNameEl.textContent = topConsultant.name;
+                topConsultantPhotoEl.src = getConsultantPhotoUrl(topConsultant.name);
+                topConsultantPhotoEl.onerror = () => { topConsultantPhotoEl.src = DEFAULT_AVATAR; };
+                topConsultantPhotoEl.style.display = 'inline-block';
+            } else {
+                topConsultantNameEl.textContent = '-';
+                topConsultantPhotoEl.style.display = 'none';
+            }
+
+            let rankNumberClass = 'rank-number';
+            let salesCountClass = 'sales-count';
+            let btnClass = 'expand-ranking-btn';
+            
+            if (stateSuffix === 'CE') {
+                rankNumberClass = 'rank-number rank-number-ce';
+                salesCountClass = 'sales-count sales-count-ce';
+                btnClass = 'expand-ranking-btn btn-ce';
+            } else if (stateSuffix === 'MG') {
+                rankNumberClass = 'rank-number rank-number-mg';
+                salesCountClass = 'sales-count sales-count-mg';
+                btnClass = 'expand-ranking-btn btn-mg';
+            }
+            
+            let listHtml = (ranking || []).map((consultor, index) => {
+                const photoUrl = getConsultantPhotoUrl(consultor.name);
+                return `<div class="ranking-item">
+                            <div class="consultant-info">
+                                <div class="${rankNumberClass}">${index + 1}</div>
+                                <img src="${photoUrl}" class="consultant-photo-ranking" onerror="this.src='${DEFAULT_AVATAR}';">
+                                <div class="consultant-name">${consultor.name}</div>
+                            </div>
+                            <div class="${salesCountClass}">${consultor.sales}</div>
+                        </div>`;
+            }).join('');
+
+            let finalHtml = `<div id="ranking-list-${stateSuffix}" class="ranking-list-container ${ranking.length > 5 ? 'collapsed' : ''}">${listHtml}</div>`;
+            if (ranking.length > 5) {
+                finalHtml += `<button id="expand-btn-${stateSuffix}" class="${btnClass}" onclick="toggleRanking('${stateSuffix}')">Ver Ranking Completo</button>`;
+            }
+
+            const rankingContainer = document.getElementById(rankingElementId);
+            if (rankingContainer) {
+                rankingContainer.innerHTML = finalHtml || '<p style="text-align:center;color:#6b7280;padding:20px;">Nenhum processo para o mês.</p>';
+            }
+        }
+        
         async function fetchSalesData() {
             try {
                 updateConnectionStatus('loading', 'Conectando à Vendas...');
@@ -1378,11 +1512,16 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                 if (!response.ok) throw new Error(`Falha na conexão de Vendas: ${response.statusText}`);
                 const csvData = await response.text();
                 if (csvData && csvData.trim()) {
-                    const newSalesData = await processCsvData(csvData);
-                    checkForNewSales(newSalesData, salesData, 'Santa Catarina');
-                    salesData = newSalesData;
+                    const { scData, mgData } = await processCsvDataWithUnit(csvData);
+                    
+                    checkForNewSales(scData, salesData, 'Santa Catarina');
+                    checkForNewSales(mgData, minasData, 'Minas Gerais');
+                    
+                    salesData = scData;
+                    minasData = mgData;
+                    
                     if (document.getElementById('monthFilter').options.length === 0) {
-                        populateMonthFilter(salesData);
+                        populateMonthFilter(salesData, cearaData, minasData);
                     }
                     updateDashboard();
                 }
@@ -1517,6 +1656,7 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             return null;
         }
 
+        // Função original para processar CSV (usada pelo Ceará)
         async function processCsvData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
             const tempData = [];
@@ -1535,6 +1675,39 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                 }
             }
             return tempData;
+        }
+        
+        // Nova função para processar CSV com a coluna de unidade (coluna F = índice 5)
+        async function processCsvDataWithUnit(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const scData = [];
+            const mgData = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                const processoValue = (columns[0] || '').trim().toUpperCase();
+                if (processoValue === 'CANCELADO') { continue; }
+                
+                if (columns.length >= 5) {
+                    const saleRecord = {
+                        processo: (columns[0] || '').trim(),
+                        cliente: (columns[1] || '').trim(),
+                        data: (columns[3] || '').trim(),
+                        consultor: (columns[4] || '').trim(),
+                        unidade: (columns[5] || '').trim().toUpperCase(), // Coluna F (índice 5)
+                        originalIndex: i
+                    };
+                    
+                    // Verifica a unidade na coluna F para separar SC e MG
+                    if (saleRecord.unidade === 'MG' || saleRecord.unidade === 'MINAS' || saleRecord.unidade === 'MINAS GERAIS') {
+                        mgData.push(saleRecord);
+                    } else {
+                        // Se não for MG, vai para SC (padrão)
+                        scData.push(saleRecord);
+                    }
+                }
+            }
+            return { scData, mgData };
         }
 
         async function processPaymentsCsv(csvText) {
@@ -1672,7 +1845,6 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                     <td><span class="date-badge">${formattedDate}</span></td>
                     <td>${payment.cliente || '-'}</td>
                     <td><span class="process-badge">--</span></td>
-
                     <td>${cobradorDisplay}</td>
                 </tr>`;
             });
@@ -1711,9 +1883,7 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                     <td>${acordo.cliente || '-'}</td>
                     <td>${acordo.processo || '-'}</td>
                     <td><span class="process-badge">--</span></td>
-
                     <td><span class="process-badge" style="background-color: #a78bfa; color: white;">--</span></td>
-
                     <td><span class="status-badge" style="background-color: ${bgColor};">${acordo.status || '-'}</span></td>
                 </tr>`;
             });
@@ -1740,7 +1910,6 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
                     <td>${payment.nome || '-'}</td>
                     <td><span class="process-badge">${payment.processo || '-'}</span></td>
                     <td>--</td>
-
                 </tr>`;
             });
             tableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #6b7280;">Nenhum processo nesta categoria.</td></tr>';
@@ -1763,42 +1932,42 @@ function updateConsultantRanking(ranking, rankingElementId, topConsultantId, top
             updateProcessCounter(totalPaid);
         }
 
-function populateMonthFilter(dataSC, dataCE) {
-    const monthSet = new Set();
-    const allData = [...(dataSC || []), ...(dataCE || [])]; // Combina os dados de SC e CE
-    
-    allData.forEach(sale => {
-        if (sale.data) {
-            const date = parsePtBrDate(sale.data);
-            if (date) {
-                 const month = date.getMonth() + 1;
-                 const year = date.getFullYear();
-                 monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
+        function populateMonthFilter(dataSC, dataCE, dataMG) {
+            const monthSet = new Set();
+            const allData = [...(dataSC || []), ...(dataCE || []), ...(dataMG || [])];
+            
+            allData.forEach(sale => {
+                if (sale.data) {
+                    const date = parsePtBrDate(sale.data);
+                    if (date) {
+                         const month = date.getMonth() + 1;
+                         const year = date.getFullYear();
+                         monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
+                    }
+                }
+            });
+
+            const monthSelect = document.getElementById('monthFilter');
+            const currentVal = monthSelect.value;
+            const allMonths = Array.from(monthSet).sort((a, b) => {
+                const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
+                return new Date(yb, mb - 1) - new Date(ya, ma - 1);
+            });
+
+            monthSelect.innerHTML = '';
+            allMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month; 
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+
+            if (allMonths.includes(currentVal)) {
+                monthSelect.value = currentVal;
+            } else if (allMonths.length > 0) {
+                monthSelect.value = allMonths[0];
             }
         }
-    });
-
-    const monthSelect = document.getElementById('monthFilter');
-    const currentVal = monthSelect.value;
-    const allMonths = Array.from(monthSet).sort((a, b) => {
-        const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
-        return new Date(yb, mb - 1) - new Date(ya, ma - 1);
-    });
-
-    monthSelect.innerHTML = '';
-    allMonths.forEach(month => {
-        const option = document.createElement('option');
-        option.value = month; 
-        option.textContent = month;
-        monthSelect.appendChild(option);
-    });
-
-    if (allMonths.includes(currentVal)) {
-        monthSelect.value = currentVal;
-    } else if (allMonths.length > 0) {
-        monthSelect.value = allMonths[0]; // Seleciona o mês mais recente por padrão
-    }
-}
         
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
@@ -1819,6 +1988,17 @@ function populateMonthFilter(dataSC, dataCE) {
                 return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
             });
         }
+        
+        function getMonthMinas() {
+            const selectedMonthYear = document.getElementById('monthFilter').value;
+            if (!selectedMonthYear) return [];
+            const [filterMonth, filterYear] = selectedMonthYear.split('/').map(Number);
+            return minasData.filter(sale => {
+                const date = parsePtBrDate(sale.data);
+                return date && date.getMonth() + 1 === filterMonth && date.getFullYear() === filterYear;
+            });
+        }
+        
         function filterPayments(statusToShow) {
             document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
@@ -1831,11 +2011,13 @@ function populateMonthFilter(dataSC, dataCE) {
                 }
             });
         }
+        
         function getConsultantPhotoUrl(consultantName) {
             if (!consultantName) return DEFAULT_AVATAR;
             const baseName = getNormalizedConsultantKey(consultantName);
             return `${baseName}.PNG`;
         }
+        
         function toggleRanking(stateSuffix) {
             const list = document.getElementById(`ranking-list-${stateSuffix}`);
             const button = document.getElementById(`expand-btn-${stateSuffix}`);
@@ -1849,17 +2031,16 @@ function populateMonthFilter(dataSC, dataCE) {
                 }
             }
         }
+        
+        function closeProcessDetails() {
+            document.getElementById('process-details-modal').style.display = 'none';
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Prepara a navegação do carrossel
             setupCarousel();
-
-            // 2. Busca todos os dados pela primeira vez (esta é a linha que liga tudo)
             fetchAllData(); 
-
-            // 3. Configura a atualização automática a cada 30 segundos (30000 milissegundos)
             setInterval(fetchAllData, 30000);
 
-            // Configura o fechamento do modal ao clicar fora dele
             const modal = document.getElementById('process-details-modal');
             window.onclick = function(event) {
                 if (event.target == modal) {
@@ -1867,7 +2048,6 @@ function populateMonthFilter(dataSC, dataCE) {
                 }
             }
 
-            // Configura o botão de pausar/retomar o carrossel
             const toggleBtn = document.getElementById('carousel-toggle-button');
             const icon = toggleBtn.querySelector('i');
             
@@ -1886,10 +2066,8 @@ function populateMonthFilter(dataSC, dataCE) {
                 }
             });
 
-            // Garante que o filtro de pagamentos comece mostrando tudo
             filterPayments('all');
         });
     </script>
 </body>
 </html>
-
