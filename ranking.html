@@ -648,38 +648,45 @@ async function fetchRankingData(monthNameArg) {
     try {
         let targetMonth = monthNameArg;
         
-        // Se a função foi chamada sem argumento, tenta descobrir pelo filtro selecionado
+        // Se a função foi chamada sem argumento, tenta descobrir pelo filtro
         if (!targetMonth) {
             const monthSelector = document.getElementById('monthFilter');
             if (monthSelector && monthSelector.value) {
                 const [m, ] = monthSelector.value.split('/');
                 targetMonth = MONTH_NAMES_PTBR[parseInt(m) - 1];
             } else {
-                // Fallback para o mês atual do sistema
                 targetMonth = MONTH_NAMES_PTBR[new Date().getMonth()];
             }
         }
 
-        // Nome exato da aba criado pelo script
+        // Nome exato da aba
         const sheetName = `Ranking - ${targetMonth.toUpperCase()}`;
-        console.log(`Tentando buscar aba: ${sheetName}`); // Debug no console
+        console.log(`Tentando buscar aba: ${sheetName}`);
 
-        // URL Ajustada: Adiciona o parâmetro 'id' que ajuda o Google a achar a aba pelo nome
+        // URL USANDO A API DE VISUALIZAÇÃO (GVIZ)
+        // tqx=out:csv -> Formato CSV
+        // sheet= -> Nome da aba
         const encodedSheetName = encodeURIComponent(sheetName);
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&id=${RANKING_AUDITORIA_ID}&sheet=${encodedSheetName}&_=${new Date().getTime()}`;
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/gviz/tq?tqx=out:csv&sheet=${encodedSheetName}`;
 
-        const response = await fetch(csvUrl, { mode: 'cors' });
+        const response = await fetch(csvUrl);
         
         if (!response.ok) {
-            console.warn(`Erro HTTP ao buscar aba ${sheetName}: ${response.status}`);
+            console.warn(`Erro na requisição: ${response.status}`);
             return null;
         }
 
         const csvData = await response.text();
         
-        // Verifica se retornou HTML (erro) em vez de CSV
+        // Verifica se retornou HTML de erro
         if (csvData.trim().startsWith('<!DOCTYPE html>') || csvData.includes('<html')) {
-            console.warn(`Aba "${sheetName}" não encontrada (retornou HTML padrão).`);
+            console.warn(`Aba "${sheetName}" não encontrada (retornou HTML).`);
+            return null;
+        }
+
+        // VERIFICAÇÃO DE SEGURANÇA: Se baixou a aba de Log por engano, ignora
+        if (csvData.includes('"Timestamp"') && csvData.includes('"Consultor Auditado"')) {
+            console.warn(`Aviso: O Google retornou a aba de Log em vez de "${sheetName}". A aba de ranking provavelmente não existe ainda.`);
             return null;
         }
 
@@ -688,28 +695,32 @@ async function fetchRankingData(monthNameArg) {
         }
         return null;
     } catch (error) {
-        console.error("Erro fatal ao buscar ranking:", error);
+        console.error("Erro ao buscar ranking:", error);
         return null;
     }
 }
-        
 async function processRankingCsv(csvText) {
-    // 1. LIMPEZA CRÍTICA: Remove caractere BOM invisível se existir no início
+    if (!csvText) return null;
+
+    // Remove BOM se existir
     if (csvText.charCodeAt(0) === 0xFEFF) {
         csvText = csvText.substr(1);
     }
 
     const lines = csvText.split('\n').filter(line => line.trim());
-    if (lines.length < 2) {
-        console.warn("CSV de ranking com menos de 2 linhas.");
+    if (lines.length < 2) return null;
+
+    const headers = parseCSVLine(lines[0]);
+    
+    // SEGURANÇA: Se o header tiver "Timestamp", estamos na aba errada (Log)
+    // Isso impede o erro crítico de "coluna não encontrada"
+    const headerString = headers.join(',').toUpperCase();
+    if (headerString.includes('TIMESTAMP') || headerString.includes('CONSULTOR AUDITADO')) {
+        console.log("Ignorando dados da aba de Log de Alterações.");
         return null;
     }
 
-    // Parseia os cabeçalhos
-    const headers = parseCSVLine(lines[0]);
-    
-    // Debug: Mostra no console o que ele realmente leu (ajuda a identificar erros)
-    console.log("Headers brutos lidos:", headers);
+    console.log("Headers processados:", headers);
 
     // 2. BUSCA ROBUSTA: Procura os índices ignorando maiúsculas/minúsculas e espaços
     // Normaliza para: TRIM (sem espaço) e UPPERCASE (maiúsculo)
