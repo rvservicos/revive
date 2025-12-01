@@ -644,51 +644,54 @@
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
         
-        async function fetchRankingData(monthNameArg) {
-            try {
-                // Se nenhum mês for passado, tentamos pegar o mês atual
-                let targetMonth = monthNameArg;
-                if (!targetMonth) {
-                    const now = new Date();
-                    targetMonth = MONTH_NAMES_PTBR[now.getMonth()];
-                }
+async function fetchRankingData(monthNameArg) {
+    try {
+        let targetMonth = monthNameArg;
         
-                // Constrói o nome da aba conforme definido no Apps Script
-                const sheetName = `Ranking - ${targetMonth.toUpperCase()}`;
-                
-                // Codifica o nome para URL (espaços viram %20, acentos, etc)
-                const encodedSheetName = encodeURIComponent(sheetName);
-        
-                // URL usando o parâmetro 'sheet=' em vez de 'gid='
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&sheet=${encodedSheetName}&_=${new Date().getTime()}`;
-                
-                console.log(`Buscando ranking da aba: ${sheetName}`); // Para debug
-        
-                const response = await fetch(csvUrl, { mode: 'cors' });
-                
-                // Se a aba não existir (ex: mês futuro), o Google retorna erro ou redireciona
-                if (!response.ok) {
-                    console.warn(`Aba ${sheetName} não encontrada ou erro na requisição.`);
-                    return null; 
-                }
-                
-                const csvData = await response.text();
-                
-                // Verifica se o retorno parece HTML (erro de página de login ou 404 disfarçado)
-                if (csvData.trim().startsWith('<!DOCTYPE html>') || csvData.includes('<html')) {
-                    console.warn(`Aba ${sheetName} provavelmente não existe.`);
-                    return null;
-                }
-        
-                if (csvData && csvData.trim()) {
-                    return await processRankingCsv(csvData);
-                }
-                return null;
-            } catch (error) {
-                console.error("Erro ao buscar dados de ranking:", error);
-                return null;
+        // Se a função foi chamada sem argumento, tenta descobrir pelo filtro selecionado
+        if (!targetMonth) {
+            const monthSelector = document.getElementById('monthFilter');
+            if (monthSelector && monthSelector.value) {
+                const [m, ] = monthSelector.value.split('/');
+                targetMonth = MONTH_NAMES_PTBR[parseInt(m) - 1];
+            } else {
+                // Fallback para o mês atual do sistema
+                targetMonth = MONTH_NAMES_PTBR[new Date().getMonth()];
             }
         }
+
+        // Nome exato da aba criado pelo script
+        const sheetName = `Ranking - ${targetMonth.toUpperCase()}`;
+        console.log(`Tentando buscar aba: ${sheetName}`); // Debug no console
+
+        // URL Ajustada: Adiciona o parâmetro 'id' que ajuda o Google a achar a aba pelo nome
+        const encodedSheetName = encodeURIComponent(sheetName);
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&id=${RANKING_AUDITORIA_ID}&sheet=${encodedSheetName}&_=${new Date().getTime()}`;
+
+        const response = await fetch(csvUrl, { mode: 'cors' });
+        
+        if (!response.ok) {
+            console.warn(`Erro HTTP ao buscar aba ${sheetName}: ${response.status}`);
+            return null;
+        }
+
+        const csvData = await response.text();
+        
+        // Verifica se retornou HTML (erro) em vez de CSV
+        if (csvData.trim().startsWith('<!DOCTYPE html>') || csvData.includes('<html')) {
+            console.warn(`Aba "${sheetName}" não encontrada (retornou HTML padrão).`);
+            return null;
+        }
+
+        if (csvData && csvData.trim()) {
+            return await processRankingCsv(csvData);
+        }
+        return null;
+    } catch (error) {
+        console.error("Erro fatal ao buscar ranking:", error);
+        return null;
+    }
+}
         
         async function processRankingCsv(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
@@ -1096,29 +1099,25 @@
 async function fetchAllData() {
     updateConnectionStatus('loading', 'Atualizando dados...');
 
-    // 1. Carrega todas as vendas e pagamentos primeiro
-    // Removemos fetchRankingData daqui porque ele precisa do mês primeiro
+    // 1. Busca Vendas e Pagamentos (que são rápidos e alimentam o filtro)
     const [salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
-        fetchSalesData(), // Isso preenche salesData e minasData
-        fetchCearaData(), // Isso preenche cearaData
+        fetchSalesData(), 
+        fetchCearaData(),
         fetchPaymentsData(),
         fetchRtmPaymentsData(),
         fetchAcordosData()
     ]);
 
-    updateTotalFinishedCounter();
-
-    // 2. Se for a primeira carga, popula o filtro de meses com base nas vendas carregadas
-    if (firstLoad) {
-        populateMonthFilter(salesData, cearaData, minasData);
-        firstLoad = false;
-    }
-
-    // 3. Agora que temos o filtro de mês preenchido (ou atualizado), chamamos updateDashboard
-    // O updateDashboard agora vai buscar o Ranking do mês selecionado
+    // 2. Popula o filtro de meses (Agora forçando o mês atual a aparecer)
+    // Fazemos isso sempre, não só no firstLoad, para garantir sincronia
+    populateMonthFilter(salesData, cearaData, minasData);
+    
+    // 3. Agora que o filtro tem "12/2025" selecionado, chamamos o updateDashboard
+    // O updateDashboard vai ler o filtro e chamar o fetchRankingData correto
     await updateDashboard();
     
-    // Se o updateDashboard der sucesso, o status ficará "connected" lá dentro.
+    updateTotalFinishedCounter();
+    firstLoad = false;
 }
 
         function updateProcessStats(allConsultantData) {
@@ -1446,23 +1445,21 @@ function clearRankingUI() {
 async function updateDashboard() {
     const monthSelector = document.getElementById('monthFilter');
     
-    // Se não houver opções ou for o primeiro load vazio, aborta
-    if (monthSelector.options.length === 0 && !firstLoad) {
-        return;
-    }
+    // Proteção: Se o seletor estiver vazio, não faz nada
+    if (!monthSelector || monthSelector.options.length === 0) return;
 
     const selectedValue = monthSelector.value; // Ex: "12/2025"
     
+    // Lógica para o Ranking (Async)
     if (selectedValue) {
-        // Extrai o mês do valor "12/2025"
         const [monthStr, yearStr] = selectedValue.split('/');
         const monthIndex = parseInt(monthStr, 10) - 1;
-        const monthName = MONTH_NAMES_PTBR[monthIndex]; // Ex: "DEZEMBRO"
+        const monthName = MONTH_NAMES_PTBR[monthIndex]; // "DEZEMBRO"
 
-        // Atualiza conexão visualmente para "Carregando"
-        updateConnectionStatus('loading', `Carregando Ranking de ${monthName}...`);
+        // Atualiza label visual
+        updateConnectionStatus('loading', `Ranking: ${monthName}...`);
 
-        // Busca o ranking específico desse mês
+        // Busca o ranking da aba específica
         const rankingResult = await fetchRankingData(monthName);
         
         if (rankingResult) {
@@ -1473,22 +1470,21 @@ async function updateDashboard() {
             updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto', 'SC');
             updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE', 'CE');
             updateConsultantRanking(rankingMG, 'minasRanking', 'topConsultantMG', 'topConsultantPhotoMG', 'MG');
-            
-            updateConnectionStatus('connected', 'Dados Atualizados');
+            updateConnectionStatus('connected', 'Atualizado');
         } else {
-            // Se não achar a aba (ex: selecionou um mês muito antigo que não tem ranking gerado)
-            console.log("Ranking não encontrado para este mês.");
-            clearRankingUI(); // Função auxiliar para limpar a tela
-            updateConnectionStatus('error', 'Ranking não disponível');
+            console.log(`Ranking para ${monthName} vazio ou inexistente.`);
+            clearRankingUI(); // Limpa a tela se não achar a aba
+            updateConnectionStatus('connected', 'Sem Ranking'); // Conectado, mas sem dados
         }
         
-        // Atualiza labels de mês na interface
-        const monthLabelText = `${monthName.charAt(0) + monthName.slice(1).toLowerCase()} ${yearStr}`;
-        document.getElementById('monthLabelGlobal').textContent = monthLabelText;
-        document.getElementById('monthLabelSC').textContent = monthLabelText;
+        // Atualiza textos do label
+        const prettyMonth = monthName.charAt(0) + monthName.slice(1).toLowerCase();
+        const labelText = `${prettyMonth} ${yearStr}`;
+        if(document.getElementById('monthLabelGlobal')) document.getElementById('monthLabelGlobal').textContent = labelText;
+        if(document.getElementById('monthLabelSC')) document.getElementById('monthLabelSC').textContent = labelText;
     }
 
-    // O resto da lógica de filtrar as vendas locais (que já estão carregadas) continua
+    // Lógica para Vendas (Local/Síncrona)
     const monthSalesSC = getMonthSales();
     const monthSalesCE = getMonthCeara();
     const monthSalesMG = getMonthMinas();
@@ -1503,7 +1499,6 @@ async function updateDashboard() {
     
     updateProcessEvolutionChart(salesData, cearaData, minasData);
 }
-
         function updateMainStats(totalSC, totalCE, totalMG, totalGlobal) {
             document.getElementById('totalMonthGlobal').textContent = totalGlobal;
             document.getElementById('totalMonthSC').textContent = totalSC;
@@ -2006,42 +2001,54 @@ async function updateDashboard() {
             updateProcessCounter(totalPaid);
         }
 
-        function populateMonthFilter(dataSC, dataCE, dataMG) {
-            const monthSet = new Set();
-            const allData = [...(dataSC || []), ...(dataCE || []), ...(dataMG || [])];
-            
-            allData.forEach(sale => {
-                if (sale.data) {
-                    const date = parsePtBrDate(sale.data);
-                    if (date) {
-                         const month = date.getMonth() + 1;
-                         const year = date.getFullYear();
-                         monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
-                    }
-                }
-            });
-
-            const monthSelect = document.getElementById('monthFilter');
-            const currentVal = monthSelect.value;
-            const allMonths = Array.from(monthSet).sort((a, b) => {
-                const [ma, ya] = a.split('/'); const [mb, yb] = b.split('/');
-                return new Date(yb, mb - 1) - new Date(ya, ma - 1);
-            });
-
-            monthSelect.innerHTML = '';
-            allMonths.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month; 
-                option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-
-            if (allMonths.includes(currentVal)) {
-                monthSelect.value = currentVal;
-            } else if (allMonths.length > 0) {
-                monthSelect.value = allMonths[0];
+function populateMonthFilter(dataSC, dataCE, dataMG) {
+    const monthSet = new Set();
+    const allData = [...(dataSC || []), ...(dataCE || []), ...(dataMG || [])];
+    
+    // 1. Adiciona meses baseados nos dados de vendas
+    allData.forEach(sale => {
+        if (sale.data) {
+            const date = parsePtBrDate(sale.data);
+            if (date) {
+                    const month = date.getMonth() + 1;
+                    const year = date.getFullYear();
+                    monthSet.add(`${String(month).padStart(2, '0')}/${year}`);
             }
         }
+    });
+
+    // 2. CORREÇÃO: Força a adição do Mês Atual (para garantir que Dezembro apareça mesmo sem vendas)
+    const now = new Date();
+    const currentMonthKey = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+    monthSet.add(currentMonthKey);
+
+    // 3. Ordenação Decrescente (Do mais novo para o mais antigo)
+    const allMonths = Array.from(monthSet).sort((a, b) => {
+        const [ma, ya] = a.split('/').map(Number); 
+        const [mb, yb] = b.split('/').map(Number);
+        
+        if (ya !== yb) return yb - ya; // Compara ano
+        return mb - ma; // Compara mês
+    });
+
+    const monthSelect = document.getElementById('monthFilter');
+    const currentVal = monthSelect.value;
+
+    monthSelect.innerHTML = '';
+    allMonths.forEach(month => {
+        const option = document.createElement('option');
+        option.value = month; 
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    // Mantém a seleção atual se possível, senão seleciona o primeiro (o mais recente/Dezembro)
+    if (currentVal && allMonths.includes(currentVal)) {
+        monthSelect.value = currentVal;
+    } else if (allMonths.length > 0) {
+        monthSelect.value = allMonths[0]; // Seleciona o topo da lista (Dezembro)
+    }
+}
         
         function getMonthSales() {
             const selectedMonthYear = document.getElementById('monthFilter').value;
