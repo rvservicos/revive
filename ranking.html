@@ -2000,8 +2000,14 @@
         }
         
         function filterPayments(statusToShow) {
+            // Remove a classe active de todos os botões existentes
             document.querySelectorAll('.payment-filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`).classList.add('active');
+            
+            // CORREÇÃO: Verifica se o botão existe antes de tentar adicionar a classe
+            const btnToActivate = document.querySelector(`.payment-filter-btn[onclick="filterPayments('${statusToShow}')"]`);
+            if (btnToActivate) {
+                btnToActivate.classList.add('active');
+            }
             
             document.querySelectorAll('.payment-status-section').forEach(section => {
                 if (statusToShow === 'all') {
