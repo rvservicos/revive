@@ -634,7 +634,7 @@
         const PREVIDENCIARIO_TYPES = ['CONCESSÃO MATERNIDADE', 'AUXILIO-ACIDENTE', 'APOSENTADORIA POR TEMPO DE SERVIÇO', 'LOAS', 'AUXILIO-DOENÇA', 'APOSENTADORIA POR IDADE', 'APOSENTADORIA POR INVALIDEZ', 'PENSÃO POR MORTE'].map(type => type.toUpperCase().trim());
         const SEGURO_TERCEIRO_TYPES = ['TERCEIRO DANO CORPORAL', 'TERCEIRO DANO MATERIAL'].map(type => type.toUpperCase().trim());
         const SEGURO_VIDA_TYPES = ['VIDA', 'VIDA APLICATIVO'].map(type => type.toUpperCase().trim());
-        
+        const MONTH_NAMES_PTBR = ['JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'];
         // Consultores de cada estado (nomes em maiúsculo para comparação)
         const CONSULTORES_CEARA = ['WESLLEY', 'LIVIA', 'LÍVIA', 'LUCAS', 'VANESSA'];
         const CONSULTORES_MINAS = ['LUIZMG', 'CONSULTORMG2']; // ADICIONE AQUI OS NOMES DOS CONSULTORES DE MG
@@ -644,13 +644,42 @@
             return fullName.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
         }
         
-        async function fetchRankingData() {
+        async function fetchRankingData(monthNameArg) {
             try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&gid=${RANKING_AUDITORIA_GID}&_=${new Date().getTime()}`;
+                // Se nenhum mês for passado, tentamos pegar o mês atual
+                let targetMonth = monthNameArg;
+                if (!targetMonth) {
+                    const now = new Date();
+                    targetMonth = MONTH_NAMES_PTBR[now.getMonth()];
+                }
+        
+                // Constrói o nome da aba conforme definido no Apps Script
+                const sheetName = `Ranking - ${targetMonth.toUpperCase()}`;
+                
+                // Codifica o nome para URL (espaços viram %20, acentos, etc)
+                const encodedSheetName = encodeURIComponent(sheetName);
+        
+                // URL usando o parâmetro 'sheet=' em vez de 'gid='
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${RANKING_AUDITORIA_ID}/export?format=csv&sheet=${encodedSheetName}&_=${new Date().getTime()}`;
+                
+                console.log(`Buscando ranking da aba: ${sheetName}`); // Para debug
+        
                 const response = await fetch(csvUrl, { mode: 'cors' });
-                if (!response.ok) throw new Error(`Falha ao buscar ranking: ${response.statusText}`);
+                
+                // Se a aba não existir (ex: mês futuro), o Google retorna erro ou redireciona
+                if (!response.ok) {
+                    console.warn(`Aba ${sheetName} não encontrada ou erro na requisição.`);
+                    return null; 
+                }
+                
                 const csvData = await response.text();
                 
+                // Verifica se o retorno parece HTML (erro de página de login ou 404 disfarçado)
+                if (csvData.trim().startsWith('<!DOCTYPE html>') || csvData.includes('<html')) {
+                    console.warn(`Aba ${sheetName} provavelmente não existe.`);
+                    return null;
+                }
+        
                 if (csvData && csvData.trim()) {
                     return await processRankingCsv(csvData);
                 }
@@ -1064,43 +1093,33 @@
             setTimeout(onAnimationFinish, 8000);
         }
 
-        async function fetchAllData() {
-            updateConnectionStatus('loading', 'Atualizando dados...');
+async function fetchAllData() {
+    updateConnectionStatus('loading', 'Atualizando dados...');
 
-            const [rankingResult, salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
-                fetchRankingData(),
-                fetchSalesData(),
-                fetchCearaData(),
-                fetchPaymentsData(),
-                fetchRtmPaymentsData(),
-                fetchAcordosData()
-            ]);
+    // 1. Carrega todas as vendas e pagamentos primeiro
+    // Removemos fetchRankingData daqui porque ele precisa do mês primeiro
+    const [salesResult, cearaResult, paymentsResult, rtmResult, acordosResult] = await Promise.allSettled([
+        fetchSalesData(), // Isso preenche salesData e minasData
+        fetchCearaData(), // Isso preenche cearaData
+        fetchPaymentsData(),
+        fetchRtmPaymentsData(),
+        fetchAcordosData()
+    ]);
 
-            if (rankingResult.status === 'fulfilled' && rankingResult.value) {
-                const { rankingSC, rankingCE, rankingMG, totalSC, totalCE, totalMG, totalGlobal, allConsultantData } = rankingResult.value;
+    updateTotalFinishedCounter();
 
-                updateMainStats(totalSC, totalCE, totalMG, totalGlobal);
-                updateProcessStats(allConsultantData);
-                updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto', 'SC');
-                updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE', 'CE');
-                updateConsultantRanking(rankingMG, 'minasRanking', 'topConsultantMG', 'topConsultantPhotoMG', 'MG');
-                
-                updateConnectionStatus('connected', 'Conectado');
-            } else {
-                console.error("Falha crítica ao buscar dados de ranking.", rankingResult.reason);
-                updateConnectionStatus('error', 'Falha no Ranking');
-                updateDashboard(); 
-            }
-            
-            updateTotalFinishedCounter();
-            if (firstLoad) {
-                populateMonthFilter(salesData, cearaData, minasData);
-            }
-            
-            updateDashboard(); 
-            
-            firstLoad = false;
-        }
+    // 2. Se for a primeira carga, popula o filtro de meses com base nas vendas carregadas
+    if (firstLoad) {
+        populateMonthFilter(salesData, cearaData, minasData);
+        firstLoad = false;
+    }
+
+    // 3. Agora que temos o filtro de mês preenchido (ou atualizado), chamamos updateDashboard
+    // O updateDashboard agora vai buscar o Ranking do mês selecionado
+    await updateDashboard();
+    
+    // Se o updateDashboard der sucesso, o status ficará "connected" lá dentro.
+}
 
         function updateProcessStats(allConsultantData) {
             if (!allConsultantData || allConsultantData.length === 0) {
@@ -1409,26 +1428,81 @@
             const monthSalesMG = getMonthMinas();
             updateMonthSalesMG(monthSalesMG);
         }
+function clearRankingUI() {
+    ['totalMonthGlobal', 'totalMonthSC', 'totalMonthCE', 'totalMonthMG'].forEach(id => {
+        document.getElementById(id).textContent = '-';
+    });
+    ['consultantRanking', 'cearaRanking', 'minasRanking'].forEach(id => {
+        document.getElementById(id).innerHTML = '<p style="text-align:center;color:#6b7280;padding:20px;">Ranking indisponível para este mês.</p>';
+    });
+    ['topConsultant', 'topConsultantCE', 'topConsultantMG'].forEach(id => {
+        document.getElementById(id).textContent = '-';
+    });
+    // Ocultar fotos
+    ['topConsultantPhoto', 'topConsultantPhotoCE', 'topConsultantPhotoMG'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
+}
+async function updateDashboard() {
+    const monthSelector = document.getElementById('monthFilter');
+    
+    // Se não houver opções ou for o primeiro load vazio, aborta
+    if (monthSelector.options.length === 0 && !firstLoad) {
+        return;
+    }
 
-        function updateDashboard() {
-            if (document.getElementById('monthFilter').options.length === 0 && !firstLoad) {
-                return;
-            }
+    const selectedValue = monthSelector.value; // Ex: "12/2025"
+    
+    if (selectedValue) {
+        // Extrai o mês do valor "12/2025"
+        const [monthStr, yearStr] = selectedValue.split('/');
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const monthName = MONTH_NAMES_PTBR[monthIndex]; // Ex: "DEZEMBRO"
 
-            const monthSalesSC = getMonthSales();
-            const monthSalesCE = getMonthCeara();
-            const monthSalesMG = getMonthMinas();
+        // Atualiza conexão visualmente para "Carregando"
+        updateConnectionStatus('loading', `Carregando Ranking de ${monthName}...`);
+
+        // Busca o ranking específico desse mês
+        const rankingResult = await fetchRankingData(monthName);
+        
+        if (rankingResult) {
+            const { rankingSC, rankingCE, rankingMG, totalSC, totalCE, totalMG, totalGlobal, allConsultantData } = rankingResult;
+
+            updateMainStats(totalSC, totalCE, totalMG, totalGlobal);
+            updateProcessStats(allConsultantData);
+            updateConsultantRanking(rankingSC, 'consultantRanking', 'topConsultant', 'topConsultantPhoto', 'SC');
+            updateConsultantRanking(rankingCE, 'cearaRanking', 'topConsultantCE', 'topConsultantPhotoCE', 'CE');
+            updateConsultantRanking(rankingMG, 'minasRanking', 'topConsultantMG', 'topConsultantPhotoMG', 'MG');
             
-            populateConsultantFilter(monthSalesSC);
-            populateConsultantFilterCE(monthSalesCE);
-            populateConsultantFilterMG(monthSalesMG);
-            
-            updateMonthSales(monthSalesSC);
-            updateMonthSalesCE(monthSalesCE);
-            updateMonthSalesMG(monthSalesMG);
-            
-            updateProcessEvolutionChart(salesData, cearaData, minasData);
+            updateConnectionStatus('connected', 'Dados Atualizados');
+        } else {
+            // Se não achar a aba (ex: selecionou um mês muito antigo que não tem ranking gerado)
+            console.log("Ranking não encontrado para este mês.");
+            clearRankingUI(); // Função auxiliar para limpar a tela
+            updateConnectionStatus('error', 'Ranking não disponível');
         }
+        
+        // Atualiza labels de mês na interface
+        const monthLabelText = `${monthName.charAt(0) + monthName.slice(1).toLowerCase()} ${yearStr}`;
+        document.getElementById('monthLabelGlobal').textContent = monthLabelText;
+        document.getElementById('monthLabelSC').textContent = monthLabelText;
+    }
+
+    // O resto da lógica de filtrar as vendas locais (que já estão carregadas) continua
+    const monthSalesSC = getMonthSales();
+    const monthSalesCE = getMonthCeara();
+    const monthSalesMG = getMonthMinas();
+    
+    populateConsultantFilter(monthSalesSC);
+    populateConsultantFilterCE(monthSalesCE);
+    populateConsultantFilterMG(monthSalesMG);
+    
+    updateMonthSales(monthSalesSC);
+    updateMonthSalesCE(monthSalesCE);
+    updateMonthSalesMG(monthSalesMG);
+    
+    updateProcessEvolutionChart(salesData, cearaData, minasData);
+}
 
         function updateMainStats(totalSC, totalCE, totalMG, totalGlobal) {
             document.getElementById('totalMonthGlobal').textContent = totalGlobal;
