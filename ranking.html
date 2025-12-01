@@ -693,70 +693,103 @@ async function fetchRankingData(monthNameArg) {
     }
 }
         
-        async function processRankingCsv(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length < 2) return null;
+async function processRankingCsv(csvText) {
+    // 1. LIMPEZA CRÍTICA: Remove caractere BOM invisível se existir no início
+    if (csvText.charCodeAt(0) === 0xFEFF) {
+        csvText = csvText.substr(1);
+    }
 
-            const headers = parseCSVLine(lines[0]);
-            const consultorIndex = headers.indexOf('Consultor');
-            const totalIndex = headers.indexOf('Total de Processos');
-            
-            if (consultorIndex === -1 || totalIndex === -1) {
-                console.error('Colunas "Consultor" ou "Total de Processos" não encontradas.');
-                return null;
-            }
+    const lines = csvText.split('\n').filter(line => line.trim());
+    if (lines.length < 2) {
+        console.warn("CSV de ranking com menos de 2 linhas.");
+        return null;
+    }
 
-            const rankingSC_raw = [];
-            const rankingCE_raw = [];
-            const rankingMG_raw = [];
+    // Parseia os cabeçalhos
+    const headers = parseCSVLine(lines[0]);
+    
+    // Debug: Mostra no console o que ele realmente leu (ajuda a identificar erros)
+    console.log("Headers brutos lidos:", headers);
 
-            const rows = lines.slice(1);
-            rows.forEach(line => {
-                const rowData = parseCSVLine(line);
-                const consultorName = (rowData[consultorIndex] || '').toUpperCase();
-                
-                if (!consultorName || consultorName === 'TOTAIS') return;
-                
-                const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
+    // 2. BUSCA ROBUSTA: Procura os índices ignorando maiúsculas/minúsculas e espaços
+    // Normaliza para: TRIM (sem espaço) e UPPERCASE (maiúsculo)
+    const consultorIndex = headers.findIndex(h => h && h.trim().toUpperCase().replace(/^"|"$/g, '') === 'CONSULTOR');
+    
+    // Procura 'TOTAL DE PROCESSOS' ou apenas 'TOTAL' para ser mais flexível
+    const totalIndex = headers.findIndex(h => {
+        if (!h) return false;
+        const cleanHeader = h.trim().toUpperCase().replace(/^"|"$/g, '');
+        return cleanHeader === 'TOTAL DE PROCESSOS' || cleanHeader === 'TOTAL';
+    });
 
-                const consultorDataObject = {
-                    name: consultorName.charAt(0) + consultorName.slice(1).toLowerCase(),
-                    sales: totalVendas,
-                    details: {}
-                };
+    if (consultorIndex === -1 || totalIndex === -1) {
+        console.error('ERRO CRÍTICO: Colunas não encontradas. Verifique os headers acima.');
+        return null;
+    }
 
-                headers.forEach((header, index) => {
-                    consultorDataObject.details[header] = parseInt(rowData[index], 10) || 0;
-                });
+    const rankingSC_raw = [];
+    const rankingCE_raw = [];
+    const rankingMG_raw = [];
 
-                if (CONSULTORES_CEARA.includes(consultorName)) {
-                    rankingCE_raw.push(consultorDataObject);
-                } else if (CONSULTORES_MINAS.includes(consultorName)) {
-                    rankingMG_raw.push(consultorDataObject);
-                } else {
-                    rankingSC_raw.push(consultorDataObject);
-                }
-            });
-            
-            rankingSC_raw.sort((a, b) => b.sales - a.sales);
-            rankingCE_raw.sort((a, b) => b.sales - a.sales);
-            rankingMG_raw.sort((a, b) => b.sales - a.sales);
+    const rows = lines.slice(1);
+    rows.forEach(line => {
+        const rowData = parseCSVLine(line);
+        
+        // Garante que a linha tem dados suficientes
+        if (rowData.length <= consultorIndex) return;
 
-            const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
-            const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
-            const rankingMG = rankingMG_raw.map(c => ({ name: c.name, sales: c.sales }));
-            
-            const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
-            const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
-            const totalMG = rankingMG.reduce((sum, c) => sum + c.sales, 0);
+        const consultorNameRaw = (rowData[consultorIndex] || '').trim();
+        // Remove aspas extras se houver e coloca em maiúsculo
+        const consultorName = consultorNameRaw.replace(/^"|"$/g, '').toUpperCase();
+        
+        // Ignora linhas de totais ou vazias
+        if (!consultorName || consultorName === 'TOTAIS') return;
+        
+        const totalVendas = parseInt(rowData[totalIndex], 10) || 0;
 
-            return { 
-                rankingSC, rankingCE, rankingMG, 
-                totalSC, totalCE, totalMG, 
-                totalGlobal: totalSC + totalCE + totalMG, 
-                allConsultantData: [...rankingSC_raw, ...rankingCE_raw, ...rankingMG_raw] 
-            };
+        // Formata o nome para "Nome" (Primeira maiúscula, resto minúscula)
+        const formattedName = consultorName.charAt(0) + consultorName.slice(1).toLowerCase();
+
+        const consultorDataObject = {
+            name: formattedName,
+            sales: totalVendas,
+            details: {}
+        };
+
+        // Preenche os detalhes dinamicamente
+        headers.forEach((header, index) => {
+            const cleanHeader = header.trim().replace(/^"|"$/g, '');
+            consultorDataObject.details[cleanHeader] = parseInt(rowData[index], 10) || 0;
+        });
+
+        if (CONSULTORES_CEARA.includes(consultorName)) {
+            rankingCE_raw.push(consultorDataObject);
+        } else if (CONSULTORES_MINAS.includes(consultorName)) {
+            rankingMG_raw.push(consultorDataObject);
+        } else {
+            rankingSC_raw.push(consultorDataObject);
         }
+    });
+    
+    rankingSC_raw.sort((a, b) => b.sales - a.sales);
+    rankingCE_raw.sort((a, b) => b.sales - a.sales);
+    rankingMG_raw.sort((a, b) => b.sales - a.sales);
+
+    const rankingSC = rankingSC_raw.map(c => ({ name: c.name, sales: c.sales }));
+    const rankingCE = rankingCE_raw.map(c => ({ name: c.name, sales: c.sales }));
+    const rankingMG = rankingMG_raw.map(c => ({ name: c.name, sales: c.sales }));
+    
+    const totalSC = rankingSC.reduce((sum, c) => sum + c.sales, 0);
+    const totalCE = rankingCE.reduce((sum, c) => sum + c.sales, 0);
+    const totalMG = rankingMG.reduce((sum, c) => sum + c.sales, 0);
+
+    return { 
+        rankingSC, rankingCE, rankingMG, 
+        totalSC, totalCE, totalMG, 
+        totalGlobal: totalSC + totalCE + totalMG, 
+        allConsultantData: [...rankingSC_raw, ...rankingCE_raw, ...rankingMG_raw] 
+    };
+}
         
         function setupCarousel() {
             carouselPages = document.querySelectorAll('.carousel-page');
